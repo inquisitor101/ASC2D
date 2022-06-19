@@ -2252,7 +2252,7 @@ void CEEInletCBC::ImposeBoundaryCondition
       // const as3double Tinf   = pInf*ovrg/rhoInf;
 
       // Step 5a: apply boundary condition through incoming acoustic wave-amplitude.
-      vecL[PsiIndex] = coefS*ovrho*a*omM2*( d11*(u - uInf) + d22*(v - vInf) )
+      vecL[PsiIndex] = coefS*a*omM2*( d11*(u - uInf) + d22*(v - vInf) )
                      - beta_t*vecT[PsiIndex];
 
       // Step 5b: apply boundary condition through incoming entropy/vorticity wave-amplitude.
