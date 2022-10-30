@@ -1,7 +1,7 @@
 #pragma once
 
 #include "option_structure.hpp"
-#include <eigen/Eigen/Dense>
+#include <../external/eigen/Eigen/Dense>
 
 
 

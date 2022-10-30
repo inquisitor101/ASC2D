@@ -1,11 +1,6 @@
 #include "ACS3.hpp"
 
 
-// TODO
-// move to header and implement as template with constexpr?
-
-
-
 
 
 void TensorProductSolAndGradVolume

@@ -20,6 +20,8 @@ BIN_DIR := bin
 # Dependency directory.
 DEP_DIR := Dependencies
 
+
+
 # Extract source files.
 SRCS := $(wildcard $(SRC_DIR)/*.cpp)
 # Specify object files.
@@ -42,7 +44,6 @@ CXX_OMP = -DHAVE_OPENMP
 
 # Compiler flags.
 CXXFLAGS = $(CXX_OPTFLAGS) $(CXX_STDFLAGS) $(CXX_OMP) $(MPI_FLAGS)  
-#CXXFLAGS =  #-fconcepts 
 
 # Linker flags.
 LDFLAGS = -Llib -flto
@@ -57,7 +58,6 @@ LDLIBS = -lm $(LD_BLAS)
 LD := $(CXX)
 
 # Dependency flags.
-#DEPFLAGS = -MT $@ -MMD -MP -MF $(DEP_DIR)/$*.d
 DEPFLAGS = -MMD -MT $@ -MP -MF $(DEP_DIR)/$*.d
 
 # Target executable.
@@ -73,12 +73,15 @@ LINK.o = $(LD) $(LDFLAGS) $(LDLIBS)
 COMPILE.cc = $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(DEPFLAGS) 
 
 
-#$(BIN_DIR)/$(EXE): $(OBJS) 
-#	$(LINK.o) $^ -o $@
-
-.PHONY: all clean debug
+.PHONY: all clean debug init_git_submodules 
 default: all
 
+
+init_git_submodules:
+	@if git submodule status | egrep -q '^[-]|^[+]' ; then \
+	echo "Initializing the necessary git submodules..."; \
+  git submodule update --init; \
+  fi
 
 debug: CXXFLAGS = -DDEBUG $(CXX_DBGFLAGS)
 debug: $(TARGET)
@@ -95,12 +98,13 @@ all:
 	$(MAKE) $(TARGET)
 
 $(TARGET): $(OBJS) 
+	mkdir -p bin
 	$(LINK.o) $^ -o $@
 
 
 $(OBJ_DIR)/%.o:	$(SRC_DIR)/%.cpp $(DEP_DIR)/%.d | $(DEP_DIR)
+	@mkdir -p obj
 	$(COMPILE.cc) -o $@ -c $<
-
 
 
 $(DEPS):

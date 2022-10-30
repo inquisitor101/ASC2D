@@ -25,7 +25,6 @@ int main(int argc, char **argv){
 
 	// Free memory.
   if( driver != nullptr ) delete driver;
-	// if( config != nullptr ) delete config;
 
 	// Exit happily.
 	return 0;
