@@ -275,6 +275,8 @@ void COutput::WriteSolutionToFile
 
 	// Report progress.
 	std::cout << "Done." << std::endl;
+  std::cout << "----------------------------------------------"
+							 "----------------------------------------------" << std::endl;
 
 	// Update file number.
 	FileNumberDataSolution++;

@@ -309,7 +309,13 @@ void CLSRK4Temporal::UpdateTime
 	*/
 {
   // Initialize max of the Mach number squared.
-  as3double M2max = 0.0;
+  as3double M2max      = 0.0;
+	// Initialize the RMS of the density.
+	as3double RMS_ResRho = 0.0;
+
+	// Compute the total number of DOFs in the main zone only.
+	const as3double nDOFsZoneMain = nElemZone[ZONE_MAIN]*nNodeZone[ZONE_MAIN];
+
 
   // Initiate OpenMP parallel region, if specified.
 #ifdef HAVE_OPENMP
@@ -379,6 +385,31 @@ void CLSRK4Temporal::UpdateTime
     }
 
 
+		// Loop over all the elements in the main zone only and compute the RMS
+		// of the residual of the density.
+#ifdef HAVE_OPENMP
+#pragma omp for schedule(static), reduction(+:RMS_ResRho)
+#endif
+		for(unsigned long iElem=0; iElem<nElemZone[ZONE_MAIN]; iElem++){
+
+			// Extract current data container.
+			auto* data_container = solver_container[ZONE_MAIN]->GetDataContainer(iElem);
+
+      // Extract current total residual.
+      auto& res = data_container->GetDataDOFsRes();
+
+			// Loop over the nodes and compute the RMS of the variable.
+			for(unsigned short iNode=0; iNode<nNodeZone[ZONE_MAIN]; iNode++){
+				
+				// Extract the residual of the density variable.
+				const as3double resRho = res[0][iNode];
+
+				// Compute the contribution onto the overall RMS of error.
+				RMS_ResRho += res[0][iNode]*res[0][iNode]; 
+			}
+		}
+
+
     // Loop over all elements in all zones and update the solution.
 #ifdef HAVE_OPENMP
 #pragma omp for schedule(static)
@@ -428,6 +459,8 @@ void CLSRK4Temporal::UpdateTime
 
   // Assign the actual max of the Mach number.
   MonitoringData[0] = sqrt(M2max);
+	// Assign the RMS of the density normalized.
+	MonitoringData[1] = sqrt( RMS_ResRho/nDOFsZoneMain );
 }
 
 
@@ -582,7 +615,13 @@ void CSSPRK3Temporal::UpdateTime
 	*/
 {
   // Initialize max of the Mach number squared.
-  as3double M2max = 0.0;
+  as3double M2max      = 0.0;
+	// Initialize the RMS of the density.
+	as3double RMS_ResRho = 0.0;
+
+	// Compute the total number of DOFs in the main zone only.
+	const as3double nDOFsZoneMain = nElemZone[ZONE_MAIN]*nNodeZone[ZONE_MAIN];
+
 
   // Initiate OpenMP parallel region, if specified.
 #ifdef HAVE_OPENMP
@@ -650,6 +689,31 @@ void CSSPRK3Temporal::UpdateTime
       // Set the max of the Mach squared in this element.
       M2max = std::max(M2max, MonitoringData[0]);
     }
+
+
+		// Loop over all the elements in the main zone only and compute the RMS
+		// of the residual of the density.
+#ifdef HAVE_OPENMP
+#pragma omp for schedule(static), reduction(+:RMS_ResRho)
+#endif
+		for(unsigned long iElem=0; iElem<nElemZone[ZONE_MAIN]; iElem++){
+
+			// Extract current data container.
+			auto* data_container = solver_container[ZONE_MAIN]->GetDataContainer(iElem);
+
+      // Extract current total residual.
+      auto& res = data_container->GetDataDOFsRes();
+
+			// Loop over the nodes and compute the RMS of the variable.
+			for(unsigned short iNode=0; iNode<nNodeZone[ZONE_MAIN]; iNode++){
+				
+				// Extract the residual of the density variable.
+				const as3double resRho = res[0][iNode];
+
+				// Compute the contribution onto the overall RMS of error.
+				RMS_ResRho += res[0][iNode]*res[0][iNode]; 
+			}
+		}
 
 
     // Abbreviations for updating the residual according to a SSPRK3 scheme.
@@ -748,4 +812,6 @@ void CSSPRK3Temporal::UpdateTime
 
   // Assign the actual max of the Mach number.
   MonitoringData[0] = sqrt(M2max);
+	// Assign the RMS of the density normalized.
+	MonitoringData[1] = sqrt( RMS_ResRho/nDOFsZoneMain );
 }

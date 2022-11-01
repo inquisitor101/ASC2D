@@ -752,28 +752,33 @@ void CDriver::MonitorOutput
   // Monitoring output frequency.
   unsigned long OutputFreq = config_container->GetOutputFreq();
 
+
 	// Display header.
-	if( iIter%nOutput == 0 ){
+	if( iIter%(50*OutputFreq) == 0 ){
 		std::cout << "**********************************************"
 							<< "**********************************************" << std::endl;
-		std::cout << " Iteration\tPhysical Time \t Time step \t Max(Mach) \t Res[RMS(rho)]" << std::endl;
+		std::cout << " Iteration\tPhysical Time \t Time step \t Max(Mach) \t RMS[Res(rho)]" << std::endl;
 		std::cout << "**********************************************"
 							<< "**********************************************" << std::endl;
 	}
 
 	// Display data in this iteration.
-	if( MonitorData && (iIter%OutputFreq==0) ){
+	if( MonitorData ){
+		if( (iIter%OutputFreq==0) || (MaxTimeIter<OutputFreq) ){
 
-    // Extract the maximum Mach number.
-    const as3double Mmax = MonitoringData[0];
+  	  // Extract the maximum Mach number.
+  	  const as3double Mmax = MonitoringData[0];
+			// Extract the RMS of the density residual.
+			const as3double RMSr = MonitoringData[1];
 
-		// Display progress.
-		std::cout << std::scientific << "   "
-							<< std::setw(nDigits) << iIter
-							<< " \t "  << time
-							<< " \t "  << dt
-              << " \t "  << Mmax
-							<< " \t "  << "N/A" << std::endl;
+			// Display progress.
+			std::cout << std::scientific << "   "
+								<< std::setw(nDigits) << iIter
+								<< " \t "  << time
+								<< " \t "  << dt
+  	            << " \t "  << Mmax
+								<< " \t "  << RMSr << std::endl;
+		}
 	}
 
 
@@ -806,9 +811,6 @@ as3double CDriver::ComputeTimeStep
     // Return data.
     return deltaT;
   }
-
-	// For now, use a fixed time step input by the user.
-	// as3double dt = config_container->GetTimeStep();
 
   // Initialize time step.
   as3double deltaT = 1.0e6;
@@ -967,8 +969,8 @@ void CDriver::Run
   const unsigned long WriteFreqZone = config_container->GetWriteFreqZoneData();
 
   // Monitoring data.
-  // Thus far, use only [0]: max(Mach).
-  as3vector1d<as3double> MonitoringData(1);
+  // Thus far, use only [0]: max(Mach) and [1]: RMS(res[RHO]).
+  as3vector1d<as3double> MonitoringData(2);
 
 	// Estimate time step needed.
 	as3double dt = ComputeTimeStep();
@@ -1043,6 +1045,9 @@ void CDriver::Run
     if( (SimTime >= SimTimeFinal) || (IterCount >= MaxTimeIter) )
       FinalStep = true;
 
+		// Display output for progress monitoring.
+		MonitorOutput(IterCount, SimTime, dt, MonitoringData);
+
     // Process data every OutputFreq iterations.
     if( IterCount%WriteFreq == 0 || FinalStep ){
 
@@ -1061,9 +1066,6 @@ void CDriver::Run
       // If this is an adaptive time-stepping, then compute new time-step.
       if( config_container->GetAdaptTime() ) dt = ComputeTimeStep();
     }
-
-		// Display output for progress monitoring.
-		MonitorOutput(IterCount, SimTime, dt, MonitoringData);
 	}
 
   // Write processed data to file, if specified.
