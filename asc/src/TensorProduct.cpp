@@ -1,5 +1,4 @@
-#include "ACS3.hpp"
-
+#include "ASC2D.hpp"
 
 
 
@@ -509,7 +508,7 @@ void TensorProductSurfaceResidual
 	*   N  : Column dimension of both input and output vector.
 	*   K  : Dimension of DOFs of output points in 1D.
   *   IDX: Indices on B that return the surface data in 1D of current face (K-by-1).
-	*   A  : Polynomial basis of interpolation in 1D in r-direction (K-by-M).
+	*   A  : Polynomial basis of interpolation in 1D (K-by-M).
 	*   B  : Input 1D data ( (M-by-N ).
 	*   C  : Output residual data ( (K*K)-by-N ).
 	*   NOTE,

@@ -1,5 +1,10 @@
 #pragma once
 
+/*!
+ * @file process_structure.hpp
+ * @brief The file containing all the (post-)processing functionalities.
+ */
+
 #include "option_structure.hpp"
 #include "config_structure.hpp"
 #include "geometry_structure.hpp"
@@ -8,17 +13,29 @@
 #include "spatial_structure.hpp"
 #include "output_structure.hpp"
 #include "initial_structure.hpp"
+#include "probe_structure.hpp"
+#include "reflection_structure.hpp"
 
 
-// Forward declaration to avoid compiler problems.
-class CSensorData;
-
-
+/*!
+ * @brief An interface class used for initializing a generic process class.
+ */
 class CProcess {
 
   public:
-    // Constructor.
-    CProcess(CConfig       *config_container,
+ 		/*!
+		 * @brief Default constructor of CProcess, which initializes a generic process class.
+		 *
+		 * @param[in] config_container pointer to input configuration container.
+		 * @param[in] geometry_container pointer to input geometry container.
+		 * @param[in] output_container pointer to the output container.
+		 * @param[in] element_container pointer to input standard element container.
+		 * @param[in] initial_container pointer to input initial conditions container.
+		 * @param[in] solver_container pointer to input solver container.
+		 * @param[in] spatial_container pointer to input spatial container.
+		 * @param[in] iZone input zone ID.
+		 */
+		CProcess(CConfig       *config_container,
              CGeometry     *geometry_container,
              COutput       *output_container,
              CElement     **element_container,
@@ -27,46 +44,75 @@ class CProcess {
              CSpatial     **spatial_container,
              unsigned short iZone);
 
-    // Destructor.
-    virtual ~CProcess(void);
+ 		/*!
+		 * @brief Destructor, which frees any allocated memory.
+		 */   
+		virtual ~CProcess(void);
 
-    // Function that filters the solution in this zone.
+    /*!
+		 * @brief Function that filters the solution in this zone.
+		 *
+		 * @param[in] config_container pointer to input configuration container.
+		 * @param[in] geometry_container pointer to input geometry container.
+		 * @param[in] element_container pointer to current zone standard element container.
+		 * @param[in] solver_container pointer to current zone solver container.
+		 * @param[in] spatial_container pointer to current zone spatial container.
+		 */
     void FilterSolution(CConfig   *config_container,
                         CGeometry *geometry_container,
                         CElement  *element_container,
                         CSolver   *solver_container,
                         CSpatial  *spatial_container);
 
-    // Pure virtual function that selects what/how to process the data.
-    // Must be overriden by a derived class.
+    /*!
+		 * @brief Pure virtual function that specifies the processing method.
+		 * Must be overriden by a derived class.
+		 *
+		 * @param[in] config_container pointer to input configuration container.
+		 * @param[in] geometry_container pointer to input geometry container.
+		 * @param[in] element_container pointer to current zone standard element container.
+		 * @param[in] spatial_container pointer to current zone spatial container.
+		 * @param[in] solver_container pointer to current zone solver container.
+		 * @param[in] initial_container pointer to current zone initial conditions container.
+		 * @param[in] output_container pointer to output container.
+		 * @param[in] localTime current physical (simulation) time.
+		 */
     virtual void ProcessData(CConfig   *config_container,
                              CGeometry *geometry_container,
                              CElement  *element_container,
                              CSpatial  *spatial_container,
                              CSolver   *solver_container,
                              CInitial  *initial_container,
+														 COutput   *output_container,
                              as3double  localTime) = 0;
 
-    // Pure virtual function that decides what data to write as output.
-    // Must be overriden by a derived class.
-    virtual void WriteProcessedData(CConfig   *config_container,
-                                    CGeometry *geometry_container,
-                                    COutput   *output_container) = 0;
-
   protected:
-    // Zone ID.
-    unsigned short zoneID;
+    unsigned short zoneID;  ///< Current zone ID.
 
   private:
 
 };
 
 
+/*!
+ * @brief A class used for initializing an Euler-equation(EE) process class.
+ */
 class CEEProcess : public CProcess {
 
   public:
-    // Constructor.
-    CEEProcess(CConfig       *config_container,
+ 		/*!
+		 * @brief Default constructor of CEEProcess, which initializes an Euler-equation(EE) process class.
+		 *
+		 * @param[in] config_container pointer to input configuration container.
+		 * @param[in] geometry_container pointer to input geometry container.
+		 * @param[in] output_container pointer to the output container.
+		 * @param[in] element_container pointer to input standard element container.
+		 * @param[in] initial_container pointer to input initial conditions container.
+		 * @param[in] solver_container pointer to input solver container.
+		 * @param[in] spatial_container pointer to input spatial container.
+		 * @param[in] iZone input zone ID.
+		 */ 
+		CEEProcess(CConfig       *config_container,
                CGeometry     *geometry_container,
                COutput       *output_container,
                CElement     **element_container,
@@ -75,109 +121,38 @@ class CEEProcess : public CProcess {
                CSpatial     **spatial_container,
                unsigned short iZone);
 
-    // Destructor.
-    ~CEEProcess(void) override;
+ 		/*!
+		 * @brief Destructor, which frees any allocated memory.
+		 */      
+		~CEEProcess(void) override;
 
-    // Function that selects what/how to process the data.
-    void ProcessData(CConfig   *config_container,
+    /*!
+		 * @brief Function that specifies the processing method.
+		 *
+		 * @param[in] config_container pointer to input configuration container.
+		 * @param[in] geometry_container pointer to input geometry container.
+		 * @param[in] element_container pointer to current zone standard element container.
+		 * @param[in] spatial_container pointer to current zone spatial container.
+		 * @param[in] solver_container pointer to current zone solver container.
+		 * @param[in] initial_container pointer to current zone initial conditions container.
+		 * @param[in] output_container pointer to output container.
+		 * @param[in] localTime current physical (simulation) time.
+		 */  
+		void ProcessData(CConfig   *config_container,
                      CGeometry *geometry_container,
                      CElement  *element_container,
                      CSpatial  *spatial_container,
                      CSolver   *solver_container,
                      CInitial  *initial_container,
+										 COutput   *output_container,
                      as3double  localTime) override;
 
-    // Function that decides what data to write as output.
-    void WriteProcessedData(CConfig   *config_container,
-                            CGeometry *geometry_container,
-                            COutput   *output_container);
-
   protected:
-    // Function that computes the reflection coeffcient as a function of (P).
-    // Expression: R = max( p'(t) )/pinf.
-    void ComputeReflectionCoefficientFuncP(CConfig   *config_container,
-                                           CGeometry *geometry_container,
-                                           CElement  *element_container,
-                                           CSpatial  *spatial_container,
-                                           CSolver   *solver_container,
-                                           CInitial  *initial_container,
-                                           as3double  localTime);
 
-    // Function that computes the reflection coeffcient as a function of (P, T).
-    // Expression: R = ( max( p'(t) )/pinf ) / ( max( T'(t=0) )/ Tinf ).
-    void ComputeReflectionCoefficientFuncPT(CConfig   *config_container,
-                                            CGeometry *geometry_container,
-                                            CElement  *element_container,
-                                            CSpatial  *spatial_container,
-                                            CSolver   *solver_container,
-                                            CInitial  *initial_container,
-                                            as3double  localTime);
-
-    // Function that computes the reflection coeffcient as a function of (P, M).
-    // Expression: R = ( max( p'(t) )/pinf ) / ( max( M'(t) )/ Minf ).
-    void ComputeReflectionCoefficientFuncPM(CConfig   *config_container,
-                                            CGeometry *geometry_container,
-                                            CElement  *element_container,
-                                            CSpatial  *spatial_container,
-                                            CSolver   *solver_container,
-                                            CInitial  *initial_container,
-                                            as3double  localTime);
-
-    // Function that samples data from probe points of a domain.
-    void SampleProbePoints(CConfig   *config_container,
-                           CGeometry *geometry_container,
-                           CElement  *element_container,
-                           CSpatial  *spatial_container,
-                           CSolver   *solver_container,
-                           CInitial  *initial_container,
-                           as3double  localTime);
-
-  private:
-    // Temporal signature.
-    as3vector1d<as3double> TimeProcessed;
-    // Processed data.
-    as3vector2d<as3double> DataProcessed;
-    // Sensor data for probing a location, if needed.
-    as3data1d<CSensorData> sensor_container;
+	private:
+    as3data1d<CProbe>      probe_container;      ///< Probe data object.
+		as3data1d<CReflection> reflection_container; ///< Reflection coefficient object.
 };
 
-
-class CSensorData {
-
-  public:
-    // Constructor.
-    CSensorData(CConfig               *config_container,
-                CGeometry             *geometry_container,
-                CElement              *element_container,
-                as3vector1d<as3double> probe,
-                unsigned short         iZone);
-    // Destructor.
-    ~CSensorData(void);
-
-    // Getter: returns IndexZone.
-    unsigned short GetIndexProbeZone(void)               const {return IndexProbeZone;}
-    // Getter: returns IndexProbeElem.
-    unsigned long GetIndexProbeElem(void)                const {return IndexProbeElem;}
-    // Getter: returns ProbeLocation.
-    const as3vector1d<as3double> &GetProbeLocation(void) const {return ProbeLocation;}
-    // Getter: returns Interpolation.
-    const as3vector1d<as3double> &GetInterpolation(void) const {return Interpolation;}
-
-  private:
-    // Zone ID of element holding current probe.
-    unsigned short IndexProbeZone;
-    // Global element index of the probe ownership.
-    unsigned long IndexProbeElem;
-    // Probe coordinates.
-    as3vector1d<as3double> ProbeLocation;
-    // Lagrange interpolation over this element.
-    as3vector1d<as3double> Interpolation;
-
-    // Function that computes the Lagrange interpolation entry in 1D for a given basis.
-    as3double EvaluateEntryLagrangePolynomial(const as3double               xPoint,
-                                              const as3vector1d<as3double> &rBasis,
-                                              const unsigned short          iDegree);
-
-};
 
 

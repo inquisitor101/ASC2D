@@ -28,6 +28,9 @@ CData::~CData
 	* Destructor for CData class, frees allocated memory.
 	*/
 {
+	for(unsigned short i=0; i<MatchDOFsInt.size(); i++)
+		if( MatchDOFsInt[i] ) delete [] MatchDOFsInt[i];
+
   for(unsigned short i=0; i<DataDOFsSol.size(); i++)
     if( DataDOFsSol[i] ) delete [] DataDOFsSol[i];
 
@@ -219,6 +222,15 @@ CEESpongeData::CEESpongeData
                                    initial_container,
                                    element_container,
                                    iZone, iElem);
+
+
+	// If a characteristic-layer term is specified, initialize the matching profile.
+	// Note, this must be executed after the grid-stretching.
+	if( config_container->GetCharacteristicMatching(iZone) )
+		InitializeCharacteristicMatching(config_container,
+				                             geometry_container,
+																		 element_container,
+																		 iZone, iElem);
 }
 
 
@@ -231,6 +243,154 @@ CEESpongeData::~CEESpongeData
 	*/
 {
 
+}
+
+
+void CEESpongeData::InitializeCharacteristicMatching
+(
+  CConfig       *config_container,
+  CGeometry     *geometry_container,
+  CElement      *element_container,
+  unsigned short iZone,
+  unsigned long  iElem
+)
+ /*
+  * Function that initializes and defines the characteristic matching coefficients.
+  */
+{
+  // Number of integration DOFs in 2D.
+  const unsigned short nDOFsInt2D = element_container->GetnDOFsInt2D();
+
+  // Get grid zone.
+  auto* grid_zone  = geometry_container->GetGeometryZone(iZone);
+  // Get grid element.
+  auto* grid_elem  = grid_zone->GetGeometryElem(iElem);
+  // Get zone dimensions/bounds.
+  auto& zone_bound = grid_zone->GetZoneSize();
+  // Main domain bounding box.
+  auto& MainBox    = config_container->GetDomainBound();
+
+  // To avoid confusion, explicitly extract the main-zone bounding coordinates.
+  const as3double xMin = MainBox[0]; // west.
+  const as3double xMax = MainBox[1]; // east.
+  const as3double yMin = MainBox[2]; // south.
+  const as3double yMax = MainBox[3]; // north.
+
+  // Type of zone.
+  unsigned short TypeZone = config_container->GetTypeZone(iZone);
+
+  // Extract characteristic-matching constant.
+  const as3double ms = config_container->GetCharacteristicConstant(iZone);
+  // Extract characteristic-matching exponential.
+  const as3double mb = config_container->GetCharacteristicExponent(iZone);
+
+  // Extract grid-stretching constant.
+  const as3double gs = config_container->GetGridStretchingConstant(iZone);
+  // Extract grid-stretching exponential.
+  const as3double gb = config_container->GetGridStretchingExponent(iZone);
+
+	// Extract the coordinates of the volume integration nodes.
+	auto& q = grid_elem->GetCoordIntDOFs();
+
+  // Obtain min x-coordinate of face.
+  const as3double xmin = grid_elem->GetCoordBoundary(IDX_WEST);
+  // Obtain max x-coordinate of face.
+  const as3double xmax = grid_elem->GetCoordBoundary(IDX_EAST);
+  // Obtain min y-coordinate of face.
+  const as3double ymin = grid_elem->GetCoordBoundary(IDX_SOUTH);
+  // Obtain max y-coordinate of face.
+  const as3double ymax = grid_elem->GetCoordBoundary(IDX_NORTH);
+
+	// Initialize characteristic matching on the volume integration nodes in 2D.
+	MatchDOFsInt.resize( nDim, nullptr );
+	MatchDOFsInt[0] = new as3double[nDOFsInt2D]();
+	MatchDOFsInt[1] = new as3double[nDOFsInt2D]();
+
+	// Check if allocation failed.
+	if( !MatchDOFsInt[0] || !MatchDOFsInt[1] )
+		Terminate("InitializeCharacteristicMatching", __FILE__, __LINE__,
+				      "Allocation failed for MatchDOFsInt.");
+
+
+  // Determine which type of zone we are dealing with.
+  switch( TypeZone ){
+
+    // In these zones: alpha(x) is non-zero and alpha(y) = 1.
+    case(ZONE_EAST): case(ZONE_WEST):
+    {
+      // Extract inverse of width of zone in x-direction.
+      const as3double ovDx = 1.0/zone_bound[0];
+      // Interface location in x-direction.
+      const as3double x0   = ( TypeZone == ZONE_WEST ) ? xMin : xMax;
+
+			// Loop over volume integration nodes and populate the matching profile.
+			for(unsigned short l=0; l<nDOFsInt2D; l++)
+			{
+				// Compute the necessary functions.
+				const as3double fx = gs*pow( ovDx*fabs( q[0][l] - x0 ), gb );
+				const as3double gx = ms*pow( ovDx*fabs( q[0][l] - x0 ), mb );
+				// Assign the matching profiles.
+				MatchDOFsInt[0][l] = gx/( 1.0 + fx ); 
+				MatchDOFsInt[1][l] = 0.0;
+			}
+
+      break;
+    }
+
+    // In these zones: alpha(y) is non-zero and alpha(x) = 1.
+    case(ZONE_SOUTH): case(ZONE_NORTH):
+    {
+      // Extract inverse of width of zone in y-direction.
+      const as3double ovDy = 1.0/zone_bound[1];
+      // Interface location in y-direction.
+      const as3double y0   = ( TypeZone == ZONE_SOUTH ) ? yMin : yMax;
+     
+			// Loop over volume integration nodes and populate the matching profile.
+			for(unsigned short l=0; l<nDOFsInt2D; l++)
+			{
+				// Compute the necessary functions.
+				const as3double fy = gs*pow( ovDy*fabs( q[1][l] - y0 ), gb );
+				const as3double gy = ms*pow( ovDy*fabs( q[1][l] - y0 ), mb );
+				// Assign the matching profiles.
+				MatchDOFsInt[0][l] = 0.0; 
+				MatchDOFsInt[1][l] = gy/( 1.0 + fy );
+			}
+
+      break;
+    }
+
+    // In these zones: alpha(x) and alpha(y) are non-zero.
+    case(ZONE_CORNER_0): case(ZONE_CORNER_1): case(ZONE_CORNER_2): case(ZONE_CORNER_3):
+    {
+      // Extract inverse of width of zone in x-direction.
+      const as3double ovDx = 1.0/zone_bound[0];
+      // Extract inverse of width of zone in y-direction.
+      const as3double ovDy = 1.0/zone_bound[1];
+      // Interface location in x- and y-directions.
+      const as3double x0   = ( (TypeZone == ZONE_CORNER_0) || (TypeZone == ZONE_CORNER_2) ) ? xMin : xMax;
+      const as3double y0   = ( (TypeZone == ZONE_CORNER_0) || (TypeZone == ZONE_CORNER_1) ) ? yMin : yMax;
+
+			// Loop over volume integration nodes and populate the matching profile.
+			for(unsigned short l=0; l<nDOFsInt2D; l++)
+			{
+				// Compute the necessary functions.
+				const as3double fx = gs*pow( ovDx*fabs( q[0][l] - x0 ), gb );
+				const as3double gx = ms*pow( ovDx*fabs( q[0][l] - x0 ), mb );
+				const as3double fy = gs*pow( ovDy*fabs( q[1][l] - y0 ), gb );
+				const as3double gy = ms*pow( ovDy*fabs( q[1][l] - y0 ), mb );
+				// Assign the matching profiles.
+				MatchDOFsInt[0][l] = gx/( 1.0 + fx ); 
+				MatchDOFsInt[1][l] = gy/( 1.0 + fy );
+			}
+
+      break;
+    }
+
+    // If this is the main zone, exit immediately.
+    default:
+      Terminate("CEESpongeData::InitializeCharacteristicMatching", __FILE__, __LINE__,
+                "Wrong zone type specified.");
+  }
 }
 
 
@@ -317,7 +477,6 @@ void CEESpongeData::InitializeGridStretching
       // Populate grid-stretching data.
       unsigned short idx = 0;
       for(unsigned short i=0; i<nDOFsInt1D; i++){
-#pragma omp simd
         for(unsigned short l=0; l<nDOFsSol1D; l++){
 
           // Extract coordinates.
@@ -371,7 +530,6 @@ void CEESpongeData::InitializeGridStretching
       // Populate grid-stretching data.
       unsigned short idx = 0;
       for(unsigned short i=0; i<nDOFsInt1D; i++){
-#pragma omp simd
         for(unsigned short l=0; l<nDOFsSol1D; l++){
 
           // Extract coordinates.
@@ -438,7 +596,6 @@ void CEESpongeData::InitializeGridStretching
       // Populate grid-stretching data.
       unsigned short idx = 0;
       for(unsigned short i=0; i<nDOFsInt1D; i++){
-#pragma omp simd
         for(unsigned short l=0; l<nDOFsSol1D; l++){
 
           // Extract coordinates.
@@ -567,7 +724,6 @@ void CEESpongeData::InitializeArtificialConvection
       // Populate artificial-velocity data.
       unsigned short idx = 0;
       for(unsigned short i=0; i<nDOFsInt1D; i++){
-#pragma omp simd
         for(unsigned short l=0; l<nDOFsSol1D; l++){
 
           // Extract coordinates.
@@ -638,7 +794,6 @@ void CEESpongeData::InitializeArtificialConvection
       // Populate artificial-velocity data.
       unsigned short idx = 0;
       for(unsigned short i=0; i<nDOFsInt1D; i++){
-#pragma omp simd
         for(unsigned short l=0; l<nDOFsSol1D; l++){
 
           // Extract coordinates.
@@ -758,7 +913,6 @@ void CEESpongeData::InitializeArtificialConvection
       // Populate artificial-velocity data.
       unsigned short idx = 0;
       for(unsigned short i=0; i<nDOFsInt1D; i++){
-#pragma omp simd
         for(unsigned short l=0; l<nDOFsSol1D; l++){
 
           // Extract coordinates.

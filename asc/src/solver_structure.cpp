@@ -206,10 +206,10 @@ void CSolver::Boundary_Preprocessing
           case( SOLVER_EE ):
           {
             // Check what type of buffer layer this is, if any.
-            switch( config_container->GetTypeBufferLayer(iZone) ){
-
+            switch( config_container->GetTypeBufferLayer(iZone) )
+						{
               // Physical or sponge EE-type spatial container.
-              case(NO_LAYER): case(SPONGE_LAYER):
+							case(NO_LAYER): case(SPONGE_LAYER): case(PML_LAYER):
               {
                 // Initialize interface/periodic boundary.
                 boundary_container[iBoundary] = new CEEInterfaceBoundary(config_container,
@@ -217,18 +217,6 @@ void CSolver::Boundary_Preprocessing
                                                                          initial_container,
                                                                          element_container,
                                                                          iZone, iBoundary);
-                break;
-              }
-
-              // PML EE-type spatial container.
-              case(PML_LAYER):
-              {
-                // Initialize interface/periodic boundary.
-                boundary_container[iBoundary] = new CEEPMLInterfaceBoundary(config_container,
-                                                                            geometry_container,
-                                                                            initial_container,
-                                                                            element_container,
-                                                                            iZone, iBoundary);
                 break;
               }
 
@@ -271,14 +259,25 @@ void CSolver::Boundary_Preprocessing
         break;
       }
 
-      case(BC_CBC_INLET):
+      case(BC_CBC_STATIC_INLET):
       {
-        // Initialize characteristic inlet boundary.
-				boundary_container[iBoundary] = new CEEInletCBC(config_container,
-																												geometry_container,
-                                                        initial_container,
-																												element_container,
-																												iZone, iBoundary);
+        // Initialize characteristic static inlet boundary.
+				boundary_container[iBoundary] = new CEEStaticInletCBC(config_container,
+																												      geometry_container,
+                                                              initial_container,
+																												      element_container,
+																												      iZone, iBoundary);
+        break;
+      }
+
+			case(BC_CBC_TOTAL_INLET):
+      {
+        // Initialize characteristic total inlet boundary.
+				boundary_container[iBoundary] = new CEETotalInletCBC(config_container,
+																												     geometry_container,
+                                                             initial_container,
+																												     element_container,
+																												     iZone, iBoundary);
         break;
       }
 

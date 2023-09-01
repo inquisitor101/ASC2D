@@ -3,13 +3,13 @@ MAKE = make -j 8
 
 
 # Define compiler with OpenMP.
-CXX = g++ -std=c++17 -fopenmp
+CXX = g++ -std=c++17 -fopenmp 
 
 # Define compiler serial version.
 CXXSERIAL = g++ -std=c++17
 
 # Program executable.
-EXE := ACS3
+EXE := ASC2D
 
 # Source files directory.
 SRC_DIR := src
@@ -33,10 +33,10 @@ DEPS := $(patsubst $(SRC_DIR)/%.cpp,$(DEP_DIR)/%.d,$(SRCS))
 INCLUDE = -Iinclude
 
 # Compiler debug flags.
-CXX_DBGFLAGS = -g -Wall -DENABLE_NAN_CHECK -Werror 
+CXX_DBGFLAGS = -g -Wall -DENABLE_NAN_CHECK -Werror #-fanalyzer 
 
 # Optimization flags
-CXX_OPTFLAGS = -O2 -mavx2 -mfma -ffast-math -funroll-loops -ftree-vectorize -ftree-vectorizer-verbose=2 -march=native 
+CXX_OPTFLAGS = -O2 -funroll-loops -ftree-vectorize -march=native -mtune=native 
 
 
 # OpenMP flags.

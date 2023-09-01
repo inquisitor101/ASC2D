@@ -29,8 +29,7 @@ CSpatial::CSpatial
   if( config_container->GetTypeFilterSolution(iZone) != NO_FILTER )
     InitializeFilterMatrix(config_container,
                            geometry_container,
-                           element_container[iZone],
-                           FilterMatrix);
+                           element_container[iZone]);
 }
 
 
@@ -51,8 +50,7 @@ void CSpatial::InitializeFilterMatrix
 (
  CConfig   *config_container,
  CGeometry *geometry_container,
- CElement  *element_container,
- as3double *matF
+ CElement  *element_container
 )
  /*
   * Function that initializes and computes the filtering matrix.
@@ -284,10 +282,8 @@ void CEESpatial::ComputeVolumeResidual
 {
   // Some abbreviations.
   const as3double gm1 = GAMMA_MINUS_ONE;
-  // Initialize max Mach number.
-  as3double M2max     = 0.0;
 
-  // Extract current element size.
+	// Extract current element size.
   auto hElem = geometry_element->GetElemSize();
 
   // Step 0a: assign the pointers for the working solution and its gradients.
@@ -329,16 +325,6 @@ void CEESpatial::ComputeVolumeResidual
     const as3double v     = ovrho*Var[2][l];
     const as3double p     = gm1*(Var[3][l]
                           - 0.5*(u*Var[1][l] + v*Var[2][l]) );
-
-    // Magnitude of the velocity squared.
-    const as3double umag2 = u*u + v*v;
-    // Speed of sound squared.
-    const as3double a2    = GAMMA*p*ovrho;
-
-    // Compute the local Mach number squared.
-    const as3double M2 = umag2/a2;
-    // Check if this value is the largest.
-    M2max = std::max(M2max, M2);
 
     // Compute the inviscid flux in the x-direction. Including the jacobian
     // and the integration weights.
@@ -589,8 +575,8 @@ void CEESpatial::ComputeVolumeResidual
     if( config_container->GetAlignedPeriodicPulse() ){
 
       // Background velocity.
-      const as3double uInf = initial_container->GetVelocityNormal();
-      const as3double vInf = initial_container->GetVelocityTransverse();
+      const as3double uInf = initial_container->GetUinf();
+      const as3double vInf = initial_container->GetVinf();
 
       // Abbreviation.
       const as3double umag = sqrt( uInf*uInf + vInf*vInf );
@@ -673,6 +659,31 @@ void CEESpatial::ComputeVolumeResidual
                                   ell, ell, Var, res.data() );
     }
   }
+
+	// Compute max Mach number over the solution DOFs.
+  as3double M2max = 0.0;
+	for(unsigned short l=0; l<nDOFsSol2D; l++){
+
+    // Determine primitive variables.
+    const as3double rho   = sol[0][l];
+    const as3double ovrho = 1.0/rho;
+    const as3double u     = ovrho* sol[1][l];
+    const as3double v     = ovrho* sol[2][l];
+    const as3double p     = gm1*(  sol[3][l]
+                          - 0.5*(u*sol[1][l] 
+													     + v*sol[2][l]) );
+
+    // Magnitude of the velocity squared.
+    const as3double umag2 = u*u + v*v;
+    // Speed of sound squared.
+    const as3double a2    = GAMMA*p*ovrho;
+
+    // Compute the local Mach number squared.
+    const as3double M2 = umag2/a2;
+    // Check if this value is the largest.
+    M2max = std::max(M2max, M2);
+	}
+
 
   // Assign the monitoring data.
   MonitoringData[0] = M2max;
@@ -945,8 +956,6 @@ void CEESpongeSpatial::ComputeVolumeResidual
 {
   // Some abbreviations.
   const as3double gm1 = GAMMA_MINUS_ONE;
-  // Initialize max Mach number.
-  as3double M2max     = 0.0;
 
   // Extract current element size.
   auto hElem = geometry_element->GetElemSize();
@@ -996,6 +1005,8 @@ void CEESpongeSpatial::ComputeVolumeResidual
 #pragma omp simd
   for(unsigned short l=0; l<nDOFsInt2D; l++){
 
+		// NOTE, the residual is defined on the right-hand side, opposite to the definition
+		// in VCP3D (which is on the LHS).
     // Extract the integration weight multiplied with the jacobians.
     const as3double weightx = wts[l]*drdx;
     const as3double weighty = wts[l]*dsdy;
@@ -1014,16 +1025,6 @@ void CEESpongeSpatial::ComputeVolumeResidual
     const as3double v     = ovrho*Var[2][l];
     const as3double p     = gm1*(Var[3][l]
                           - 0.5*(u*Var[1][l] + v*Var[2][l]) );
-
-    // Magnitude of the velocity squared.
-    const as3double umag2 = u*u + v*v;
-    // Speed of sound squared.
-    const as3double a2    = GAMMA*p*ovrho;
-
-    // Compute the local Mach number squared.
-    const as3double M2 = umag2/a2;
-    // Check if this value is the largest.
-    M2max = std::max(M2max, M2);
 
     // Compute the inviscid flux in the x-direction. Including the jacobian
     // and the integration weights.
@@ -1056,6 +1057,164 @@ void CEESpongeSpatial::ComputeVolumeResidual
   // Step 6c: compute source contribution to the residual.
   TensorProductVolumeResidual(nDOFsInt1D, nVar, nDOFsSol1D,
                               ell, ell, VarSrc, res.data());
+
+
+	// Check if a characteristic layer is needed.
+	if( config_container->GetCharacteristicMatching(zoneID) )
+	{
+		// Abbreviation involving gamma.
+		const as3double ovgm1 = 1.0/gm1;
+
+		// Extract the characteristic-matching profile.
+		auto& match = data_container->GetMatchDOFsInt();
+
+		// Extract transpose of 1D derivative Lagrange polynomial.
+		auto* dellT = element_container->GetDerLagrangeInt1DTranspose();
+
+		// Compute the data at the integation nodes.
+  	TensorProductSolAndGradVolume(nDOFsInt1D, nVar, nDOFsSol1D,
+  	                              ellT, dellT, sol.data(),
+  	                              Var, dVarDx, dVarDy);
+
+    // Convert the parametric gradients into physical space.
+    for(unsigned short iVar=0; iVar<nVar; iVar++){
+#pragma omp simd
+      for(unsigned short l=0; l<nDOFsInt2D; l++){
+        dVarDx[iVar][l] *= drdx;
+        dVarDy[iVar][l] *= dsdy;
+      }
+    }
+
+		// Deduce which indices are the outgoing indices in each direction. Then, assign
+		// a value of zero for each of the dxI and dyI values. This way, only the incoming
+		// indices are modified, as expected.
+
+		// Obtain the layer orientation, w.r.t. the main zone.
+		const as3double nx = geometry_container->GetGeometryZone(zoneID)->GetLayerOrientation()[0];
+		const as3double ny = geometry_container->GetGeometryZone(zoneID)->GetLayerOrientation()[1];
+
+
+  	// Loop over all integration points and compute the additional characteristic
+		// matching term on them.
+#pragma omp simd
+  	for(unsigned short l=0; l<nDOFsInt2D; l++){
+    	
+	   	// Weights associated source terms.
+    	const as3double wx = wts[l]*match[0][l];
+			const as3double wy = wts[l]*match[1][l];
+
+			// Determine primitive variables.
+    	const as3double rho   = Var[0][l];
+			const as3double rhou  = Var[1][l];
+			const as3double rhov  = Var[2][l];
+			const as3double ovrho = 1.0/rho;
+    	const as3double u     = ovrho*rhou;
+    	const as3double v     = ovrho*rhov;
+    	const as3double p     = gm1*(Var[3][l]
+    	                      - 0.5*(u*rhou + v*rhov) );
+
+			// Compute the speed of sound and its square.
+			const as3double a2    = GAMMA*p*ovrho;
+			const as3double a     = sqrt( a2 );
+
+			// Some abbreviations commonly used.
+			const as3double ova2  = 1.0/a2;
+			const as3double rova  = rho/a;
+			const as3double rhoa  = rho*a;
+			const as3double ovra  = 1.0/rhoa;
+			const as3double ek    = 0.5*( u*u + v*v );
+
+			// Compute the eigenvalues in both directions. Note, the if statements are
+			// there in order to identify which eigenvalues are outgoing, thus completely
+			// eliminate them -- since we only want to match the incoming characteristics,
+			// with respect to the main, physical zone.
+			
+			// First in the x-direction.
+			as3double lmbx1 = (u - a);
+			as3double lmbx2 = (u    );
+			as3double lmbx3 = (u + a);
+
+			// Then in the y-direction.
+			as3double lmby1 = (v - a);
+			as3double lmby2 = (v    );
+			as3double lmby3 = (v + a);
+
+			// Eliminate any outgoing eigenvalues in x-direction.
+			if( nx*lmbx1 > 0.0 ) lmbx1 = 0.0;
+			if( nx*lmbx2 > 0.0 ) lmbx2 = 0.0;
+			if( nx*lmbx3 > 0.0 ) lmbx3 = 0.0;
+
+			// Eliminate any outgoing eigenvalues in y-direction.
+			if( ny*lmby1 > 0.0 ) lmby1 = 0.0;
+			if( ny*lmby2 > 0.0 ) lmby2 = 0.0;
+			if( ny*lmby3 > 0.0 ) lmby3 = 0.0;
+
+			// Extract the derivative of the primitive variables in the x-direction.
+      const as3double drdx = dVarDx[0][l];
+      const as3double dudx = ovrho*(  dVarDx[1][l] - u*drdx );
+    	const as3double dvdx = ovrho*(  dVarDx[2][l] - v*drdx );
+    	const as3double dpdx = gm1*( ek*dVarDx[0][l]
+      										 -  		  u*dVarDx[1][l]
+      										 -        v*dVarDx[2][l]
+      										 +          dVarDx[3][l] );
+
+
+			// Extract the derivative of the primitive variables in the y-direction.
+      const as3double drdy = dVarDy[0][l];
+      const as3double dudy = ovrho*(  dVarDy[1][l] - u*drdy );
+    	const as3double dvdy = ovrho*(  dVarDy[2][l] - v*drdy );
+    	const as3double dpdy = gm1*( ek*dVarDy[0][l]
+      										 -  		  u*dVarDy[1][l]
+      										 -        v*dVarDy[2][l]
+      										 +          dVarDy[3][l] );
+
+
+			// Compute the directional wave amplitudes and factor in the indices that are 
+			// only incoming, zero all outgoing information.
+			
+			// First in the x-direction.
+			const as3double Lx1 = 0.5*lmbx1*( dudx - ovra*dpdx );
+			const as3double Lx2 =     lmbx2*( drdx - ova2*dpdx );
+			const as3double Lx3 =     lmbx2*( dvdx             );
+			const as3double Lx4 = 0.5*lmbx3*( dudx + ovra*dpdx );
+
+			// Then in the y-direction.
+			const as3double Ly1 = 0.5*lmby1*( dvdy - ovra*dpdy );
+			const as3double Ly2 =     lmby2*( dudy             );
+			const as3double Ly3 =     lmby2*( drdy - ova2*dpdy );
+			const as3double Ly4 = 0.5*lmby3*( dvdy + ovra*dpdy );
+
+
+			// Some abbreviations involving the wave amplitudes: x-direction.
+			const as3double Lx14p     = Lx1 + Lx4;
+			const as3double Lx14m     = Lx1 - Lx4;
+			const as3double rhoLx14m  = rho*Lx14m;
+			const as3double termx     = Lx2 + rova*Lx14p;
+
+			// Some abbreviations involving the wave amplitudes: y-direction.
+			const as3double Ly14p     = Ly1 + Ly4;
+			const as3double Ly14m     = Ly1 - Ly4;
+			const as3double rhoLy14m  = rho*Ly14m;
+			const as3double termy     = Ly3 + rova*Ly14p;
+			
+			// Subtract the modified/incoming quasi-linear flux in the x-direction: dFdx.
+			VarSrc[0][l] = wx*(    termx                                            );
+			VarSrc[1][l] = wx*(  u*termx - rhoLx14m                                 );
+			VarSrc[2][l] = wx*(  v*termx +  rho*Lx3                                 ); 
+			VarSrc[3][l] = wx*( ek*termx + rhov*Lx3 - rhou*Lx14m + ovgm1*rhoa*Lx14p );
+	
+			// Subtract the modified/incoming quasi-linear flux in the y-direction: dGdy.
+			VarSrc[0][l] += wy*(    termy                                            );
+			VarSrc[1][l] += wy*(  u*termy +  rho*Ly2                                 );
+			VarSrc[2][l] += wy*(  v*termy - rhoLy14m                                 ); 
+			VarSrc[3][l] += wy*( ek*termy + rhou*Ly2 - rhov*Ly14m + ovgm1*rhoa*Ly14p );
+		}
+
+  	// Compute source contribution to the residual.
+  	TensorProductVolumeResidual(nDOFsInt1D, nVar, nDOFsSol1D,
+  	                            ell, ell, VarSrc, res.data());
+	}
+
 
 
   // Check if an artificial-convection term is needed in the x-direction.
@@ -1091,6 +1250,31 @@ void CEESpongeSpatial::ComputeVolumeResidual
     TensorProductVolumeResidual(nDOFsInt1D, nVar, nDOFsSol1D,
                                 ell, u0delly, dVarDy, res.data());
   }
+
+
+	// Compute max Mach number over the solution DOFs.
+  as3double M2max = 0.0;
+	for(unsigned short l=0; l<nDOFsSol2D; l++){
+
+    // Determine primitive variables.
+    const as3double rho   = sol[0][l];
+    const as3double ovrho = 1.0/rho;
+    const as3double u     = ovrho* sol[1][l];
+    const as3double v     = ovrho* sol[2][l];
+    const as3double p     = gm1*(  sol[3][l]
+                          - 0.5*(u*sol[1][l] 
+													     + v*sol[2][l]) );
+
+    // Magnitude of the velocity squared.
+    const as3double umag2 = u*u + v*v;
+    // Speed of sound squared.
+    const as3double a2    = GAMMA*p*ovrho;
+
+    // Compute the local Mach number squared.
+    const as3double M2 = umag2/a2;
+    // Check if this value is the largest.
+    M2max = std::max(M2max, M2);
+	}
 
   // Assign the monitoring data.
   MonitoringData[0] = M2max;
@@ -1135,7 +1319,7 @@ void CEESpongeSpatial::ComputeSurfaceResidual
   // Step 1: extract the required basis operators in 1D and integration weights in 1D.
   auto* ell  = element_container->GetLagrangeInt1D();
   auto* ellT = element_container->GetLagrangeInt1DTranspose();
-  auto& wts  = element_container->GetwDOFsInt1D();
+  auto& wts  = element_container->GetwDOFsInt1D();	
 
 
   // Step 2: loop over all the faces and interpolate the neighboring solution.
@@ -1199,7 +1383,7 @@ void CEESpongeSpatial::ComputeSurfaceResidual
                                 nullptr, nullptr);
 
     // Step 4: invoke a riemann solver to determine the flux at the face.
-    riemann_container->ComputeFluxState(UnitNormal, wts, hh, VarI, VarJ, Flux);
+		riemann_container->ComputeFluxState(UnitNormal, wts, hh, VarI, VarJ, Flux);
 
     // Step 5: compute flux contribution to the residual.
     TensorProductSurfaceResidual(nDOFsInt1D, nVar, nDOFsSol1D,
@@ -1278,8 +1462,9 @@ CEEPMLSpatial::CEEPMLSpatial
 {
   // Set the dispersion-relation correction coefficient.
   DispersionCorrection = initial_container->GetBetaPML();
-  // Set the transverse velocity component.
-  VelocityTransverse   = initial_container->GetVelocityTransverse();
+  // Set the transverse velocity component. Note, in this work
+	// this is assumed to be the v-velocity component.
+  VelocityTransverse   = initial_container->GetVinf();
 }
 
 
@@ -1396,8 +1581,6 @@ void CEEPMLSpatial::ComputeVolumeResidual
   const as3double gm1 = GAMMA_MINUS_ONE;
   // Dispersion-relation correction coefficient.
   const as3double bb = DispersionCorrection;
-  // Initialize max Mach number.
-  as3double M2max    = 0.0;
   // Number of variables for the cross terms contributoin, default nVar (no cross terms).
   unsigned short nVarCross = nVar;
 
@@ -1486,16 +1669,6 @@ void CEEPMLSpatial::ComputeVolumeResidual
     const as3double p     = gm1*(VarU[3][l]
                           - 0.5*(u*VarU[1][l] + v*VarU[2][l]) );
 
-    // Magnitude of the velocity squared.
-    const as3double umag2 = u*u + v*v;
-    // Speed of sound squared.
-    const as3double a2    = GAMMA*p*ovrho;
-
-    // Compute the local Mach number squared.
-    const as3double M2 = umag2/a2;
-    // Check if this value is the largest.
-    M2max = std::max(M2max, M2);
-
     // Compute the inviscid flux in the x-direction. Including the jacobian
     // and the integration weights.
     dVarDxU[0][l] =    VarU[1][l];      // fx0
@@ -1571,6 +1744,31 @@ void CEEPMLSpatial::ComputeVolumeResidual
   // Step 4c: compute total source contribution to the physical residual.
   TensorProductVolumeResidual(nDOFsInt1D, 2*nVar, nDOFsSol1D,
                               ell, ell, VarSrcTotal, res.data());
+
+
+	// Compute max Mach number over the solution DOFs.
+  as3double M2max = 0.0;
+	for(unsigned short l=0; l<nDOFsSol2D; l++){
+
+    // Determine primitive variables.
+    const as3double rho   = sol[0][l];
+    const as3double ovrho = 1.0/rho;
+    const as3double u     = ovrho* sol[1][l];
+    const as3double v     = ovrho* sol[2][l];
+    const as3double p     = gm1*(  sol[3][l]
+                          - 0.5*(u*sol[1][l] 
+														   + v*sol[2][l]) );
+
+    // Magnitude of the velocity squared.
+    const as3double umag2 = u*u + v*v;
+    // Speed of sound squared.
+    const as3double a2    = GAMMA*p*ovrho;
+
+    // Compute the local Mach number squared.
+    const as3double M2 = umag2/a2;
+    // Check if this value is the largest.
+    M2max = std::max(M2max, M2);
+	}
 
   // Assign the monitoring data.
   MonitoringData[0] = M2max;

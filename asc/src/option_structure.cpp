@@ -88,6 +88,40 @@ std::string DisplayBoundarySide
 }
 
 
+void SwapBytes
+(
+ void   *buffer,
+ size_t  nBytes,
+ int     nItems
+)
+ /*
+	* Function, which swaps bytes.
+	*/
+{
+	// Store half the number of bytes in kk and cast the buffer
+	// to a character buffer.
+	char *buf       = (char *) buffer;
+	const size_t kk = nBytes/2;
+	
+	// Loop over the number of items in the buffer.
+	for(int j=0; j<nItems; ++j)
+	{
+	  // Initialize ii and jj, which are used to store the
+	  // indices of the bytes to be swapped.
+	  size_t ii = j*nBytes;
+	  size_t jj = ii + nBytes - 1;
+	
+	  // Swap the bytes.
+	  for(size_t i=0; i<kk; ++i, ++ii, --jj)
+	  {
+	    const char tmp = buf[jj];
+	    buf[jj] = buf[ii];
+	    buf[ii] = tmp;
+	  }
+	}
+}
+
+
 void AddBoolOption
 (
   std::ifstream  &inputFile,

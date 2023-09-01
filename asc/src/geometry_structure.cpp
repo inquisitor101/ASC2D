@@ -226,6 +226,23 @@ CGeometryZone::CGeometryZone
 
   // Identify the internal elements neighbors that share the same face.
   IdentifyNeighborInternalElement();
+
+	// Zone layer orientation.
+	LayerOrientation.resize(nDim, 0.0);
+	switch( config_container->GetTypeZone(iZone) )
+	{
+		case( ZONE_MAIN     ): break;
+		case( ZONE_EAST     ): LayerOrientation = { 1.0,  0.0 }; break;
+		case( ZONE_WEST     ): LayerOrientation = {-1.0,  0.0 }; break;
+	  case( ZONE_SOUTH    ): LayerOrientation = { 0.0, -1.0 }; break;
+		case( ZONE_NORTH    ): LayerOrientation = { 0.0,  1.0 }; break;
+		case( ZONE_CORNER_0 ): LayerOrientation = {-1.0, -1.0 }; break;
+		case( ZONE_CORNER_1 ): LayerOrientation = { 1.0, -1.0 }; break;
+		case( ZONE_CORNER_2 ): LayerOrientation = {-1.0,  1.0 }; break;
+		case( ZONE_CORNER_3 ): LayerOrientation = { 1.0,  1.0 }; break;
+		default:
+			Terminate("CGeometryZone::CGeometryZone", __FILE__, __LINE__, "Unknown zone,");
+	}
 }
 
 

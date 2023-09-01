@@ -330,7 +330,7 @@ void CLSRK4Temporal::UpdateTime
 
   // Impose the boundary conditions in all boundary elements across all zones.
 #ifdef HAVE_OPENMP
-#pragma omp for schedule(static), collapse(2)
+#pragma omp for schedule(dynamic), collapse(2)
 #endif
     for(unsigned short iZone=0; iZone<nZone; iZone++){
       for(unsigned short iBoundary=0; iBoundary<nFace; iBoundary++){
@@ -351,14 +351,17 @@ void CLSRK4Temporal::UpdateTime
 
     // Loop over all the elements in all the zones and compute their residual.
 #ifdef HAVE_OPENMP
-#pragma omp for schedule(static), reduction(max:M2max)
+#pragma omp for schedule(dynamic), reduction(max:M2max)
 #endif
     for(unsigned long i=0; i<nElemTotal; i++){
 
       // Extract local zone number.
       unsigned short iZone = MapGlobalToLocal[i][0];
       // Extract local zone element index.
-      unsigned long iElem  = MapGlobalToLocal[i][1];
+      unsigned long  iElem = MapGlobalToLocal[i][1];
+
+			// Temporary storage for the Monitoring values.
+			as3vector1d<as3double> monitordata( MonitoringData.size(), 0.0 ); 
 
       // Preprocess the data and apply the boundary conditions.
       iteration_container[iZone]->Preprocess(config_container,
@@ -378,12 +381,11 @@ void CLSRK4Temporal::UpdateTime
                                                   initial_container[iZone],
                                                   work_array,
       																						localTime, iElem,
-                                                  MonitoringData);
+                                                  monitordata);
 
       // Set the max of the Mach squared in this element.
-      M2max = std::max(M2max, MonitoringData[0]);
+      M2max = std::max(M2max, monitordata[0]);
     }
-
 
 		// Loop over all the elements in the main zone only and compute the RMS
 		// of the residual of the density.
@@ -393,22 +395,18 @@ void CLSRK4Temporal::UpdateTime
 		for(unsigned long iElem=0; iElem<nElemZone[ZONE_MAIN]; iElem++){
 
 			// Extract current data container.
-			auto* data_container = solver_container[ZONE_MAIN]->GetDataContainer(iElem);
+			auto* data = solver_container[ZONE_MAIN]->GetDataContainer(iElem);
 
       // Extract current total residual.
-      auto& res = data_container->GetDataDOFsRes();
+      auto& resu = data->GetDataDOFsRes();
 
 			// Loop over the nodes and compute the RMS of the variable.
 			for(unsigned short iNode=0; iNode<nNodeZone[ZONE_MAIN]; iNode++){
 				
-				// Extract the residual of the density variable.
-				const as3double resRho = res[0][iNode];
-
 				// Compute the contribution onto the overall RMS of error.
-				RMS_ResRho += res[0][iNode]*res[0][iNode]; 
+				RMS_ResRho += resu[0][iNode]*resu[0][iNode]; 
 			}
 		}
-
 
     // Loop over all elements in all zones and update the solution.
 #ifdef HAVE_OPENMP
@@ -419,7 +417,7 @@ void CLSRK4Temporal::UpdateTime
       // Extract local zone number.
       unsigned short iZone = MapGlobalToLocal[i][0];
       // Extract local zone element index.
-      unsigned long iElem  = MapGlobalToLocal[i][1];
+      unsigned long  iElem = MapGlobalToLocal[i][1];
 
       // Extract current data container.
       auto* data_container = solver_container[iZone]->GetDataContainer(iElem);
@@ -622,7 +620,6 @@ void CSSPRK3Temporal::UpdateTime
 	// Compute the total number of DOFs in the main zone only.
 	const as3double nDOFsZoneMain = nElemZone[ZONE_MAIN]*nNodeZone[ZONE_MAIN];
 
-
   // Initiate OpenMP parallel region, if specified.
 #ifdef HAVE_OPENMP
 #pragma omp parallel
@@ -636,7 +633,7 @@ void CSSPRK3Temporal::UpdateTime
 
   // Impose the boundary conditions in all boundary elements across all zones.
 #ifdef HAVE_OPENMP
-#pragma omp for schedule(static), collapse(2)
+#pragma omp for schedule(dynamic), collapse(2)
 #endif
     for(unsigned short iZone=0; iZone<nZone; iZone++){
       for(unsigned short iBoundary=0; iBoundary<nFace; iBoundary++){
@@ -657,14 +654,17 @@ void CSSPRK3Temporal::UpdateTime
 
     // Loop over all the elements in all the zones and compute their residual.
 #ifdef HAVE_OPENMP
-#pragma omp for schedule(static), reduction(max:M2max)
+#pragma omp for schedule(dynamic), reduction(max:M2max)
 #endif
     for(unsigned long i=0; i<nElemTotal; i++){
 
       // Extract local zone number.
       unsigned short iZone = MapGlobalToLocal[i][0];
       // Extract local zone element index.
-      unsigned long iElem  = MapGlobalToLocal[i][1];
+      unsigned long  iElem = MapGlobalToLocal[i][1];
+
+			// Temporary storage for the Monitoring values.
+			as3vector1d<as3double> monitordata( MonitoringData.size(), 0.0 ); 
 
       // Preprocess the data and apply the boundary conditions.
       iteration_container[iZone]->Preprocess(config_container,
@@ -684,12 +684,11 @@ void CSSPRK3Temporal::UpdateTime
                                                   initial_container[iZone],
                                                   work_array,
       																						localTime, iElem,
-                                                  MonitoringData);
+                                                  monitordata);
 
       // Set the max of the Mach squared in this element.
-      M2max = std::max(M2max, MonitoringData[0]);
+      M2max = std::max(M2max, monitordata[0]);
     }
-
 
 		// Loop over all the elements in the main zone only and compute the RMS
 		// of the residual of the density.
@@ -699,19 +698,16 @@ void CSSPRK3Temporal::UpdateTime
 		for(unsigned long iElem=0; iElem<nElemZone[ZONE_MAIN]; iElem++){
 
 			// Extract current data container.
-			auto* data_container = solver_container[ZONE_MAIN]->GetDataContainer(iElem);
+			auto* data = solver_container[ZONE_MAIN]->GetDataContainer(iElem);
 
       // Extract current total residual.
-      auto& res = data_container->GetDataDOFsRes();
+      auto& resu = data->GetDataDOFsRes();
 
 			// Loop over the nodes and compute the RMS of the variable.
 			for(unsigned short iNode=0; iNode<nNodeZone[ZONE_MAIN]; iNode++){
 				
-				// Extract the residual of the density variable.
-				const as3double resRho = res[0][iNode];
-
 				// Compute the contribution onto the overall RMS of error.
-				RMS_ResRho += res[0][iNode]*res[0][iNode]; 
+				RMS_ResRho += resu[0][iNode]*resu[0][iNode]; 
 			}
 		}
 
@@ -732,7 +728,7 @@ void CSSPRK3Temporal::UpdateTime
         // Extract local zone number.
         unsigned short iZone = MapGlobalToLocal[i][0];
         // Extract local zone element index.
-        unsigned long iElem  = MapGlobalToLocal[i][1];
+        unsigned long  iElem = MapGlobalToLocal[i][1];
 
         // Extract current data container.
         auto* data_container = solver_container[iZone]->GetDataContainer(iElem);
@@ -773,7 +769,7 @@ void CSSPRK3Temporal::UpdateTime
         // Extract local zone number.
         unsigned short iZone = MapGlobalToLocal[i][0];
         // Extract local zone element index.
-        unsigned long iElem  = MapGlobalToLocal[i][1];
+        unsigned long  iElem = MapGlobalToLocal[i][1];
 
         // Extract current data container.
         auto* data_container = solver_container[iZone]->GetDataContainer(iElem);

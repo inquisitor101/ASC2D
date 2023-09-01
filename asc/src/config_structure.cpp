@@ -131,8 +131,8 @@ bool CConfig::ReadModifiedBCOptions
   // Assign TypeModifyBC map.
   MapTypeModifyBC();
 
-  // Factor pi/2 for the angular frequency.
-  for(auto &omg : ModifyFreqBC)omg *= PI_CONSTANT/2.0;
+  // Convert frequency to angular frequency.
+  for(auto &omg : ModifyFreqBC)omg *= 2.0*PI_CONSTANT;
 
   // Make sure number of centers is a multiple of nDim.
   if(ModifyCenterBC.size()%2 != 0)
@@ -391,18 +391,39 @@ bool CConfig::ReadIOOptions
 
   // Read restart solution, if specified.
   AddBoolOption(paramFile, "RESTART_SOLUTION", RestartSolution, DefaultParam.NameRestartSolution, true);
-  // Read output file-writing frequency.
-  AddScalarOption(paramFile, "WRITE_FREQ", WriteFreq, DefaultParam.WriteFreq, true);
+  // Read output VTK file-writing frequency.
+  AddScalarOption(paramFile, "WRITE_VTKDATA_FREQ", WriteVTKFreq, DefaultParam.WriteVTKFreq, true);
+  // Read output restart data file-writing frequency.
+  AddScalarOption(paramFile, "WRITE_RESTART_FREQ", WriteRestartFreq, DefaultParam.WriteRestartFreq, true);
   // Read output screen-monitoring frequency.
   AddScalarOption(paramFile, "OUTPUT_FREQ", OutputFreq, DefaultParam.OutputFreq, true);
 	// Read output solution filename.
 	AddScalarOption(paramFile, "OUTPUT_SOL_FILENAME", OutputSolFilename, true);
 	// Read output solution filename.
 	AddScalarOption(paramFile, "OUTPUT_VTK_FILENAME", OutputVTKFilename, true);
+	// Read output VTK variables written.
+	AddVectorOption(paramFile, "VTK_VARIABLE_WRITE",  NameOutputVTKVariable, DefaultParam.NameOutputVTKVariable, true);
+	// Assign OutputVTKVariable.
+	MapTypeOutputVTKVariable();
+
   // Read input solution restart filename.
 	AddScalarOption(paramFile, "RESTART_FILENAME", RestartFilename, true);
   // Read output whether to write pml auxiliary data.
   AddBoolOption(paramFile, "OUTPUT_AUX_PML", WriteAuxiliaryDataPML, DefaultParam.NameWriteAuxiliaryDataPML, true);
+
+	// Read whether to write a GNU-plot file.
+	AddBoolOption(paramFile, "WRITE_GNUPLOT", WriteGNUplot, DefaultParam.NameWriteGNUplot, true);
+	// Read GNU-plot filename.
+	AddScalarOption(paramFile, "GNUPLOT_FILENAME", GNUplotFilename, DefaultParam.GNUplotFilename, true);
+
+	// Read VTK output format file.
+	AddScalarOption(paramFile, "VTK_FILE_FORMAT", NameFileFormatVTK, DefaultParam.NameFileFormatVTK, true);
+	// Assign TypeFileFormatVTK map.
+	MapTypeFileFormatVTK();
+	// Read restart solution output format file.
+	AddScalarOption(paramFile, "RESTART_SOLUTION_FILE_FORMAT", NameFileFormatSolution, DefaultParam.NameFileFormatSolution, true);
+	// Assign TypeFileFormatSolution map.
+	MapTypeFileFormatSolution();
 
   // Close file.
   paramFile.close();
@@ -519,13 +540,38 @@ bool CConfig::ReadProcessingOptions
   std::ifstream paramFile(configFile);
 
   // Read processed output filename.
-  AddScalarOption(paramFile, "PROCESSED_DATA_FILENAME", OutputProcessedFilename, true);
+  AddScalarOption(paramFile, "PROCESSED_DATA_DIRECTORY", OutputProcessedDirectory, true);
 	// Read type of processing data.
   AddScalarOption(paramFile, "PROCESS_DATA", NameTypeProcessData, DefaultParam.NameTypeProcessData, true);
-  // Read probe locations.
+	// Read location of processing data.
+  AddScalarOption(paramFile, "PROCESS_LOCATION", NameProcessLocation, DefaultParam.NameProcessLocation, true);
+	// Assign ProcessLocation.
+	MapTypeProcessLocation();
+
+	// Read processed/probed output format file.
+	AddScalarOption(paramFile, "PROCESS_PROBE_FILE_FORMAT", NameFileFormatProcessedProbed, DefaultParam.NameFileFormatProcessedProbed, true);
+	// Assign TypeFileFormatProcessedProbed map.
+	MapTypeFileFormatProcessedProbed();
+
+	// Read whether a probe is specified.
+	AddBoolOption(paramFile, "PROBE_SPECIFIED", ProbeSpecified, DefaultParam.NameProbeSpecified, true);
+	// Read probe locations.
   AddVectorOption(paramFile, "PROBE_LOCATION", ProbeLocation, DefaultParam.ProbeLocation, true);
   // Assign ProcessData.
   MapTypeProcessData();
+	// Read probe variables.
+  AddVectorOption(paramFile, "PROBE_VARIABLE", NameProbeVariable, DefaultParam.NameProbeVariable, true);
+  // Assign ProbeVariable.
+  MapTypeProbeVariable();
+
+	// Read whether or not surface boundart data is sampled.
+	AddBoolOption(paramFile, "SAMPLE_SURFACE_DATA", SampleSurfaceData, DefaultParam.NameSampleSurfaceData, true);
+	// Read the surface boundaries that are sampled.
+	AddVectorOption(paramFile, "MARKER_SAMPLE_BOUNDARY", NameMarkerSampleSurface, DefaultParam.NameMarkerSampleSurface, true);
+	// Read sample surface data output filename.
+	AddScalarOption(paramFile, "SAMPLE_SURFACE_DIRECTORY", OutputSampleSurfaceDirectory, DefaultParam.OutputSampleSurfaceDirectory, true);
+	// Assign SampleDataBoundaryID.
+	MapSampleDataBoundaryID();
 
   // Read whether or not zone data is written.
   AddBoolOption(paramFile, "SAMPLE_ZONE_DATA", SampleZoneData, DefaultParam.NameSampleZoneData, true);
@@ -537,6 +583,61 @@ bool CConfig::ReadProcessingOptions
   AddScalarOption(paramFile, "ZONE_DATA_WRITE_FREQ", WriteFreqZoneData, DefaultParam.WriteFreqZoneData, true);
   // Assign ZoneData.
   MapTypeZoneData();
+
+	// Read zone sampling output format file.
+	AddScalarOption(paramFile, "ZONE_FILE_FORMAT", NameFileFormatZone, DefaultParam.NameFileFormatZone, true);
+	// Assign TypeFileFormatZone map.
+	MapTypeFileFormatZone();
+
+
+	// Pre-process sample boundary surface data subdirectories.
+	if( SampleSurfaceData ){
+	
+		// Total size of the sampled boundaries.
+		unsigned short nSampleData = SampleDataBoundaryID.size(); 
+
+		for(int iSample=0; iSample<nSampleData; iSample++){
+
+			// Create a lower-case version of the current boundary marker name.
+			CreateLowerCase( NameMarkerSampleSurface[iSample] );
+			std::string fn = NameMarkerSampleSurface[iSample];
+
+			// Extract base path and file directory.
+			fn = OutputSampleSurfaceDirectory + fn;
+			std::cout << "\n";
+
+#if __cplusplus > 201103L
+		// This standard is higher than C++11.
+
+		// Check if the current subdirectory exists, otherwise create one.
+		if( !std::filesystem::is_directory( fn ) || !std::filesystem::exists( fn ) ){
+			std::cout << "Directory: " << fn << ", does not exist, creating one." << std::endl;
+			std::filesystem::create_directory( fn );	
+		}
+
+#else
+		// The standard is equal or below C++11.
+	
+		// Check if the currect subdirectory exists, otherwise create one.
+		struct stat info; bool DirExists = false;
+		if( stat( fn.c_str(), &info ) != 0 ) 
+			std::cout << "Cannot access: " << fn << std::endl;
+		else if( info.st_mode & S_IFDIR )  
+			DirExists = true;
+		else
+			std::cout << "Directory: " << fn << ", does not exist, creating one." << std::endl;
+		
+		// Create the subdirectory.
+		if( !DirExists ){
+			const int dir_err = mkdir(fn.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+			if( dir_err == -1 )
+				std::cout << "Could not create the directory: " << fn << std::endl;
+		}
+
+#endif
+		}
+	}
+
 
   // Close file.
   paramFile.close();
@@ -564,7 +665,9 @@ bool CConfig::ReadBoundaryOptions
   ReadGridStretchingOptions(configFile);
   // Read artificial-convection information.
   ReadArtificialConvectionOptions(configFile);
-  // Process boundary conditions, based on the multizone strategy used.
+  // Read characteristic-layer information.
+	ReadCharacteristicLayerOptions(configFile);
+	// Process boundary conditions, based on the multizone strategy used.
   ProcessBoundaryConditions();
 
   // Return happily.
@@ -595,6 +698,38 @@ void CConfig::ReadBoundaryConditionOptions
 }
 
 
+void CConfig::ReadCharacteristicLayerOptions
+(
+ const char *configFile
+)
+ /*
+	* Function that reads the characteristic layer information.
+	*/
+{
+  // Open input file.
+  std::ifstream paramFile(configFile);
+
+  // Read the sponge-layer matching constant.
+  AddVectorOption(paramFile, "CHARACTERISTIC_MATCHING_CONSTANT", CharacteristicConstant, DefaultParam.CharacteristicConstant, true);
+  // Pad entries for CharacteristicConstant.
+  PadEntriesVectorData(CharacteristicConstant, "CHARACTERISTIC_MATCHING_CONSTANT", nZone, 1, 2);
+
+  // Read the characteristic-layer matching exponential.
+  AddVectorOption(paramFile, "CHARACTERISTIC_MATCHING_EXPONENT", CharacteristicExponent, DefaultParam.CharacteristicExponent, true);
+  // Pad entries for CharacteristicExponent.
+  PadEntriesVectorData(CharacteristicExponent, "CHARACTERISTIC_MATCHING_EXPONENT", nZone, 1, 2);
+
+  // Characteristic-matching indicator. Always off in the main zone.
+  CharacteristicMatching.resize(nZone, false);
+  for(unsigned short iZone=1; iZone<nZone; iZone++)
+    if( fabs(CharacteristicConstant[iZone]) > 1.0e-5 )
+      CharacteristicMatching[iZone] = true;
+
+  // Close file.
+  paramFile.close();
+}
+
+
 void CConfig::ReadCharacteristicBoundaryOptions
 (
   const char *configFile
@@ -608,7 +743,8 @@ void CConfig::ReadCharacteristicBoundaryOptions
 
   // Check if an inlet NSCBC is prescribed.
   bool InletNSCBC = false;
-  for(auto& BC : TypeExternalBC) if (BC == BC_CBC_INLET) InletNSCBC = true;
+  for(auto& BC : TypeExternalBC) 
+		if ( (BC == BC_CBC_STATIC_INLET) || (BC == BC_CBC_TOTAL_INLET) ) InletNSCBC = true;
 
   // if an inlet NSCBC is found, extract the tuning parameters.
   if( InletNSCBC ){
@@ -616,6 +752,8 @@ void CConfig::ReadCharacteristicBoundaryOptions
     AddVectorOption(paramFile, "INLET_NSCBC_TUNING", ParamInletNSCBC, DefaultParam.ParamInletNSCBC, true);
     // Pad entries for ParamInletNSCBC.
     PadEntriesVectorDefaultData(ParamInletNSCBC, DefaultParam.ParamInletNSCBC, "INLET_NSCBC_TUNING");
+		// Read whether or not to use a non-reflecting boundary inlet.
+		AddBoolOption(paramFile, "INLET_NONREFLECTING", InletNRBC, DefaultParam.NameInletNRBC, true);
   }
 
   // Check if an outlet NSCBC is prescribed.
@@ -725,6 +863,170 @@ void CConfig::ReadArtificialConvectionOptions
 }
 
 
+void CConfig::MapTypeFileFormatProcessedProbed
+(
+ void
+)
+ /*
+	* Function that maps NameFileFormatProcessedProbed to its enum type.
+	*/
+{
+	// Initialize mapper.
+	std::map<std::string, unsigned short> Mapper;
+
+  // Assign mapper according to its enum convention.
+  Mapper["BINARY"] = BINARY_FORMAT;
+	Mapper["ASCII"]  = ASCII_FORMAT;
+
+  // Initialize to unknown.
+	TypeFileFormatProcessedProbed = UNKNOWN_FORMAT;
+
+  // Check if data abides by map convention.
+	try {
+		Mapper.at(NameFileFormatProcessedProbed);
+	}
+	catch ( std::out_of_range& ) {
+		Terminate("CConfig::MapTypeFileFormatProcessedProbed", __FILE__, __LINE__,
+							"Processed/probed file type does not follow associated map convention!");
+	}
+  // Assign data according to dedicated enum.
+	TypeFileFormatProcessedProbed = Mapper.at(NameFileFormatProcessedProbed);
+}
+
+
+void CConfig::MapTypeFileFormatZone
+(
+ void
+)
+ /*
+	* Function that maps NameFileFormatZone to its enum type.
+	*/
+{
+	// Initialize mapper.
+	std::map<std::string, unsigned short> Mapper;
+
+  // Assign mapper according to its enum convention.
+  Mapper["BINARY"] = BINARY_FORMAT;
+	Mapper["ASCII"]  = ASCII_FORMAT;
+
+  // Initialize to unknown.
+	TypeFileFormatZone = UNKNOWN_FORMAT;
+
+  // Check if data abides by map convention.
+	try {
+		Mapper.at(NameFileFormatZone);
+	}
+	catch ( std::out_of_range& ) {
+		Terminate("CConfig::MapTypeFileFormatZone", __FILE__, __LINE__,
+							"Zone sampling file type does not follow associated map convention!");
+	}
+  // Assign data according to dedicated enum.
+	TypeFileFormatZone = Mapper.at(NameFileFormatZone);
+}
+
+
+void CConfig::MapTypeFileFormatSolution
+(
+ void
+)
+ /*
+	* Function that maps NameFileFormatSolution to its enum type.
+	*/
+{
+	// Initialize mapper.
+	std::map<std::string, unsigned short> Mapper;
+
+  // Assign mapper according to its enum convention.
+  Mapper["BINARY"] = BINARY_FORMAT;
+	Mapper["ASCII"]  = ASCII_FORMAT;
+
+  // Initialize to unknown.
+	TypeFileFormatSolution = UNKNOWN_FORMAT;
+
+  // Check if data abides by map convention.
+	try {
+		Mapper.at(NameFileFormatSolution);
+	}
+	catch ( std::out_of_range& ) {
+		Terminate("CConfig::MapTypeFileFormatSolution", __FILE__, __LINE__,
+							"Restart solution file type does not follow associated map convention!");
+	}
+  // Assign data according to dedicated enum.
+	TypeFileFormatSolution = Mapper.at(NameFileFormatSolution);
+}
+
+
+void CConfig::MapTypeFileFormatVTK
+(
+ void
+)
+ /*
+	* Function that maps NameFileFormatVTK to its enum type.
+	*/
+{
+	// Initialize mapper.
+	std::map<std::string, unsigned short> Mapper;
+
+  // Assign mapper according to its enum convention.
+  Mapper["BINARY"] = BINARY_FORMAT;
+	Mapper["ASCII"]  = ASCII_FORMAT;
+
+  // Initialize to unknown.
+	TypeFileFormatVTK = UNKNOWN_FORMAT;
+
+  // Check if data abides by map convention.
+	try {
+		Mapper.at(NameFileFormatVTK);
+	}
+	catch ( std::out_of_range& ) {
+		Terminate("CConfig::MapTypeFileFormatVTK", __FILE__, __LINE__,
+							"VTK file type does not follow associated map convention!");
+	}
+  // Assign data according to dedicated enum.
+	TypeFileFormatVTK = Mapper.at(NameFileFormatVTK);
+}
+
+
+void CConfig::MapTypeOutputVTKVariable
+(
+ void
+)
+ /*
+	* Function that maps NameOutputVTKVariable to its enum type.
+	*/
+{
+	// Initialize mapper.
+	std::map<std::string, unsigned short> Mapper;
+
+  // Assign mapper according to its enum convention.
+  Mapper["PRESSURE"]    = VTK_VARIABLE_PRESSURE;
+  Mapper["VELOCITY"]    = VTK_VARIABLE_VELOCITY;
+  Mapper["VORTICITY"]   = VTK_VARIABLE_VORTICITY;
+  Mapper["MACH"]        = VTK_VARIABLE_MACH;
+	Mapper["TEMPERATURE"] = VTK_VARIABLE_TEMPERATURE;
+	Mapper["ENTROPY"]     = VTK_VARIABLE_ENTROPY;
+
+	// Always include the conservative variables.
+	OutputVTKVariable.push_back( VTK_VARIABLE_DENSITY     );
+	OutputVTKVariable.push_back( VTK_VARIABLE_MOMENTUM    );
+	OutputVTKVariable.push_back( VTK_VARIABLE_TOTALENERGY );
+
+  for(int iVar=0; iVar<NameOutputVTKVariable.size(); iVar++){
+
+    // Check if data abides by map convention.
+		try {
+			Mapper.at(NameOutputVTKVariable[iVar]);
+		}
+		catch ( std::out_of_range& ) {
+			Terminate("CConfig::MapTypeOutputVTKVariable", __FILE__, __LINE__,
+								"VTK variable does not follow associated map convention!");
+		}
+    // Assign data according to dedicated enum.
+		OutputVTKVariable.push_back( Mapper.at(NameOutputVTKVariable[iVar]) );
+  }
+}
+
+
 void CConfig::MapTypeExternalBC
 (
  void
@@ -739,7 +1041,8 @@ void CConfig::MapTypeExternalBC
   // Assign mapper according to its enum convention.
   Mapper["PERIODIC"]          = BC_INTERFACE;
   Mapper["CBC_OUTLET"]        = BC_CBC_OUTLET;
-  Mapper["CBC_INLET"]         = BC_CBC_INLET;
+  Mapper["CBC_STATIC_INLET"]  = BC_CBC_STATIC_INLET;
+	Mapper["CBC_TOTAL_INLET"]   = BC_CBC_TOTAL_INLET;
   Mapper["SYMMETRY"]          = BC_SYMMETRY;
   Mapper["STATIC_INLET"]      = BC_STATIC_INLET;
   Mapper["TOTAL_INLET"]       = BC_TOTAL_INLET;
@@ -766,6 +1069,121 @@ void CConfig::MapTypeExternalBC
     // Assign data according to dedicated enum.
 		TypeExternalBC[iFace] = Mapper.at(NameBoundaryCondition[iFace]);
   }
+}
+
+
+void CConfig::MapTypeProbeVariable
+(
+ void
+)
+ /*
+	* Function that maps NameProbeVariable to its enum type.
+	*/
+{
+	// Initialize mapper.
+	std::map<std::string, unsigned short> Mapper;
+
+	// Assign mapper according to its enum convention.
+	Mapper["DENSITY"]     = PROBE_DENSITY;
+	Mapper["XMOMENTUM"]   = PROBE_XMOMENTUM;
+	Mapper["YMOMENTUM"]   = PROBE_YMOMENTUM;
+	Mapper["TOTALENERGY"] = PROBE_TOTALENERGY;
+	Mapper["XVELOCITY"]   = PROBE_XVELOCITY;
+	Mapper["YVELOCITY"]   = PROBE_YVELOCITY;
+	Mapper["PRESSURE"]    = PROBE_PRESSURE;
+
+	// Extract number of input variables to probe.
+	unsigned short nProbeVar = NameProbeVariable.size();
+
+	// Initialize vector of probe variables.
+	ProbeVariable.resize(nProbeVar, PROBE_NOTHING);
+
+	for(int iVar=0; iVar<nProbeVar; iVar++){
+
+		// Check if data abides by map convention.
+	  try {
+			Mapper.at(NameProbeVariable[iVar]);
+		}
+	  catch ( std::out_of_range& ) {
+		  Terminate("CConfig::MapTypeProbeVariable", __FILE__, __LINE__,
+		 		        "Probe variable does not follow associated map convention!");
+		}
+	  // Assign data according to dedicated enum.
+	  ProbeVariable[iVar] = Mapper.at(NameProbeVariable[iVar]);
+	}
+}
+
+
+void CConfig::MapSampleDataBoundaryID
+(
+ void
+)
+ /*
+	* Function that maps NameMarkerSampleSurface to its enum type.
+	*/
+{
+	// Initialize mapper.
+	std::map<std::string, unsigned short> Mapper;
+
+	// Assign mapper according to its enum convention.
+	Mapper["XMIN"] = IDX_WEST;
+	Mapper["XMAX"] = IDX_EAST;
+	Mapper["YMIN"] = IDX_SOUTH;
+	Mapper["YMAX"] = IDX_NORTH;
+
+	// Extract number of input sample data boundaries.
+	unsigned short nSampleData = NameMarkerSampleSurface.size();
+
+	// Initialize vector of boundary IDs.
+	SampleDataBoundaryID.resize(nSampleData, NONE);
+
+	for(int iSample=0; iSample<nSampleData; iSample++){
+
+		// Check if data abides by map convention.
+	  try {
+			Mapper.at(NameMarkerSampleSurface[iSample]);
+		}
+	  catch ( std::out_of_range& ) {
+		  Terminate("CConfig::MapSampleDataBoundaryID", __FILE__, __LINE__,
+		 		        "Sample data boundary does not follow associated map convention!");
+		}
+	  // Assign data according to dedicated enum.
+	  SampleDataBoundaryID[iSample] = Mapper.at(NameMarkerSampleSurface[iSample]);
+	}
+}
+
+
+void CConfig::MapTypeProcessLocation
+(
+ void
+)
+ /*
+	* Function that maps NameProcessLocation to its enum type.
+	*/
+{
+	// Initialize mapper.
+	std::map<std::string, unsigned short> Mapper;
+
+	// Assign mapper according to its enum convention.
+	Mapper["XMIN"]   = PROCESS_LOCATION_XMIN;
+	Mapper["XMAX"]   = PROCESS_LOCATION_XMAX;
+	Mapper["YMIN"]   = PROCESS_LOCATION_YMIN;
+	Mapper["YMAX"]   = PROCESS_LOCATION_YMAX;
+	Mapper["DOMAIN"] = PROCESS_LOCATION_DOMAIN; 
+
+	// Initialize process location.
+	ProcessLocation = PROCESS_LOCATION_UNKNOWN;
+
+	// Check if data abides by map convention.
+	try {
+		Mapper.at(NameProcessLocation);
+	}
+	catch ( std::out_of_range& ) {
+	  Terminate("CConfig::MapTypeProcessLocation", __FILE__, __LINE__,
+	 		        "Process location does not follow associated map convention!");
+	}
+	// Assign data according to dedicated enum.
+	ProcessLocation = Mapper.at(NameProcessLocation);
 }
 
 
@@ -819,8 +1237,12 @@ void CConfig::MapTypeProcessData
 	std::map<std::string, unsigned short> Mapper;
 
   // Assign mapper according to its enum convention.
-  Mapper["IC"]   = PROCESS_IC;
-  Mapper["NONE"] = PROCESS_NOTHING;
+  Mapper["RATIO_P_U"]              = PROCESS_RATIO_P_U;
+	Mapper["RATIO_P_M"]              = PROCESS_RATIO_P_M;
+	Mapper["RATIO_WM_WP"]            = PROCESS_RATIO_WM_WP; 
+	Mapper["RATIO_LM_LP"]            = PROCESS_RATIO_LM_LP;
+	Mapper["WAVE_AMPLITUDE_ENTROPY"] = PROCESS_WAVE_ENTROPY;
+	Mapper["NOTHING"]                = PROCESS_NOTHING;
 
   // Initialize to unknown.
 	TypeProcessData = PROCESS_NOTHING;
@@ -850,12 +1272,14 @@ void CConfig::MapTypeIC
 	std::map<std::string, unsigned short> Mapper;
 
 	// Assign mapper according to its enum convention.
-	Mapper["GAUSSIAN_PRESSURE"]   = IC_GAUSSIAN_PRESSURE;
-  Mapper["ISENTROPIC_VORTEX"]   = IC_ISENTROPIC_VORTEX;
-  Mapper["ENTROPY_WAVE"]        = IC_ENTROPY_WAVE;
-  Mapper["VORTEX_ROLLUP"]       = IC_VORTEX_ROLLUP;
-  Mapper["ACOUSTIC_PLANE_WAVE"] = IC_ACOUSTIC_PLANE_WAVE;
-
+	Mapper["GAUSSIAN_PRESSURE"]      = IC_GAUSSIAN_PRESSURE;
+  Mapper["ISENTROPIC_VORTEX"]      = IC_ISENTROPIC_VORTEX;
+  Mapper["ENTROPY_WAVE"]           = IC_ENTROPY_WAVE;
+  Mapper["VORTEX_ROLLUP"]          = IC_VORTEX_ROLLUP;
+  Mapper["ACOUSTIC_PLANE_WAVE"]    = IC_ACOUSTIC_PLANE_WAVE;
+	Mapper["GAUSSIAN_PRESSURE_1D_X"] = IC_GAUSSIAN_PRESSURE_1D_X;
+	Mapper["GAUSSIAN_PRESSURE_1D_Y"] = IC_GAUSSIAN_PRESSURE_1D_Y;
+	
 	// Initialize actual mapped data.
 	TypeIC.resize(nZone);
 

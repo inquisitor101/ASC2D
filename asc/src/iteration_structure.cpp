@@ -92,15 +92,15 @@ void CEEIteration::Preprocess
 
 void CEEIteration::ComputeResidual
 (
- CConfig               *config_container,
- CGeometry             *geometry_container,
- CSolver               *solver_container,
- CElement              *element_container,
- CSpatial              *spatial_container,
- CInitial              *initial_container,
- as3data1d<as3double>  &work_array,
- as3double              localTime,
- unsigned long          iElem,
+ CConfig                *config_container,
+ CGeometry              *geometry_container,
+ CSolver                *solver_container,
+ CElement               *element_container,
+ CSpatial               *spatial_container,
+ CInitial               *initial_container,
+ as3data1d<as3double>   &work_array,
+ as3double               localTime,
+ unsigned long           iElem,
  as3vector1d<as3double> &MonitoringData
 )
  /*
@@ -111,11 +111,11 @@ void CEEIteration::ComputeResidual
   // Extract number of solution DOFs in 2D.
   unsigned short nDOFsSol2D = element_container->GetnDOFsSol2D();
   // Load inverse mass matrix.
-  auto* InvMassMatrix  = solver_container->GetInvMassMatrix();
+  auto* InvMassMatrix       = solver_container->GetInvMassMatrix();
   // Load the grid of the element.
-  auto* geometry_element = geometry_container->GetGeometryZone(zoneID)->GetGeometryElem(iElem);
+  auto* geometry_element    = geometry_container->GetGeometryZone(zoneID)->GetGeometryElem(iElem);
   // Load overall data container for all elements.
-  auto& data_container = solver_container->GetDataContainer();
+  auto& data_container      = solver_container->GetDataContainer();
 
   // Initialize residual to zero.
   data_container[iElem]->ResetResidual();

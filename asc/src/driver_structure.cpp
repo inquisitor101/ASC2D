@@ -19,12 +19,17 @@ CDriver::CDriver
   // Choose active config container as input container.
   config_container = config;
 
-  // Preprocess element container.
+	// Preprocess element container.
   Element_Preprocessing(config_container);
 
   // Preprocess geometry container.
   Geometry_Preprocessing(config_container,
                          element_container);
+
+  // Preprocess the parallelization. Note, this must be set before the
+  // temporal container.
+  Parallelization_Preprocessing();
+
 
   // Preprocess input container.
   Input_Preprocessing(config_container,
@@ -59,11 +64,7 @@ CDriver::CDriver
   												element_container,
   												spatial_container);
 
-  // Preprocess the parallelization. Note, this must be set before the
-  // temporal container.
-  Parallelization_Preprocessing();
-
-  // Preprocess temporal container.
+	// Preprocess temporal container.
   Temporal_Preprocessing(config_container,
   											 geometry_container,
   											 iteration_container,
@@ -205,11 +206,9 @@ void CDriver::Parallelization_Preprocessing
   */
 {
   // Extract the number of elements per each zone individually.
-  as3vector1d<unsigned long> nElemZone(nZone);
-  for(unsigned short iZone=0; iZone<nZone; iZone++)
-    nElemZone[iZone] = solver_container[iZone]->GetnElem();
+  auto& nElemZone = geometry_container->GetnElemZone();
 
-  // Compute total numbe of elements in all the grid zones combined.
+  // Compute total number of elements in all the grid zones combined.
   nElemTotal = 0;
   for(unsigned short iZone=0; iZone<nZone; iZone++)
     nElemTotal += nElemZone[iZone];
@@ -276,7 +275,7 @@ void CDriver::Parallelization_Preprocessing
     unsigned short iThread = omp_get_thread_num();
 
     // Accumulate the number of solution DOFs per thread.
-    WorkLoadDOFs[iThread] += solver_container[iZone]->GetnDOFsSol2D();
+    WorkLoadDOFs[iThread] += geometry_container->GetGeometryZone(iZone)->GetnDOFsSol2D();
   }
 
   // Compute number of max digits needed for output.
@@ -294,7 +293,6 @@ void CDriver::Parallelization_Preprocessing
 #else
   std::cout << "This is a serial implementation." << std::endl;
 #endif
-
 }
 
 
@@ -380,7 +378,8 @@ void CDriver::Output_Preprocessing
 {
 	// Assign an output container.
 	output_container = new COutput(config_container,
-																 geometry_container);
+																 geometry_container,
+																 MapGlobalToLocal);
 }
 
 
@@ -446,7 +445,7 @@ void CDriver::Initial_Preprocessing
 		switch( config_container->GetTypeIC(iZone) ){
 
 			// Gaussian IC.
-			case(IC_GAUSSIAN_PRESSURE):
+			case(IC_GAUSSIAN_PRESSURE): case(IC_GAUSSIAN_PRESSURE_1D_X): case(IC_GAUSSIAN_PRESSURE_1D_Y):
 			{
         // Assign initial container.
 				initial_container[iZone] = new CGaussianInitial(config_container,
@@ -752,12 +751,11 @@ void CDriver::MonitorOutput
   // Monitoring output frequency.
   unsigned long OutputFreq = config_container->GetOutputFreq();
 
-
 	// Display header.
 	if( iIter%(50*OutputFreq) == 0 ){
 		std::cout << "**********************************************"
 							<< "**********************************************" << std::endl;
-		std::cout << " Iteration\tPhysical Time \t Time step \t Max(Mach) \t RMS[Res(rho)]" << std::endl;
+		std::cout << " Iteration\tPhysical Time \t Time step \t Max(Mach) \t Res[RMS(rho)]" << std::endl;
 		std::cout << "**********************************************"
 							<< "**********************************************" << std::endl;
 	}
@@ -766,8 +764,8 @@ void CDriver::MonitorOutput
 	if( MonitorData ){
 		if( (iIter%OutputFreq==0) || (MaxTimeIter<OutputFreq) ){
 
-  	  // Extract the maximum Mach number.
-  	  const as3double Mmax = MonitoringData[0];
+    	// Extract the maximum Mach number.
+    	const as3double Mmax = MonitoringData[0];
 			// Extract the RMS of the density residual.
 			const as3double RMSr = MonitoringData[1];
 
@@ -776,9 +774,13 @@ void CDriver::MonitorOutput
 								<< std::setw(nDigits) << iIter
 								<< " \t "  << time
 								<< " \t "  << dt
-  	            << " \t "  << Mmax
+    	          << " \t "  << Mmax
 								<< " \t "  << RMSr << std::endl;
 		}
+
+		// Check if there need be a gnuplot file written and write one.
+		if( config_container->GetWriteGNUplot() )
+			output_container->WriteGNUplot(config_container, iIter, time, MonitoringData);
 	}
 
 
@@ -811,6 +813,9 @@ as3double CDriver::ComputeTimeStep
     // Return data.
     return deltaT;
   }
+
+	// For now, use a fixed time step input by the user.
+	// as3double dt = config_container->GetTimeStep();
 
   // Initialize time step.
   as3double deltaT = 1.0e6;
@@ -931,12 +936,32 @@ void CDriver::Preprocess
   } // End of parallel loop.
 
 
+	// Report progress.
 	std::cout << "Done." << std::endl;
 
 	// Write output VTK for initial condition.
 	output_container->WriteFileVTK(config_container,
 																 geometry_container,
+																 element_container,
 																 solver_container);
+
+	// Write solution restart data to file.
+  output_container->WriteSolutionToFile(config_container,
+                                        geometry_container,
+                                        element_container,
+                                        solver_container,
+                                        SimTimeStart);
+
+	// Write the processed data, if specified. Note, this is only done in the main zone.
+	if( config_container->GetTypeProcessData() != PROCESS_NOTHING || config_container->GetProbeSpecified() )
+  	process_container[ZONE_MAIN]->ProcessData(config_container,
+  	                                          geometry_container,
+  	                                          element_container[ZONE_MAIN],
+  	                                          spatial_container[ZONE_MAIN],
+  	                                          solver_container[ZONE_MAIN],
+  	                                          initial_container[ZONE_MAIN],
+																							output_container,
+  	                                          SimTimeStart);
 }
 
 
@@ -961,12 +986,14 @@ void CDriver::Run
 		}
 	std::cout << std::endl;
 
-  // Output writing frequency.
-  const unsigned long WriteFreq  = config_container->GetWriteFreq();
+  // Output writing VTK file frequency.
+  const unsigned long WriteVTKFreq     = config_container->GetWriteVTKFreq();
+  // Output writing restart file frequency.
+  const unsigned long WriteRestartFreq = config_container->GetWriteRestartFreq();
   // Filtering frequency.
-  const unsigned long FilterFreq = (unsigned long) config_container->GetFilterCharacteristics()[0];
+  const unsigned long FilterFreq       = (unsigned long) config_container->GetFilterCharacteristics()[0];
   // Sample zone writing frequency.
-  const unsigned long WriteFreqZone = config_container->GetWriteFreqZoneData();
+  const unsigned long WriteFreqZone    = config_container->GetWriteFreqZoneData();
 
   // Monitoring data.
   // Thus far, use only [0]: max(Mach) and [1]: RMS(res[RHO]).
@@ -976,11 +1003,11 @@ void CDriver::Run
 	as3double dt = ComputeTimeStep();
 
 	// Current time.
-	as3double SimTime = SimTimeStart;
+	as3double SimTime       = SimTimeStart;
 	// Current iteration.
 	unsigned long IterCount = 0;
   // Marker to check if final time step is written or not.
-  bool FinalStep = false;
+  bool FinalStep          = false;
 
 
   // Check if there needs to be any sampling of entire zone data.
@@ -990,11 +1017,24 @@ void CDriver::Run
                                           solver_container,
                                           SimTime);
 
+	// Check if there needs to be any sampling for the boundary data. 
+	// Note, this only applies to the main/internal zone.
+	if( config_container->GetSampleSurfaceData() )
+		for(unsigned short iSample=0; iSample<config_container->GetSampleDataBoundaryID().size(); iSample++)
+			output_container->WriteBoundaryDataToFile(config_container,
+					                                      geometry_container,
+																								element_container[ZONE_MAIN],
+																								initial_container[ZONE_MAIN],
+																								solver_container[ZONE_MAIN],
+																								iSample, SimTime, IterCount);
+
+
 	// Display header for output format.
 	MonitorOutput(IterCount, SimTime, dt, MonitoringData, false);
 
 	// March in time, until target time is reached.
-	while( (SimTime < SimTimeFinal) && (IterCount < MaxTimeIter) ){
+	while( (SimTime < SimTimeFinal) && (IterCount < MaxTimeIter) )
+	{
 
 		// Execute a single temporal update.
 		temporal_container->TimeMarch(config_container,
@@ -1025,13 +1065,14 @@ void CDriver::Run
 
     // Check if there needs to be any processing done. For now, limit the
     // processing to only the main physical zone.
-    if( config_container->GetTypeProcessData() != PROCESS_NOTHING )
+		if( config_container->GetTypeProcessData() != PROCESS_NOTHING || config_container->GetProbeSpecified() )
       process_container[ZONE_MAIN]->ProcessData(config_container,
                                                 geometry_container,
                                                 element_container[ZONE_MAIN],
                                                 spatial_container[ZONE_MAIN],
                                                 solver_container[ZONE_MAIN],
                                                 initial_container[ZONE_MAIN],
+																								output_container,
                                                 SimTime);
 
     // Check if there needs to be any sampling of entire zone data.
@@ -1041,38 +1082,48 @@ void CDriver::Run
                                             solver_container,
                                             SimTime);
 
+	  // Check if there needs to be any sampling for the boundary data. 
+	  // Note, this only applies to the main/internal zone.
+	  if( config_container->GetSampleSurfaceData() )
+	  	for(unsigned short iSample=0; iSample<config_container->GetSampleDataBoundaryID().size(); iSample++)
+	  		output_container->WriteBoundaryDataToFile(config_container,
+	  				                                      geometry_container,
+	  																							element_container[ZONE_MAIN],
+	  																							initial_container[ZONE_MAIN],
+	  																							solver_container[ZONE_MAIN],
+	  																							iSample, SimTime, IterCount);
+
     // Check if this is the final time step.
     if( (SimTime >= SimTimeFinal) || (IterCount >= MaxTimeIter) )
       FinalStep = true;
 
-		// Display output for progress monitoring.
-		MonitorOutput(IterCount, SimTime, dt, MonitoringData);
-
-    // Process data every OutputFreq iterations.
-    if( IterCount%WriteFreq == 0 || FinalStep ){
-
+    // Output VTK data every input iterations.
+    if( IterCount%WriteVTKFreq == 0 || FinalStep )
+		{
       // Write output VTK for initial condition.
       output_container->WriteFileVTK(config_container,
     																 geometry_container,
-    																 solver_container);
+																		 element_container,
+    																 solver_container);		
+		}
 
-      // Write solution data to file.
+		// Output restart data every input iterations.
+		if( IterCount%WriteRestartFreq == 0 || FinalStep )
+		{
+			// Write solution restart data to file.
       output_container->WriteSolutionToFile(config_container,
                                             geometry_container,
                                             element_container,
                                             solver_container,
                                             SimTime);
+		}
+	
+		// If this is an adaptive time-stepping, then compute new time-step.
+		if( config_container->GetAdaptTime() ) dt = ComputeTimeStep();
 
-      // If this is an adaptive time-stepping, then compute new time-step.
-      if( config_container->GetAdaptTime() ) dt = ComputeTimeStep();
-    }
+		// Display output for progress monitoring.
+		MonitorOutput(IterCount, SimTime, dt, MonitoringData);
 	}
-
-  // Write processed data to file, if specified.
-  if( config_container->GetTypeProcessData() != PROCESS_NOTHING )
-    process_container[ZONE_MAIN]->WriteProcessedData(config_container,
-                                                     geometry_container,
-                                                     output_container);
 }
 
 

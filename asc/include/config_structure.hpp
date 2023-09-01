@@ -1,600 +1,1184 @@
 #pragma once
 
+/*!
+ * @file config_structure.hpp
+ * @brief The file containing all the user input options.
+ */
+
 #include "option_structure.hpp"
 #include <map>
 
+#if __cplusplus > 201103L
+	#include <filesystem>
+#else
+	#include <sys/types.h>
+	#include <sys/stat.h>
+#endif
 
-
+/*!
+ * @brief A class used for storing and processing the user-specified input options. 
+ */
 class CConfig {
 
 	public:
-		// Constructor.
+		/*!
+		 * @brief Default constructor of CConfig, which reads the input dictionary.
+		 *
+		 * @param[in] configFile input configuration/dictionary file.
+		 */
 		CConfig(const char *configFile);
 
-		// Destructor.
+		/*!
+		 * @brief Destructor, which frees any allocated memory.
+		 */
 		~CConfig(void);
 
-    // Getter: returns CFL.
+
+		/*!
+		 * @brief Getter function which returns the value of InletNRBC.
+		 *
+		 * @return InletNRBC
+		 */
+		bool GetInletNRBC(void)                                                                           const {return InletNRBC;}
+		/*!
+		 * @brief Getter function which returns the value of OutputVTKVariable.
+		 *
+		 * @return OutputVTKVariable
+		 */
+		as3vector1d<unsigned short> GetOutputVTKVariable(void)                                            const {return OutputVTKVariable;}
+    /*!
+		 * @brief Getter function which returns the value of ProcessLocation.
+		 *
+		 * @return ProcessLocation
+		 */	
+		unsigned short GetProcessLocation(void)                                                           const {return ProcessLocation;}
+    /*!
+		 * @brief Getter function which returns the value of TypeFileFormatProcessedProbed.
+		 *
+		 * @return TypeFileFormatProcessedProbed
+		 */	
+		unsigned short GetTypeFileFormatProcessedProbed(void)                                             const {return TypeFileFormatProcessedProbed;}
+    /*!
+		 * @brief Getter function which returns the value of GNUplotFilename.
+		 *
+		 * @return GNUplotFilename
+		 */	
+		const char *GetGNUplotFilename(void)                                                              const {return GNUplotFilename.c_str();}
+    /*!
+		 * @brief Getter function which returns the value of WriteGNUplot.
+		 *
+		 * @return WriteGNUplot
+		 */	
+		bool GetWriteGNUplot(void)                                                                        const {return WriteGNUplot;}
+	  /*!
+		 * @brief Getter function which returns the value of TypeFileFormatZone.
+		 *
+		 * @return TypeFileFormatZone
+		 */		
+		unsigned short GetTypeFileFormatZone(void)                                                        const {return TypeFileFormatZone;}
+	  /*!
+		 * @brief Getter function which returns the value of TypeFileFormatSolution.
+		 *
+		 * @return TypeFileFormatSolution
+		 */	
+		unsigned short GetTypeFileFormatSolution(void)                                                    const {return TypeFileFormatSolution;}
+	  /*!
+		 * @brief Getter function which returns the value of TypeFileFormatVTK.
+		 *
+		 * @return TypeFileFormatVTK
+		 */	
+		unsigned short GetTypeFileFormatVTK(void)                                                         const {return TypeFileFormatVTK;}
+ 	  /*!
+		 * @brief Getter function which returns the value of CFL.
+		 *
+		 * @return CFL
+		 */	
     as3double GetCFL(void)                                                                            const {return CFL;}
-    // Getter: returns AdaptTime.
+ 	  /*!
+		 * @brief Getter function which returns the value of AdaptTime.
+		 *
+		 * @return AdaptTime
+		 */	
     bool GetAdaptTime(void)                                                                           const {return AdaptTime;}
-    // Getter: returns OutputFreq.
+ 	  /*!
+		 * @brief Getter function which returns the value of OutputFreq.
+		 *
+		 * @return OutputFreq
+		 */	
     unsigned long GetOutputFreq(void)                                                                 const {return OutputFreq;}
-    // Getter: returns WriteFreq.
-    unsigned long GetWriteFreq(void)                                                                  const {return WriteFreq;}
-    // Getter: returns OutputSolFilename.
+ 	  /*!
+		 * @brief Getter function which returns the value of WriteVTKFreq.
+		 *
+		 * @return WriteVTKFreq
+		 */	
+    unsigned long GetWriteVTKFreq(void)                                                               const {return WriteVTKFreq;}
+ 	  /*!
+		 * @brief Getter function which returns the value of WriteRestartFreq.
+		 *
+		 * @return WriteRestartFreq
+		 */
+    unsigned long GetWriteRestartFreq(void)                                                           const {return WriteRestartFreq;}
+ 	  /*!
+		 * @brief Getter function which returns the value of OutputSolFilename.
+		 *
+		 * @return OutputSolFilename
+		 */   
 		const char *GetOutputSolFilename(void)                                                            const {return OutputSolFilename.c_str();}
-		// Getter: returns OutputVTKFilename.
+ 	  /*!
+		 * @brief Getter function which returns the value of OutputVTKFilename.
+		 *
+		 * @return OutputVTKFilename
+		 */ 
 		const char *GetOutputVTKFilename(void)                                                            const {return OutputVTKFilename.c_str();}
-    // Getter: returns OutputProcessedFilename.
-    const char *GetOutputProcessedFilename(void)                                                      const {return OutputProcessedFilename.c_str();}
-    // Getter: returns OutputZoneDataFilename.
+ 	  /*!
+		 * @brief Getter function which returns the value of OutputProcessedDirectory.
+		 *
+		 * @return OutputProcessedDirectory
+		 */ 
+    const char *GetOutputProcessedDirectory(void)                                                     const {return OutputProcessedDirectory.c_str();}
+ 	  /*!
+		 * @brief Getter function which returns the value of OutputZoneDataFilename.
+		 *
+		 * @return OutputZoneDataFilename
+		 */ 
     const char *GetOutputZoneDataFilename(void)                                                       const {return OutputZoneDataFilename.c_str();}
-    // Getter: returns RestartFilename.
+ 	  /*!
+		 * @brief Getter function which returns the value of RestartFilename.
+		 *
+		 * @return RestartFilename
+		 */ 
     const char *GetRestartFilename(void)                                                              const {return RestartFilename.c_str();}
-    // Getter: returns nZone.
+ 	  /*!
+		 * @brief Getter function which returns the value of OutputSampleSurfaceDirectory.
+		 *
+		 * @return OutputSampleSurfaceDirectory
+		 */ 
+		const char *GetOutputSampleSurfaceDirectory(void)                                                 const {return OutputSampleSurfaceDirectory.c_str();}
+ 	  /*!
+		 * @brief Getter function which returns the value of nZone.
+		 *
+		 * @return nZone
+		 */ 
 		unsigned short GetnZone(void)                                                                     const {return nZone;}
-    // Getter: returns MultizoneStrategy.
+ 	  /*!
+		 * @brief Getter function which returns the value of MultizoneStrategy.
+		 *
+		 * @return MultizoneStrategy
+		 */ 
     unsigned short GetMultizoneStrategy(void)                                                         const {return MultizoneStrategy;}
-    // Getter: returns nPolySolZone, per input zone.
+ 	  /*!
+		 * @brief Getter function which returns the value of nPolySolZone, per input zone.
+		 *
+		 * @param[in] iZone zone ID.
+		 *
+		 * @return nPolySolZone[iZone]
+		 */ 
 		unsigned short GetnPolySolZone(unsigned short iZone)                                              const {return nPolySolZone[iZone];}
-    // Getter: returns nPolySolZone.
+ 	  /*!
+		 * @brief Getter function which returns the value of nPolySolZone.
+		 *
+		 * @return nPolySolZone
+		 */ 
 		const as3vector1d<unsigned short> &GetnPolySolZone(void)                                          const {return nPolySolZone;}
-    // Getter: returns BlockInterfaceLocation.
+ 	  /*!
+		 * @brief Getter function which returns the value of BlockInterfaceLocation.
+		 *
+		 * @return BlockInterfaceLocation
+		 */    
     const as3vector1d<as3double> &GetBlockInterfaceLocation(void)                                     const {return BlockInterfaceLocation;}
-    // Getter: returns DomainExpansionRatio.
+ 	  /*!
+		 * @brief Getter function which returns the value of DomainExpansionRatio.
+		 *
+		 * @return DomainExpansionRatio
+		 */ 
     const as3vector1d<as3double> &GetDomainExpansionRatio(void)                                       const {return DomainExpansionRatio;}
-    // Getter: returns nxBlockElem.
+ 	  /*!
+		 * @brief Getter function which returns the value of nxBlockElem.
+		 *
+		 * @return nxBlockElem
+		 */ 
     const as3vector1d<unsigned long> &GetnxBlockElem(void)                                            const {return nxBlockElem;}
-    // Getter: returns nyBlockElem.
+ 	  /*!
+		 * @brief Getter function which returns the value of nyBlockElem.
+		 *
+		 * @return nyBlockElem
+		 */ 
     const as3vector1d<unsigned long> &GetnyBlockElem(void)                                            const {return nyBlockElem;}
-    // Getter: returns UniformGridResolution.
+ 	  /*!
+		 * @brief Getter function which returns the value of UniformGridResolution.
+		 *
+		 * @return UniformGridResolution
+		 */
     bool GetUniformGridResolution(void)                                                               const {return UniformGridResolution;}
-    // Getter: returns ZoneMarker, per input zone.
+ 	  /*!
+		 * @brief Getter function which returns the value of SampleSurfaceData.
+		 *
+		 * @return SampleSurfaceData
+		 */
+		bool GetSampleSurfaceData(void)                                                                   const {return SampleSurfaceData;}
+ 	  /*!
+		 * @brief Getter function which returns the value of SampleDataBoundaryID.
+		 *
+		 * @return SampleDataBoundaryID
+		 */
+		as3vector1d<unsigned short> GetSampleDataBoundaryID(void)                                         const {return SampleDataBoundaryID;}
+ 	  /*!
+		 * @brief Getter function which returns the value of NameMarkerSampleSurface.
+		 *
+		 * @return NameMarkerSampleSurface
+		 */
+		as3vector1d<std::string> GetNameMarkerSampleSurface(void)                                         const {return NameMarkerSampleSurface;}
+ 	  /*!
+		 * @brief Getter function which returns the value of TypeZone, per input zone.
+		 *
+		 * @param[in] iZone zone ID.
+		 *
+		 * @return TypeZone[iZone]
+		 */
     unsigned short GetTypeZone(unsigned short iZone)                                                  const {return TypeZone[iZone];}
-    // Getter: returns ZoneMarker.
+ 	  /*!
+		 * @brief Getter function which returns the value of TypeZone.
+		 *
+		 * @return TypeZone
+		 */
 		const as3vector1d<unsigned short> &GetTypeZone(void)                                              const {return TypeZone;}
-    // Getter: returns TypeDOFs, per input zone.
+ 	  /*!
+		 * @brief Getter function which returns the value of TypeDOFs, per input zone.
+		 *
+		 * @param[in] iZone zone ID.
+		 *
+		 * @return TypeDOFs[iZone]
+		 */   
 		unsigned short GetTypeDOFs(unsigned short iZone)                                                  const {return TypeDOFs[iZone];}
-    // Getter: returns TypeDOFs.
+ 	  /*!
+		 * @brief Getter function which returns the value of TypeDOFs.
+		 *
+		 * @return TypeDOFs
+		 */ 
 		const as3vector1d<unsigned short> &GetTypeDOFs(void)                                              const {return TypeDOFs;}
-    // Getter: returns TypeSolver, per input zone.
+ 	  /*!
+		 * @brief Getter function which returns the value of TypeSolver, per input zone.
+		 *
+		 * @param[in] iZone zone ID.
+		 *
+		 * @return TypeSolver[iZone]
+		 */
     unsigned short GetTypeSolver(unsigned short iZone)                                                const {return TypeSolver[iZone];}
-    // Getter: returns TypeSolver.
+ 	  /*!
+		 * @brief Getter function which returns the value of TypeSolver.
+		 *
+		 * @return TypeSolver
+		 */
     const as3vector1d<unsigned short> &GetTypeSolver(void)                                            const {return TypeSolver;}
-    // Getter: returns TypeBufferLayer.
-    const as3vector1d<unsigned short> &GetTypeBufferLayer(void)                                       const {return TypeBufferLayer;}
-    // Getter: returns TypeBufferLayer, per input zone.
+ 	  /*!
+		 * @brief Getter function which returns the value of TypeBufferLayer, per input zone.
+		 *
+		 * @param[in] iZone zone ID.
+		 *
+		 * @return TypeBufferLayer[iZone]
+		 */ 
     unsigned short GetTypeBufferLayer(unsigned short iZone)                                           const {return TypeBufferLayer[iZone];}
-    // Getter: returns UsePML.
+		/*!
+		 * @brief Getter function which returns the value of TypeBufferLayer.
+		 *
+		 * @return TypeBufferLayer
+		 */   
+    const as3vector1d<unsigned short> &GetTypeBufferLayer(void)                                       const {return TypeBufferLayer;}
+  	/*!
+		 * @brief Getter function which returns the value of UsePML.
+		 *
+		 * @return UsePML
+		 */   
     bool GetUsePML(void)                                                                              const {return UsePML;}
-    // Getter: returns WriteAuxiliaryDataPML.
+  	/*!
+		 * @brief Getter function which returns the value of WriteAuxiliaryDataPML.
+		 *
+		 * @return WriteAuxiliaryDataPML
+		 */
     bool GetWriteAuxiliaryDataPML(void)                                                               const {return WriteAuxiliaryDataPML;}
-    // Getter: returns integrationFactor.
+  	/*!
+		 * @brief Getter function which returns the value of IntegrationFactor.
+		 *
+		 * @return IntegrationFactor
+		 */
 		unsigned short GetIntegrationFactor(void)                                                         const {return IntegrationFactor;}
-		// Getter: returns SimulationTime[0].
+  	/*!
+		 * @brief Getter function which returns the value of SimulationTime[0].
+		 *
+		 * @return SimulationTime[0]
+		 */
 		as3double GetSimulationStartTime(void)                                                            const {return SimulationTime[0];}
-		// Getter: returns SimulationTime[1].
+	 	/*!
+		 * @brief Getter function which returns the value of SimulationTime[1].
+		 *
+		 * @return SimulationTime[1]
+		 */	
 		as3double GetSimulationFinalTime(void)                                                            const {return SimulationTime[1];}
-		// Getter: returns TypeTemporalScheme.
+	 	/*!
+		 * @brief Getter function which returns the value of TypeTemporalScheme.
+		 *
+		 * @return TypeTemporalScheme
+		 */	
 		unsigned short GetTypeTemporalScheme(void)                                                        const {return TypeTemporalScheme;}
-		// Getter: returns TypeIC.
-		const as3vector1d<unsigned short> &GetTypeIC(void)                                                const {return TypeIC;}
-    // Getter: returns TypeIC, per input zone.
+ 	 	/*!
+		 * @brief Getter function which returns the value of TypeIC, per input zone.
+		 *
+		 * @param[in] iZone zone ID.
+		 *
+		 * @return TypeIC[iZone]
+		 */
     unsigned short GetTypeIC(unsigned short iZone)                                                    const {return TypeIC[iZone];}
-    // Getter: returns FlowAngle.
+		/*!
+		 * @brief Getter function which returns the value of TypeIC.
+		 *
+		 * @return TypeIC
+		 */
+		const as3vector1d<unsigned short> &GetTypeIC(void)                                                const {return TypeIC;}
+		/*!
+		 * @brief Getter function which returns the value of FlowAngle.
+		 *
+		 * @return FlowAngle
+		 */
     as3double GetFlowAngle(void)                                                                      const {return FlowAngle;}
-    // Getter: returns MachInf.
+  	/*!
+		 * @brief Getter function which returns the value of MachInf.
+		 *
+		 * @return MachInf
+		 */  
     as3double GetMachInf(void)                                                                        const {return MachInf;}
-    // Getter: returns CrossFlow.
+  	/*!
+		 * @brief Getter function which returns the value of CrossFlow.
+		 *
+		 * @return CrossFlow
+		 */
     bool GetCrossFlow(void)                                                                           const {return CrossFlow;}
-    // Getter: returns CenterX0.
+  	/*!
+		 * @brief Getter function which returns the value of CenterX0.
+		 *
+		 * @return CenterX0
+		 */
     const as3vector1d<as3double> &GetCenterX0(void)                                                   const {return CenterX0;}
-    // Getter: returns DisturbanceRatio.
+  	/*!
+		 * @brief Getter function which returns the value of DisturbanceRatio.
+		 *
+		 * @return DisturbanceRatio
+		 */
     as3double GetDisturbanceRatio(void)                                                               const {return DisturbanceRatio;}
-    // Getter: returns DisturbanceWidth.
+  	/*!
+		 * @brief Getter function which returns the value of DisturbanceWidth.
+		 *
+		 * @return DisturbanceWidth
+		 */
     as3double GetDisturbanceWidth(void)                                                               const {return DisturbanceWidth;}
-    // Getter: returns AngularFrequency.
+  	/*!
+		 * @brief Getter function which returns the value of AngularFrequency.
+		 *
+		 * @return AngularFrequency
+		 */
     as3double GetAngularFrequency(void)                                                               const {return AngularFrequency;}
-    // Getter: returns ConstantFrequency.
+  	/*!
+		 * @brief Getter function which returns the value of ConstantFrequency.
+		 *
+		 * @return ConstantFrequency
+		 */
     bool GetConstantFrequency(void)                                                                   const {return ConstantFrequency;}
-    // Getter: returns TypeModifyBC, per input boundary.
+  	/*!
+		 * @brief Getter function which returns the value of TypeModifyBC, per input boundary.
+		 *
+		 * @param[in] iBoundary boundary ID.
+		 *
+		 * @return TypeModifyBC[iBoundary]
+		 */
     unsigned short GetTypeModifyBC(unsigned short iBoundary)                                          const {return TypeModifyBC[iBoundary];}
-    // Getter: returns ModifyFreqBC.
+  	/*!
+		 * @brief Getter function which returns the value of ModifyFreqBC.
+		 *
+		 * @return ModifyFreqBC
+		 */
     const as3vector1d<as3double> GetModifyFreqBC(void)                                                const {return ModifyFreqBC;}
-    // Getter: returns ModifyStrengthBC.
+   	/*!
+		 * @brief Getter function which returns the value of ModifyStrengthBC.
+		 *
+		 * @return ModifyStrengthBC
+		 */   
     const as3vector1d<as3double> GetModifyStrengthBC(void)                                            const {return ModifyStrengthBC;}
-    // Getter: returns ModifyWidthBC.
+   	/*!
+		 * @brief Getter function which returns the value of ModifyWidthBC.
+		 *
+		 * @return ModifyWidthBC
+		 */
     const as3vector1d<as3double> GetModifyWidthBC(void)                                               const {return ModifyWidthBC;}
-    // Getter: returns ModifyCenterBC.
+   	/*!
+		 * @brief Getter function which returns the value of ModifyCenterBC.
+		 *
+		 * @return ModifyCenterBC
+		 */
     const as3vector1d<as3double> GetModifyCenterBC(void)                                              const {return ModifyCenterBC;}
-    // Getter: returns ModifyShiftCenterBC.
+    /*!
+		 * @brief Getter function which returns the value of ModifyShiftCenterBC.
+		 *
+		 * @return ModifyShiftCenterBC
+		 */   
     const as3vector1d<as3double> GetModifyShiftCenterBC(void)                                         const {return ModifyShiftCenterBC;}
-    // Getter: returns RiemannSolver.
-    const as3vector1d<unsigned short> &GetRiemannSolver(void)                                         const {return RiemannSolver;}
-    // Getter: returns RiemannSolver, per input zone.
+    /*!
+		 * @brief Getter function which returns the value of RiemannSolver, per input zone.
+		 *
+		 * @param[in] iZone zone ID.
+		 *
+		 * @return RiemannSolver[iZone]
+		 */    
     unsigned short GetRiemannSolver(unsigned short iZone)                                             const {return RiemannSolver[iZone];}
-    // Getter: returns AlignedPeriodicPulse.
+		/*!
+		 * @brief Getter function which returns the value of RiemannSolver.
+		 *
+		 * @return RiemannSolver
+		 */   
+    const as3vector1d<unsigned short> &GetRiemannSolver(void)                                         const {return RiemannSolver;}
+		/*!
+		 * @brief Getter function which returns the value of AlignedPeriodicPulse.
+		 *
+		 * @return AlignedPeriodicPulse
+		 */
     bool GetAlignedPeriodicPulse(void)                                                                const {return AlignedPeriodicPulse;}
-		// Getter: returns SourceFrequencyParam.
+		/*!
+		 * @brief Getter function which returns the value of SourceFrequencyParam.
+		 *
+		 * @return SourceFrequencyParam
+		 */
 		const as3vector1d<as3double> &GetSourceFrequencyParam(void)                                       const {return SourceFrequencyParam;}
-		// Getter: returns SourceTermCenterShift.
-		const as3vector1d<as3double> &GetSourceTermCenterShift(void)                                      const {return SourceTermCenterShift;}
-		// Getter: returns SourceFrequencyExponent.
+		/*!
+		 * @brief Getter function which returns the value of SourceFrequencyExponent.
+		 *
+		 * @return SourceFrequencyExponent
+		 */
 		as3double GetSourceFrequencyExponent(void)                                                        const {return SourceFrequencyExponent;}
-		// Getter: returns SourceTermCenterFixed.
+		/*!
+		 * @brief Getter function which returns the value of SourceTermCenterShift.
+		 *
+		 * @return SourceTermCenterShift
+		 */
+		const as3vector1d<as3double> &GetSourceTermCenterShift(void)                                      const {return SourceTermCenterShift;}	
+		/*!
+		 * @brief Getter function which returns the value of SourceTermCenterFixed.
+		 *
+		 * @return SourceTermCenterFixed
+		 */
 		bool GetSourceTermCenterFixed(void)                                                               const {return SourceTermCenterFixed;}
-		// Getter: returns RestartSolution.
+		/*!
+		 * @brief Getter function which returns the value of RestartSolution.
+		 *
+		 * @return RestartSolution
+		 */	
 		bool GetRestartSolution(void)                                                                     const {return RestartSolution;}
-		// Getter: returns TimeStep.
+		/*!
+		 * @brief Getter function which returns the value of TimeStep.
+		 *
+		 * @return TimeStep
+		 */
 		as3double GetTimeStep(void)                                                                       const {return TimeStep;}
-		// Getter: returns MaxIter.
+		/*!
+		 * @brief Getter function which returns the value of MaxIter.
+		 *
+		 * @return MaxIter
+		 */
 		unsigned long GetMaxIter(void)                                                                    const {return MaxIter;}
-    // Getter: returns DomainBound.
+ 		/*!
+		 * @brief Getter function which returns the value of DomainBound.
+		 *
+		 * @return DomainBound
+		 */
     const as3vector1d<as3double> &GetDomainBound(void)                                                const {return DomainBound;}
-    // Getter: returns nxElemZone.
-    const as3vector1d<unsigned long> &GetnxElemZone(void)                                             const {return nxElemZone;}
-    // Getter: returns nxElemZone, per input zone.
+ 		/*!
+		 * @brief Getter function which returns the value of nxElemZone, per input zone.
+		 *
+		 * @param[in] iZone zone ID.
+		 *
+		 * @return nxElemZone[iZone]
+		 */   
     unsigned long GetnxElemZone(unsigned short iZone)                                                 const {return nxElemZone[iZone];}
-    // Getter: returns nyElemZone.
-    const as3vector1d<unsigned long> &GetnyElemZone(void)                                             const {return nyElemZone;}
-    // Getter: returns nyElemZone, per input zone.
+		/*!
+		 * @brief Getter function which returns the value of nxElemZone.
+		 *
+		 * @return nxElemZone
+		 */
+    const as3vector1d<unsigned long> &GetnxElemZone(void)                                             const {return nxElemZone;}
+ 		/*!
+		 * @brief Getter function which returns the value of nyElemZone, per input zone.
+		 *
+		 * @param[in] iZone zone ID.
+		 *
+		 * @return nyElemZone[iZone]
+		 */    
     unsigned long GetnyElemZone(unsigned short iZone)                                                 const {return nyElemZone[iZone];}
-    // Getter: returns hRatioZone.
+		/*!
+		 * @brief Getter function which returns the value of nyElemZone.
+		 *
+		 * @return nyElemZone
+		 */
+    const as3vector1d<unsigned long> &GetnyElemZone(void)                                             const {return nyElemZone;}
+		/*!
+		 * @brief Getter function which returns the value of hElemRatioZone.
+		 *
+		 * @return hElemRatioZone
+		 */
     const as3vector1d<as3double> &GethElemRatioZone(void)                                             const {return hElemRatioZone;}
-    // Getter: returns ParamOutletNSCBC.
+  	/*!
+		 * @brief Getter function which returns the value of ParamOutletNSCBC.
+		 *
+		 * @return ParamOutletNSCBC
+		 */  
     const as3vector1d<as3double> &GetParamOutletNSCBC(void)                                           const {return ParamOutletNSCBC;}
-    // Getter: returns ParamInletNSCBC.
+  	/*!
+		 * @brief Getter function which returns the value of ParamInletNSCBC.
+		 *
+		 * @return ParamInletNSCBC
+		 */
     const as3vector1d<as3double> &GetParamInletNSCBC(void)                                            const {return ParamInletNSCBC;}
-    // Getter: returns DampingConstant, per input zone.
+   	/*!
+		 * @brief Getter function which returns the value of DampingConstant, per input zone.
+		 *
+		 * @param[in] iZone zone ID.
+		 *
+		 * @return DampingConstant[iZone] 
+		 */   
     as3double GetDampingConstant(unsigned short iZone)                                                const {return DampingConstant[iZone];}
-    // Getter: returns DampingExponent, per input zone.
+   	/*!
+		 * @brief Getter function which returns the value of DampingExponent, per input zone.
+		 *
+		 * @param[in] iZone zone ID.
+		 *
+		 * @return DampingExponent[iZone]
+		 */   
     as3double GetDampingExponent(unsigned short iZone)                                                const {return DampingExponent[iZone];}
-    // Getter: returns TypeProcessData.
+   	/*!
+		 * @brief Getter function which returns the value of CharacteristicConstant, per input zone.
+		 *
+		 * @param[in] iZone zone ID.
+		 *
+		 * @return CharacteristicConstant[iZone]
+		 */   
+    as3double GetCharacteristicConstant(unsigned short iZone)                                         const {return CharacteristicConstant[iZone];}
+   	/*!
+		 * @brief Getter function which returns the value of CharacteristicExponent, per input zone.
+		 *
+		 * @param[in] iZone zone ID.
+		 *
+		 * @return CharacteristicExponent[iZone]
+		 */
+    as3double GetCharacteristicExponent(unsigned short iZone)                                         const {return CharacteristicExponent[iZone];}
+   	/*!
+		 * @brief Getter function which returns the value of CharacteristicMatching, per input zone.
+		 *
+		 * @param[in] iZone zone ID.
+		 *
+		 * @return CharacteristicMatching[iZone]
+		 */   
+    bool GetCharacteristicMatching(unsigned short iZone)                                              const {return CharacteristicMatching[iZone];}
+   	/*!
+		 * @brief Getter function which returns the value of TypeProcessData.
+		 *
+		 * @return TypeProcessData
+		 */    
     unsigned short GetTypeProcessData(void)                                                           const {return TypeProcessData;}
-    // Getter: returns ProbeLocation.
+   	/*!
+		 * @brief Getter function which returns the value of ProbeSpecified.
+		 *
+		 * @return ProbeSpecified
+		 */ 
+		bool GetProbeSpecified(void)                                                                      const {return ProbeSpecified;}
+   	/*!
+		 * @brief Getter function which returns the value of ProbeLocation.
+		 *
+		 * @return ProbeLocation
+		 */
     const as3vector1d<as3double> &GetProbeLocation(void)                                              const {return ProbeLocation;}
-    // Getter: returns SampleZoneData.
+   	/*!
+		 * @brief Getter function which returns the value of ProbeVariable.
+		 *
+		 * @return ProbeVariable
+		 */
+		const as3vector1d<unsigned short> &GetProbeVariable(void)                                         const {return ProbeVariable;}
+   	/*!
+		 * @brief Getter function which returns the value of SampleZoneData.
+		 *
+		 * @return SampleZoneData
+		 */
     bool GetSampleZoneData(void)                                                                      const {return SampleZoneData;}
-    // Getter: returns TypeZoneData.
+   	/*!
+		 * @brief Getter function which returns the value of TypeZoneData.
+		 *
+		 * @return TypeZoneData
+		 */   
     unsigned short GetTypeZoneData(void)                                                              const {return TypeZoneData;}
-    // Getter: returns WriteFreqZoneData.
+   	/*!
+		 * @brief Getter function which returns the value of WriteFreqZoneData.
+		 *
+		 * @return WriteFreqZoneData
+		 */   
     unsigned long GetWriteFreqZoneData(void)                                                          const {return WriteFreqZoneData;}
-    // Getter: returns TypeFilterSolution, per input zone.
+   	/*!
+		 * @brief Getter function which returns the value of TypeFilterSolution, per input zone.
+		 *
+		 * @param[in] iZone zone ID.
+		 *
+		 * @return TypeFilterSolution[iZone]
+		 */
     unsigned short GetTypeFilterSolution(unsigned short iZone)                                        const {return TypeFilterSolution[iZone];}
-    // Getter: returns FilterCharacteristics.
+   	/*!
+		 * @brief Getter function which returns the value of FilterCharacteristics.
+		 *
+		 * @return FilterCharacteristics
+		 */
     const as3vector1d<unsigned short> &GetFilterCharacteristics(void)                                 const {return FilterCharacteristics;}
-    // Getter: returns GridStretching, per input zone.
+   	/*!
+		 * @brief Getter function which returns the value of GridStretching, per input zone.
+		 *
+		 * @param[in] iZone zone ID.
+		 *
+		 * @return GridStretching[iZone]
+		 */   
     bool GetGridStretching(unsigned short iZone)                                                      const {return GridStretching[iZone];}
-    // Getter: returns GridStretchingConstant, per input zone.
+   	/*!
+		 * @brief Getter function which returns the value of GridStretchingConstant, per input zone.
+		 *
+		 * @param[in] iZone zone ID.
+		 *
+		 * @return GridStretchingConstant[iZone]
+		 */   
     as3double GetGridStretchingConstant(unsigned short iZone)                                         const {return GridStretchingConstant[iZone];}
-    // Getter: returns GridStretchingExponent, per input zone.
+   	/*!
+		 * @brief Getter function which returns the value of GridStretchingExponent, per input zone.
+		 *
+		 * @param[in] iZone zone ID.
+		 *
+		 * @return GridStretchingExponent[iZone]
+		 */   
     as3double GetGridStretchingExponent(unsigned short iZone)                                         const {return GridStretchingExponent[iZone];}
-    // Getter: returns ArtificialConvection, per input zone.
+   	/*!
+		 * @brief Getter function which returns the value of ArtificialConvection, per input zone.
+		 *
+		 * @param[in] iZone zone ID.
+		 *
+		 * @return ArtificialConvection[iZone]
+		 */    
     bool GetArtificialConvection(unsigned short iZone)                                                const {return ArtificialConvection[iZone];}
-    // Getter: returns ArtificialConvectionConstant, per input zone.
+   	/*!
+		 * @brief Getter function which returns the value of ArtificialConvectionConstant, per input zone.
+		 *
+		 * @param[in] iZone zone ID.
+		 *
+		 * @return ArtificialConvectionConstant[iZone]
+		 */
     as3double GetArtificialConvectionConstant(unsigned short iZone)                                   const {return ArtificialConvectionConstant[iZone];}
-    // Getter: returns ArtificialConvectionExponent, per input zone.
+   	/*!
+		 * @brief Getter function which returns the value of ArtificialConvectionExponent, per input zone.
+		 *
+		 * @param[in] iZone zone ID.
+		 *
+		 * @return ArtificialConvectionExponent[iZone]
+		 */
     as3double GetArtificialConvectionExponent(unsigned short iZone)                                   const {return ArtificialConvectionExponent[iZone];}
-    // Getter: returns PeriodicPulse.
+   	/*!
+		 * @brief Getter function which returns the value of PeriodicPulse.
+		 *
+		 * @return PeriodicPulse
+		 */   
     bool GetPeriodicPulse(void)                                                                       const {return PeriodicPulse;}
-    // Getter: returns TypeBC.
-    const as3vector2d<unsigned short> &GetTypeBC(void)                                                const {return TypeBC;}
-    // Getter: returns TypeBC, per input zone.
+   	/*!
+		 * @brief Getter function which returns the value of TypeBC, per input zone.
+		 *
+		 * @param[in] iZone zone ID.
+		 *
+		 * @return TypeBC[iZone]
+		 */ 
     const as3vector1d<unsigned short> &GetTypeBC(unsigned short iZone)                                const {return TypeBC[iZone];}
-    // Getter: returns TypeBC, per input zone, per input boundary.
+   	/*!
+		 * @brief Getter function which returns the value of TypeBC, per input zone, per input boundary.
+		 *
+		 * @param[in] iZone zone ID.
+		 * @param[in] iBoundary boundary ID.
+		 *
+		 * @return TypeBC[iZone][iBoundary]
+		 */    
     unsigned short GetTypeBC(unsigned short iZone, unsigned short iBoundary)                          const {return TypeBC[iZone][iBoundary];}
-    // Getter: returns InterfaceID.
-    const as3vector3d<unsigned short> &GetInterfaceID(void)                                           const {return InterfaceID;}
-    // Getter: returns InterfaceID, per input zone.
+		/*!
+		 * @brief Getter function which returns the value of TypeBC.
+		 *
+		 * @return TypeBC
+		 */    
+    const as3vector2d<unsigned short> &GetTypeBC(void)                                                const {return TypeBC;}
+   	/*!
+		 * @brief Getter function which returns the value of InterfaceID, per input zone.
+		 *
+		 * @param[in] iZone zone ID.
+		 *
+		 * @return InterfaceID[iZone]
+		 */    
     const as3vector2d<unsigned short> &GetInterfaceID(unsigned short iZone)                           const {return InterfaceID[iZone];}
-    // Getter: returns InterfaceID, per input zone, per input boundary.
+   	/*!
+		 * @brief Getter function which returns the value of InterfaceID, per input zone, per input boundary.
+		 *
+		 * @param[in] iZone zone ID.
+		 * @param[in] iBoundary boundary ID.
+		 *
+		 * @return InterfaceID[iZone][iBoundary]
+		 */    
     const as3vector1d<unsigned short> &GetInterfaceID(unsigned short iZone, unsigned short iBoundary) const {return InterfaceID[iZone][iBoundary];}
+		/*!
+		 * @brief Getter function which returns the value of InterfaceID.
+		 *
+		 * @return InterfaceID
+		 */ 
+    const as3vector3d<unsigned short> &GetInterfaceID(void)                                           const {return InterfaceID;}
+ 
+	private:
+		/*!
+		 * @brief Struct that sets the default values for a dictionary file.
+		 */    
+  	struct {
+  		
+			unsigned short nZone = 1;                                                ///< Default number of zones.
+  		unsigned short IntegrationFactor = 3;                                    ///< Default (over-)integration factor.
+  		as3vector1d<unsigned short> nPoly = { 1 };                               ///< Default polynomial order.
+      as3vector1d<std::string> NameNodalDOFs = { "LGL" };                      ///< Default Type of DOFs.
+  		as3vector1d<std::string> NameZoneMarker = { "ZONE_MAIN" };               ///< Default zone marker.
+  		as3vector1d<std::string> NameMarker = {};                                ///< Default marker names.
+  		std::string NameRestartSolution = "false";                               ///< Default restart solution option.
+  		as3double TimeStep = -1.0;                                               ///< Default time step.
+  		unsigned long MaxIter = 100000;                                          ///< Default maximum number of temporal iterations.
+      as3vector1d<as3double> hElemRatioZone = { 1.0, 1.0, 1.0, 1.0 };          ///< Default element size ratio in (West, East, South, North).
+      std::string NameZoneConformity = "true";                                 ///< Default zone conformity w.r.t. ZONE_MAIN.
+      as3vector1d<std::string> NameRiemannSolver = { "ROE" };                  ///< Default type of Riemann solver.
+      unsigned long WriteVTKFreq     = 100000;                                 ///< Default output VTK file writing frequency.
+      unsigned long WriteRestartFreq = 100000;                                 ///< Default output solution file writing frequency.
+      unsigned long OutputFreq       = 100;                                    ///< Default output (runtime-)monitoring frequency.
+      as3double CFL = 1.0;                                                     ///< Default CFD number.
+      std::string NameAdaptTime = "false";                                     ///< Default adaptive time option.
+      as3vector1d<as3double> ParamOutletNSCBC = { 0.1, -1.0, -1.0, 1.0, 0.8 }; ///< Default outlet NSCBC relaxation parameters.
+																																							 ///< Dimension: [0]: sigma, [1]: beta_l, [2]: beta_t, [3]: length, [4]: eta.
+      as3vector1d<as3double> ParamInletNSCBC = { 1.0, 1.0 };                   ///< Default inlet NSCBC relaxation parameters.
+																																							 ///< Dimension: [0]: sigma, [1]: length.
+      as3vector1d<as3double> DampingExponent = { 2.0 };                        ///< Default sponge-layer damping exponential coefficient.
+      as3vector1d<as3double> DampingConstant = { 2.0 };                        ///< Default sponge-layer damping constant coefficient.
+      as3double MachInf = 0.5;                                                 ///< Default free-stream Mach number.
+      as3double FlowAngle = 0.0;                                               ///< Default free-stream flow angle w.r.t x-direction (in degrees).
+      std::string NameTypeProcessData = "NOTHING";                             ///< Default option to process data.
+      as3vector1d<as3double> CenterX0 = { 0.0, 0.0 };                          ///< Default disturbance center coordinates.
+      as3double DisturbanceRatio = 0.2;                                        ///< Default disturbance ratio w.r.t. background flow.
+      as3double DisturbanceWidth = 0.25;                                       ///< Default disturbance width.
+      as3double Frequency = 1.0;                                               ///< Default disturbance frequency.
+      as3vector1d<std::string> NameTypeFilterSolution = { "NONE" };            ///< Default type of solution filter.
+      as3vector1d<unsigned short> FilterCharacteristics = { 5, 4, 16, 36 };    ///< Default filtering parameters.
+																																							 ///< Dimension: [0]: frequency, [1]: Nc, [2]: s, [3]: alpha.
+																																							 ///< For info, see Hesthaven DG book or Nordstrom paper on filtering in JSC 2021.
+      std::string NamePeriodicPulse = "false";                                 ///< Default option for periodic pulse.
+      as3vector1d<std::string> NameTypeBufferLayer = { "NONE" };               ///< Default type of buffer layer.
+      as3vector1d<as3double> GridStretchingConstant = { 1.0 };                 ///< Default grid-stretching constant(s).
+      as3vector1d<as3double> GridStretchingExponent = { 1.0 };                 ///< Default grid-stretching exponential(s).
+      bool GridStretching = false;                                             ///< Default option for grid-stretching.
+      as3vector1d<as3double> ArtificialConvectionConstant = { 1.15 };          ///< Default artificial convection constant(s) (max Mach at boundary).
+      as3vector1d<as3double> ArtificialConvectionExponent = { 2.0 };           ///< Default artificial convection exponential(s).
+      bool ArtificialConvection = false;                                       ///< Default option for artificial convection.
+      as3vector1d<as3double> ProbeLocation = { };                              ///< Default location for probes.
+																																							 ///< Format: (x1,y1, x2,y2, ..., etc).
+      std::string NameSampleZoneData = "false";                                ///< Default option for samping zone data.
+      std::string OutputZoneDataFilename = "zone/sample";                      ///< Default zone samping filename.
+      std::string NameMarkerZoneData = "ZONE_MAIN";                            ///< Default zone for samping zone data.
+      unsigned long WriteFreqZoneData = 100;                                   ///< Default zone samping frequency (in terms of iterations).
+      as3vector1d<std::string> NameTypeModifyBC = { "NONE" };                  ///< Default faces of boundaries to modify.
+      as3vector1d<as3double> ModifyFreqBC = { 1.0 };                           ///< Default boundary condition frequency modification on each working variable [Hz].
+      as3vector1d<as3double> ModifyWidthBC = { 0.25 };                         ///< Default boundary condition modification perturbation width.
+      as3vector1d<as3double> ModifyStrengthBC = { 0.2 };                       ///< Default boundary condition modification perturbation amplitude strength.
+																																							 ///< Note, these are done w.r.t. background flow of each working variable.
+      as3vector1d<as3double> ModifyCenterBC = { -1.0, 0.0 };                   ///< Default boundary condition modification perturbation center(s).
+      as3vector1d<as3double> ModifyShiftCenterBC = { 0.25 };                   ///< Default boundary condition modification perturbation center(s) spatial shift.
+      std::string NameWriteAuxiliaryDataPML = "false";                         ///< Default option for writing PML auxiliary data.
+      std::string NameAlignedPeriodicPulse = "false";                          ///< Default option for an aligned periodic pulse test-case.
+      std::string NameConstantFrequency = "true";                              ///< Default option for a constant frequency in a temporal perturbation source term.
+			std::string NameSourceTermCenterFixed = "true";                          ///< Default option for a spatially fixed source term in a temporal perturbation.
+			as3vector1d<as3double> SourceTermCenterShift = { 1.0, 1.0 };             ///< Default periodic source-term varying spatial center shift values: (dx, dy).
+			as3double SourceFrequencyExponent = 1.0;                                 ///< Default periodic source-term frequency amplitude alpha, such that: sin^alpha.
+			as3vector1d<as3double> SourceFrequencyParam = { 1.0, 0.1 };              ///< Default periodic source-term frequency paramters, based on: f = f0 * A^(t/tau).
+																																							 ///< Dimension: [0]: A, [1]: tau.
+      as3vector1d<as3double> DomainExpansionRatio = { 1.0, 1.0, 1.0, 1.0 };    ///< Default domain expansion ratios.
+																																							 ///< Format: (rxb1, rxb2, ryb1, ryb2).
+      std::string NameUniformGridResolution = "true";                          ///< Default option for equidistant grid resolution.
+			as3vector1d<std::string> NameMarkerSampleSurface = { "NONE" };           ///< Default boundary markers for sampling boundary data.
+    	std::string OutputSampleSurfaceDirectory = "surf/";                      ///< Default surface samping data directory name.
+			std::string NameSampleSurfaceData = "false";                             ///< Default option for surface/boundary data sampling.
+			std::string NameFileFormatVTK = "BINARY";                                ///< Default option for VTK output file format.
+			std::string NameFileFormatSolution = "BINARY";                           ///< Default option for restart solution file format.
+			std::string NameFileFormatZone = "BINARY";                               ///< Default option for zone samping file format.
+			std::string NameWriteGNUplot = "false";                                  ///< Default option for GNU-plot output (process-time) file.
+			std::string GNUplotFilename = "gnuplot/log";                             ///< Default GNU-plot output filename.
+      as3vector1d<as3double> CharacteristicExponent = { 2.0 };                 ///< Default characteristic matching layer exponential coefficient(s).
+      as3vector1d<as3double> CharacteristicConstant = { 0.0 };                 ///< Default characteristic matching layer constant coefficient(s).
+			std::string NameProbeSpecified = "false";                                ///< Default option for probe data sampling.
+			as3vector1d<std::string> NameProbeVariable = { "PRESSURE" };             ///< Default probe data variables sampled.
+			std::string NameFileFormatProcessedProbed = "BINARY";                    ///< Default format of processed/probed data files.
+			std::string NameProcessLocation = "DOMAIN";                              ///< Default location of data processed.
+			as3vector1d<std::string> NameOutputVTKVariable = { };                    ///< Default VTK variables written.
+			std::string NameInletNRBC = "true";                                      ///< Default option for a non-reflecting inlet boundary condition (NRBC).
 
-    private:
-      // Default data parameters.
-  		struct {
-  			// Number of zones.
-  			unsigned short nZone = 1;
-  			// Integration factor.
-  			unsigned short IntegrationFactor = 3;
-  			// Polynomial order.
-  			as3vector1d<unsigned short> nPoly = { 1 };
-        // Type of DOFs.
-        as3vector1d<std::string> NameNodalDOFs;
-  			// Zone marker.
-  			as3vector1d<std::string> NameZoneMarker = { "ZONE_MAIN" };
-  			// Markers.
-  			as3vector1d<std::string> NameMarker = {};
-  			// Restart solution or not.
-  			std::string NameRestartSolution = "false";
-  			// Time step.
-  			as3double TimeStep = -1.0;
-  			// Maximum iterations in time.
-  			unsigned long MaxIter = 100000;
-        // Ratio of element sizes in (WEST, EAST, SOUTH, NORTH).
-        as3vector1d<as3double> hElemRatioZone = { 1.0, 1.0, 1.0, 1.0 };
-        // Zone conformity w.r.t. ZONE_MAIN.
-        std::string NameZoneConformity = "true";
-        // Type of riemann solver.
-        as3vector1d<std::string> NameRiemannSolver = { "ROE" };
-        // Output writing frequency.
-        unsigned long WriteFreq  = 10;
-        // Output monitoring frequency.
-        unsigned long OutputFreq = 100;
-        // CFL number.
-        as3double CFL = 1.0;
-        // Adaptive time step.
-        std::string NameAdaptTime = "false";
-        // Relaxation parameters in the case of an outlet NSCBC.
-        // Dimension: [0]: sigma, [1]: beta_l, [2]: beta_t, [3]: len, [4]: eta.
-        as3vector1d<as3double> ParamOutletNSCBC = { 0.1, -1.0, -1.0, 1.0, 0.8 };
-        // Relaxation parameters in the case of an inlet NSCBC.
-        // Dimension: [0]: sigma, [1]: beta_t, [2]: len, [3]: eta.
-        as3vector1d<as3double> ParamInletNSCBC = { 1.0, -1.0, 1.0, 0.8 };
-        // Sponge-layer damping exponential coefficient.
-        as3vector1d<as3double> DampingExponent = { 2.0 };
-        // Sponge-layer damping constant.
-        as3vector1d<as3double> DampingConstant = { 2.0 };
-        // Free-stream Mach number.
-        as3double MachInf = 0.5;
-        // Flow angle in degrees (w.r.t. x-direction).
-        as3double FlowAngle = 0.0;
-        // Process data.
-        std::string NameTypeProcessData = "PROCESS_NOTHING";
-        // Disturbance center.
-        as3vector1d<as3double> CenterX0 = { 0.0, 0.0 };
-        // Ratio of disturbance w.r.t. background flow.
-        as3double DisturbanceRatio = 0.2;
-        // Disturbance width.
-        as3double DisturbanceWidth = 0.25;
-        // frequency.
-        as3double Frequency = 1.0;
-        // Type of filter applied on the solution.
-        as3vector1d<std::string> NameTypeFilterSolution = { "NONE" };
-        // Filtering parameters.
-        // Dimension: [0]: freq, [1]: Nc, [2]: s, [3]: alpha.
-        as3vector1d<unsigned short> FilterCharacteristics = { 5, 4, 16, 36 };
-        // Periodic pulse.
-        std::string NamePeriodicPulse = "false";
-        // Type of buffer layer.
-        as3vector1d<std::string> NameTypeBufferLayer = { "NONE" };
-        // Grid-stretching constant.
-        as3vector1d<as3double> GridStretchingConstant = { 1.0 };
-        // Grid-stretching exponent.
-        as3vector1d<as3double> GridStretchingExponent = { 1.0 };
-        // Grid-stretching used.
-        bool GridStretching = false;
-        // Artificial-convection constant (max Mach number at boundary).
-        as3vector1d<as3double> ArtificialConvectionConstant = { 1.15 };
-        // Artificial-convection exponent.
-        as3vector1d<as3double> ArtificialConvectionExponent = { 2.0 };
-        // Artificial-convection used.
-        bool ArtificialConvection = false;
-        // Probe locations as 1D array of (x1,y1, x2,y2, ... etc.).
-        as3vector1d<as3double> ProbeLocation = { };
-        // Whether or not to sample and write zone data.
-        std::string NameSampleZoneData = "false";
-        // Zone data output filename.
-        std::string OutputZoneDataFilename = "zonedata";
-        // Zone data selected for writing.
-        std::string NameMarkerZoneData = "ZONE_MAIN";
-        // Output writing frequency of zone data.
-        unsigned long WriteFreqZoneData = 100;
-        // Face of BCs to modify.
-        as3vector1d<std::string> NameTypeModifyBC = { "NONE" };
-        // Angular frequency of modified BC of each working variable.
-        as3vector1d<as3double> ModifyFreqBC = { 1.0 };
-        // Pulse spatial width of modified BC of each working variable.
-        as3vector1d<as3double> ModifyWidthBC = { 0.25 };
-        // Pulse spatial amplitude w.r.t. background flow of modified BC of each working variable.
-        as3vector1d<as3double> ModifyStrengthBC = { 0.2 };
-        // Pulse center(s) for BC modification.
-        as3vector1d<as3double> ModifyCenterBC = { -1.0, 0.0 };
-        // Pulse center(s) shoft for BC modification of each working variable.
-        as3vector1d<as3double> ModifyShiftCenterBC = { 0.25 };
-        // Write PML auxiliary data.
-        std::string NameWriteAuxiliaryDataPML = "false";
-        // Periodic flow direction aligned with flow.
-        std::string NameAlignedPeriodicPulse = "false";
-        // Constant frequency in source term.
-        std::string NameConstantFrequency = "true";
-				// Periodic source center fixed or not.
-				std::string NameSourceTermCenterFixed = "true";
-				// Periodic source varying spatial center shift: (dx, dy).
-				as3vector1d<as3double> SourceTermCenterShift = { 1.0, 1.0 };
-				// Periodic source frequency exponent alpha: sin^alpha.
-				as3double SourceFrequencyExponent = 1.0;
-				// Source frequency parameters f = f0 * A^(t/Tau).
-				// Dimension: [0]: A, [1]: Tau.
-				as3vector1d<as3double> SourceFrequencyParam = { 1.0, 0.1 };
-        // Domain expansion ratios: ( rxb1, rxb2, ryb1, ryb2 ).
-        as3vector1d<as3double> DomainExpansionRatio = { 1.0, 1.0, 1.0, 1.0 };
-        // Uniform equidistant grid resolution or not.
-        std::string NameUniformGridResolution = "true";
+  	} DefaultParam;
 
-  		} DefaultParam;
+    unsigned long  WriteVTKFreq;                       ///< Output VTK file writing frequency. 
+    unsigned long  WriteRestartFreq;                   ///< Output solution file writing frequency. 
+    unsigned long  OutputFreq;                         ///< Output (runtime-)monitoring frequency.
+  	std::string    OutputSolFilename;                  ///< Output solution filename.
+  	std::string    OutputVTKFilename;                  ///< Output VTK filename.
+    std::string    RestartFilename;                    ///< Input restart solution filename.
+		std::string    NameFileFormatVTK;                  ///< VTK output file format string name.
+		unsigned short TypeFileFormatVTK;                  ///< VTK output file format.
 
-      // Output writing frequency.
-      unsigned long WriteFreq;
-      // Output monitoring frequency.
-      unsigned long OutputFreq;
-      // Output solution filename.
-  		std::string OutputSolFilename;
-  		// Output visualization filename.
-  		std::string OutputVTKFilename;
-      // Restart solution filename.
-      std::string RestartFilename;
+		as3vector1d<std::string>    NameOutputVTKVariable; ///< Name of VTK variables written in output file.
+		as3vector1d<unsigned short> OutputVTKVariable;     ///< VTK variables written in output file.
+		
+		std::string    NameFileFormatSolution;             ///< Solution output file format string name.
+		unsigned short TypeFileFormatSolution;             ///< Solution output file format.
+		std::string    NameFileFormatProcessedProbed;      ///< Processed/probed output file format string name.
+		unsigned short TypeFileFormatProcessedProbed;      ///< Processed/probed output file format.
+		
+		bool        WriteGNUplot;                          ///< Option for writing GNU-plot file.     
+		std::string GNUplotFilename;                       ///< GNU-plot output filename.
 
-      // Number of zones.
-  		unsigned short nZone;
-  		// Polynomial order of solution per zone.
-  		as3vector1d<unsigned short> nPolySolZone;
-      // Multizone strategy used in the simulation.
-      unsigned short MultizoneStrategy;
+  	unsigned short              nZone;                 ///< Number of zones.
+  	as3vector1d<unsigned short> nPolySolZone;          ///< Solution polynomial order per each zone.
+    unsigned short              MultizoneStrategy;     ///< Multizone strategy used.
 
-      // Domain bounds (physical domain).
-      // Convention: (WEST, EAST, SOUTH, NORTH).
-      as3vector1d<as3double> DomainBound;
-      // Number of elements in x-direction in each zone.
-      as3vector1d<unsigned long> nxElemZone;
-      // Number of elements in y-direction in each zone.
-      as3vector1d<unsigned long> nyElemZone;
-      // Element ratio per extension of zone: (WEST, EAST, SOUTH, NORTH).
-      as3vector1d<as3double> hElemRatioZone;
-      // Use zone conformity between adjacent elements on zone.
-      bool ZoneConformity;
+    as3vector1d<as3double>     DomainBound;            ///< (physical) Domain bound, format: (West, East, South, North).
+    as3vector1d<unsigned long> nxElemZone;             ///< Number of element in the x-direction in each zone.
+    as3vector1d<unsigned long> nyElemZone;             ///< Number of element in the y-direction in each zone.
+    as3vector1d<as3double>     hElemRatioZone;         ///< Element geometric expansion ratio per each zone: (West, East, South, Noth).
+    bool                       ZoneConformity;         ///< Option to specify a conforming zone.
 
-      // Block interface location.
-      as3vector1d<as3double> BlockInterfaceLocation;
-      // Domain expansion ratios: ( rxb1, rxb2, ryb1, ryb2 ).
-      as3vector1d<as3double> DomainExpansionRatio;
-      // Number of sub-elements in x-direction in main zone.
-      as3vector1d<unsigned long> nxBlockElem;
-      // Number of sub-elements in y-direction in main zone.
-      as3vector1d<unsigned long> nyBlockElem;
-      // Uniform equidistant grid resolution or not.
-      bool UniformGridResolution;
+    as3vector1d<as3double>     BlockInterfaceLocation; ///< Block interface location.
+    as3vector1d<as3double>     DomainExpansionRatio;   ///< Domain expantion ratios: (rxb1, rxb2, ryb1. ryb2).
+    as3vector1d<unsigned long> nxBlockElem;            ///< Number of elements in x-direction in the main zone.
+    as3vector1d<unsigned long> nyBlockElem;            ///< Number of elements in y-direction in the main zone.
+    bool                       UniformGridResolution;  ///< Option to use a uniform/equidistant grid resolution.
 
-      // Zone markers, string name.
-      as3vector1d<std::string> NameZoneMarker;
-      // Zone type, enum values.
-      as3vector1d<unsigned short> TypeZone;
+    as3vector1d<std::string>    NameZoneMarker;        ///< Name of the zone marker. 
+    as3vector1d<unsigned short> TypeZone;              ///< Type of each zone.
 
-      // Nodal type of DOFs, string name.
-      as3vector1d<std::string> NameNodalDOFs;
-      // Nodal type of DOFs, enum values.
-      as3vector1d<unsigned short> TypeDOFs;
-      // Type of solver per zone.
-      as3vector1d<unsigned short> TypeSolver;
+    as3vector1d<std::string>    NameNodalDOFs;         ///< Type of the DOFs in each zone, string name.
+    as3vector1d<unsigned short> TypeDOFs;              ///< Type of DOFs in each zone.
+    as3vector1d<unsigned short> TypeSolver;            ///< Type of solver in each zone.
 
-      // Type of temporal discretization, string name.
-  		std::string NameTemporalScheme;
-  		// Type of temporal discretization.
-  		unsigned short TypeTemporalScheme;
-  		// Simulation start and end times.
-  		// index: [0]: start, [1]: end.
-  		as3double SimulationTime[2];
-  		// Time step input.
-  		as3double TimeStep;
-  		// Maximum temporal iterations.
-  		unsigned long MaxIter;
-      // CFL number.
-      as3double CFL;
-      // Adaptive time step.
-      bool AdaptTime;
+  	std::string    NameTemporalScheme;                 ///< Name of temporal discretization.
+  	unsigned short TypeTemporalScheme;                 ///< Type of temporal discretization.
+  	as3double      SimulationTime[2];                  ///< Simulation physical starting [0] and ending [1] times.
+  	as3double      TimeStep;                           ///< Physical time step.
+  	unsigned long  MaxIter;                            ///< Maximum number of temporal iterations.
+    as3double      CFL;                                ///< CFL number.
+    bool           AdaptTime;                          ///< Option for using an adaptive time step.
 
-      // Integration factor (multiplied by polynomial of solution).
-  		unsigned short IntegrationFactor;
-      // Type of filtering used, string name.
-      as3vector1d<std::string> NameTypeFilterSolution;
-      // Type of filtering used.
-      as3vector1d<unsigned short> TypeFilterSolution;
-      // Filtering parameters.
-      // Dimension: [0]: freq, [1]: Nc, [2]: s, [3]: alpha.
-      as3vector1d<unsigned short> FilterCharacteristics;
+  	unsigned short              IntegrationFactor;      ///< (over-)Integration factor.
+    as3vector1d<std::string>    NameTypeFilterSolution; ///< Type of solution filtering, string name.
+    as3vector1d<unsigned short> TypeFilterSolution;     ///< Type of solution filtering.
+    as3vector1d<unsigned short> FilterCharacteristics;  ///< Filter parameters.
+																											  ///< Dimension: [0]: frequency, [1]: Nc, [2]: s, [3]: alpha.
+																											  ///< For info, see Hesthaven DG book or Nordstrom paper on filtering in JSC 2021.
+ 
+		as3vector1d<std::string>    NameMarkerSampleSurface;      ///< Boundary marker for sampling data, string name.
+    std::string                 OutputSampleSurfaceDirectory; ///< Output samping surface data directory.
+		bool                        SampleSurfaceData;            ///< Option for samping data from a surface/boundary.
+		as3vector1d<unsigned short> SampleDataBoundaryID;         ///< Boundary ID for the sampled surface data.
 
-      // Type of initial conditions, string name.
-  		as3vector1d<std::string> NameInitialCondition;
-  		// Type of initial conditions, enum values.
-  		as3vector1d<unsigned short> TypeIC;
-  		// Decide whether or not to restart a simulation.
-  		bool RestartSolution;
+ 		
+		as3vector1d<std::string>    NameInitialCondition;         ///< Type of initial condition per each zone, string name.
+  	as3vector1d<unsigned short> TypeIC;                       ///< Type of initial condition per each zone.
+  	bool                        RestartSolution;              ///< Option for running a restart solution.
 
-      // Type of data processing, string name.
-      std::string NameTypeProcessData;
-      // Type of data processing, enum values.
-      unsigned short TypeProcessData;
-      // Output processed data filename.
-      std::string OutputProcessedFilename;
-      // Probe locations, array of coordinates: (x1,y1, x2,y2, ... etc.).
-      as3vector1d<as3double> ProbeLocation;
-      // Zone data output filename.
-      std::string OutputZoneDataFilename;
-      // Zone data selected for writing.
-      std::string NameMarkerZoneData;
-      // Type of zone selected for writing, enum values.
-      unsigned short TypeZoneData;
-      // Whether a PML zone exists in all zones or not.
-      bool UsePML;
-      // Write PML auxiliary data.
-      bool WriteAuxiliaryDataPML;
-      // Output writing frequency of zone data.
-      unsigned long WriteFreqZoneData;
-      // Whether or not to sample and write zone data.
-      bool SampleZoneData;
+    std::string                 NameTypeProcessData;          ///< Type of data processing, string name.
+    unsigned short              TypeProcessData;              ///< Type of data processing.
+		std::string                 NameProcessLocation;          ///< Location of the data processed, string name.
+		unsigned short              ProcessLocation;              ///< Location of the data processed.
+    std::string                 OutputProcessedDirectory;     ///< Processed data output directory.
+		bool                        ProbeSpecified;               ///< Option to use a probe.
+    as3vector1d<as3double>      ProbeLocation;                ///< Probe(s) location. Format: (x1,y1, x2,y2, ...etc).
+		as3vector1d<std::string>    NameProbeVariable;            ///< Name of the probe variables.
+		as3vector1d<unsigned short> ProbeVariable;                ///< Probe variables.
+    
+    std::string                 OutputZoneDataFilename;       ///< Zone samping data output filename.
+    std::string                 NameMarkerZoneData;           ///< Zone marker for sampling zone data.
+    unsigned short              TypeZoneData;                 ///< Type of zone selected for samping zone data.
+    bool                        UsePML;                       ///< Option to use a PML.
+    bool                        WriteAuxiliaryDataPML;        ///< Write auxiliary data in a PML layer.
+    unsigned long               WriteFreqZoneData;            ///< Writing frequency of output zone sampling.
+		std::string                 NameFileFormatZone;           ///< Type of zone sampling file format, string name.
+		unsigned short              TypeFileFormatZone;           ///< Type of zone sampling file format.
+    bool                        SampleZoneData;               ///< Option for samping zone data.
 
-      // Whether or not to use grid-stretching.
-      as3vector1d<bool> GridStretching;
-      // Grid-stretching constant.
-      as3vector1d<as3double> GridStretchingConstant;
-      // Grid-stretching exponent.
-      as3vector1d<as3double> GridStretchingExponent;
+    as3vector1d<bool>      GridStretching;                    ///< Option to use grid-stretching in each zone.
+    as3vector1d<as3double> GridStretchingConstant;            ///< Grid-stretching constant per each zone.
+    as3vector1d<as3double> GridStretchingExponent;            ///< Grid-stretching exponent per each zone.
 
-      // Free-stream Mach number.
-      as3double MachInf;
-      // Flow angle in degrees (w.r.t. x-direction).
-      as3double FlowAngle;
-      // Presence of a cross-flow.
-      bool CrossFlow;
-      // Disturbance center.
-      as3vector1d<as3double> CenterX0;
-      // Ratio of disturbance w.r.t. background flow.
-      as3double DisturbanceRatio;
-      // Disturbance width.
-      as3double DisturbanceWidth;
-      // Frequency.
-      as3double Frequency;
-      // Angular frequency.
-      as3double AngularFrequency;
-      // Presence of periodic pulse.
-      bool PeriodicPulse;
-      // Use a constant frequency in source term.
-      bool ConstantFrequency;
-      // Periodic flow direction aligned with flow.
-      bool AlignedPeriodicPulse;
-			// Periodic source varying frequency parameters: f = f0 * A^(t/Tau).
-			// Dimension: [0]: A, [1]: Tau.
-			as3vector1d<as3double> SourceFrequencyParam;
-			// Periodic source varying spatial center shift: (dx, dy).
-			as3vector1d<as3double> SourceTermCenterShift;
-			// Periodic source frequency exponent alpha: sin^alpha.
-			as3double SourceFrequencyExponent;
-			// Periodic source center fixed or not.
-			bool SourceTermCenterFixed;
+    as3double              MachInf;                           ///< Free-stream Mach number.
+    as3double              FlowAngle;                         ///< Free-stream flow angle w.r.t. x-direction (in degrees).
+    bool                   CrossFlow;                         ///< Option for the existence of cross(oblique)-flow.
+    
+    as3vector1d<as3double> CenterX0;                          ///< Disturbance source center.
+    as3double              DisturbanceRatio;                  ///< Disturbance strength ratio w.r.t. background flow.
+    as3double              DisturbanceWidth;                  ///< Disturbance width.
+    as3double              Frequency;                         ///< Disturbance frequency [Hz].
+    as3double              AngularFrequency;                  ///< Disturbance angular frequency.
+    bool                   PeriodicPulse;                     ///< Option for using a periodic pulse disturbance.
+    bool                   ConstantFrequency;                 ///< Option for having a constant frequency in the disturbance.
+    bool                   AlignedPeriodicPulse;              ///< Option for having a periodic flow direction aligned with the flow.
+		as3vector1d<as3double> SourceFrequencyParam;              ///< Periodic source-term frequency paramters, based on: f = f0 * A^(t/tau).
+																															///< Dimension: [0]: A, [1]: tau. 
+		as3vector1d<as3double> SourceTermCenterShift;             ///< Periodic source-term varying spatial center shift values: (dx, dy).
+		as3double              SourceFrequencyExponent;           ///< Periodic source-term frequency amplitude alpha, such that: sin^alpha.
+		bool                   SourceTermCenterFixed;             ///< Option for a spatially fixed source term in a temporal perturbation.
 
-      // Name of type of BCs to modify per face.
-      as3vector1d<std::string> NameTypeModifyBC;
-      // Type of modified BC per face.
-      as3vector1d<unsigned short> TypeModifyBC;
-      // Angular frequency of modified BC of each working variable.
-      as3vector1d<as3double> ModifyFreqBC;
-      // Pulse spatial width of modified BC of each working variable.
-      as3vector1d<as3double> ModifyWidthBC;
-      // Pulse spatial amplitude w.r.t. background flow of modified BC of each working variable.
-      as3vector1d<as3double> ModifyStrengthBC;
-      // Pulse center(s) for BC modification.
-      as3vector1d<as3double> ModifyCenterBC;
-      // Pulse center(s) shoft for BC modification of each working variable.
-      as3vector1d<as3double> ModifyShiftCenterBC;
+    as3vector1d<std::string>    NameTypeModifyBC;             ///< Type of boundary conditions to modify per each face, string name.
+    as3vector1d<unsigned short> TypeModifyBC;                 ///< Type of boundary conditions to modify per each face.
+    as3vector1d<as3double>      ModifyFreqBC;                 ///< Angular frequency in the modified boundary condition term.
+    as3vector1d<as3double>      ModifyWidthBC;                ///< Pulse width in the modified boundary condition of each working variable.
+    as3vector1d<as3double>      ModifyStrengthBC;             ///< Pulse amplitude ratio w.r.t. background flow of the modified boundary condition of each working variable.
+    as3vector1d<as3double>      ModifyCenterBC;               ///< Pulse center location(s) in the modified boundary conditions.
+    as3vector1d<as3double>      ModifyShiftCenterBC;          ///< Pulse center(s) shift in the modified boundary conditions.
 
-      // Type of buffer layer, string name.
-      as3vector1d<std::string> NameTypeBufferLayer;
-      // Type of buffer layer, enum values.
-      as3vector1d<unsigned short> TypeBufferLayer;
+    as3vector1d<std::string>    NameTypeBufferLayer;          ///< Type of buffer layer, string name.
+    as3vector1d<unsigned short> TypeBufferLayer;              ///< Type of buffer layer.
 
-      // Type of riemann solver selected, string name.
-      as3vector1d<std::string> NameRiemannSolver;
-      // Type of riemann solver, enum values.
-      as3vector1d<unsigned short> RiemannSolver;
+    as3vector1d<std::string>    NameRiemannSolver;            ///< Type of Riemann solver per each zone, string name.
+    as3vector1d<unsigned short> RiemannSolver;                ///< Type of Riemann solver per each zone.
 
-      // Type of boundary conditions, string name:
-      // ... indices: (SOUTH, NORTH, WEST, EAST).
-      as3vector1d<std::string> NameBoundaryCondition;
-      // Type of external boundary conditions over all zones:
-      // ... indices: (SOUTH, NORTH, WEST, EAST).
-      as3vector1d<unsigned short> TypeExternalBC;
-      // Type of boundary conditions per each zone.
-      // Dimension: [iZone][iBoundary], where iBoundary
-      // has indices: (SOUTH, NORTH, WEST, EAST).
-      as3vector2d<unsigned short> TypeBC;
-      // Interface ID for periodic/zonal interface boundaries.
-      // Dimension: [iZone][iBoundary][iData], with indices:
-      // [iData] = [0]: jZone, [1]: jFace.
-      as3vector3d<unsigned short> InterfaceID;
+    as3vector1d<std::string>    NameBoundaryCondition;        ///< Type of boundary conditions specified, string name.
+																															///< Format: (SOUTH, NORTH, WEST, EAST).
+    as3vector1d<unsigned short> TypeExternalBC;               ///< Type of external or terminating boundary conditions over all zones.
+																															///< Format: (SOUTH, NORTH, WEST, EAST).
+    as3vector2d<unsigned short> TypeBC;                       ///< Type of boundary conditions per each zone per each face.
+																															///< Dimension: [iZone][iBoundary], where iBoundary has indices: (SOUTH, NORTH, WEST, EAST).
+    as3vector3d<unsigned short> InterfaceID;                  ///< Interface ID for periodic/zonal interface boundaries.
+																															///< Dimension: [iZone][iBoundary][iData], with indices: [iData] = [0]: jZone, [1]: jFace.
 
-      // Relaxation parameters in the case of an outlet NSCBC.
-      // Dimension: [0]: sigma, [1]: beta_l, [2]: beta_t, [3]: len, [4]: eta.
-      as3vector1d<as3double> ParamOutletNSCBC;
-      // Relaxation parameters in the case of an inlet NSCBC.
-      // Dimension: [0]: sigma, [1]: beta_t, [2]: len, [3]: eta.
-      as3vector1d<as3double> ParamInletNSCBC;
+    as3vector1d<as3double> ParamOutletNSCBC;                  ///< Relaxation parameters in the case of an outlet NSCBC.
+																															///< Dimension: [0]: sigma, [1]: beta_l, [2]: beta_t, [3]: len, [4]: eta.
+    as3vector1d<as3double> ParamInletNSCBC;                   ///< Relaxation parameters in the case of an inlet NSCBC.
+																															///< Dimension: [0]: sigma, [1]: len. 
+		bool                   InletNRBC;                         ///< Option for using a non-reflective NSCBC inlet (NRBC).
 
-      // Sponge-layer damping exponential coefficient.
-      as3vector1d<as3double> DampingExponent;
-      // Sponge-layer damping constant.
-      as3vector1d<as3double> DampingConstant;
-
-      // Artificial-convection constant (max Mach number at boundary).
-      as3vector1d<as3double> ArtificialConvectionConstant;
-      // Artificial-convection exponent.
-      as3vector1d<as3double> ArtificialConvectionExponent;
-      // Artificial-convection used.
-      as3vector1d<bool> ArtificialConvection;
-
-      // Function that maps TypeZoneData from string to enum.
-      void MapTypeZoneData(void);
-      // Function that maps TypeDOFs from string to enum.
-      void MapTypeDOFs(void);
-      // Function that maps TypeZone from string to enum.
-      void MapTypeZone(void);
-      // Function that maps RiemannSolver from string to enum.
-      void MapRiemannSolver(void);
-      // Function that maps TemporalScheme from string to enum.
-      void MapTemporalScheme(void);
-      // Function that maps TypeIC from string to enum.
-      void MapTypeIC(void);
-      // Function that maps TypeExternalBC from string to enum.
-      void MapTypeExternalBC(void);
-      // Function that maps TypeProcessData from string to enum.
-      void MapTypeProcessData(void);
-      // Function that maps TypeFilterSolution from string to enum.
-      void MapTypeFilterSolution(void);
-      // Function that maps TypeBufferLayer from string to enum.
-      void MapTypeBufferLayer(void);
-      // Function that maps TypeModifyBC from string to enum.
-      void MapTypeModifyBC(void);
-
-      // Function that determines the multizone strategy adopted.
-      void DetermineMultizoneStrategy(void);
-      // Function that checks the element ratios specified according
-      // to specified multizone strategy.
-      void CheckElementRatio(void);
-      // Function that processes the zone conformity in the specified elements.
-      void ProcessZoneConformity(void);
-      // Function that processes the boundary conditions per each zone.
-      void ProcessBoundaryConditions(void);
-      // Function that matches each iZone iBoundary with its
-      // counterpart in jZone jBoundary.
-      as3vector1d<unsigned short> MatchInterface(unsigned short iZone,
-                                                 unsigned short iFace);
+    as3vector1d<as3double> DampingExponent;                   ///< Sponge-layer damping exponential coefficient(s).
+    as3vector1d<as3double> DampingConstant;                   ///< Sponge-layer damping constant coefficient(s).
 
 
-      // Function that reads the Integration rule data.
-      void ReadIntegrationRuleOptions(const char *configFile);
-      // Function that reads the filtering data.
-      void ReadFilteringOptions(const char *configFile);
-      // Function that reads the buffer-layer data.
-      void ReadBufferLayerOptions(const char *configFile);
-      // Function that reads the boundary conditions data.
-      void ReadBoundaryConditionOptions(const char *configFile);
-      // Function that reads the sponge-damping data.
-      void ReadSpongeDampingOptions(const char *configFile);
-      // Function that reads the grid-stretching data.
-      void ReadGridStretchingOptions(const char *configFile);
-      // Function that reads the artificial-convection data.
-      void ReadArtificialConvectionOptions(const char *configFile);
-      // Function that reads the NSCBC data.
-      void ReadCharacteristicBoundaryOptions(const char *configFile);
+    as3vector1d<bool>      CharacteristicMatching;            ///< Option for using a characteristic matching layer.
+    as3vector1d<as3double> CharacteristicExponent;            ///< Characteristic matching layer exponential coefficient(s).
+    as3vector1d<as3double> CharacteristicConstant;            ///< Characteristic matching layer constant coefficient(s).
 
-      // Function that reads grid options.
-      bool ReadGridOptions(const char *configFile);
-      // Function that reads input/output options.
-  		bool ReadIOOptions(const char *configFile);
-  		// Function that reads solver options.
-  		bool ReadSolverOptions(const char *configFile);
-  		// Function that reads boundary options.
-  		bool ReadBoundaryOptions(const char *configFile);
-  		// Function that reads temporal options.
-  		bool ReadTemporalOptions(const char *configFile);
-  		// Function that reads initial condition options.
-  		bool ReadICOptions(const char *configFile);
-      // Function that reads flow characteristics options.
-      bool ReadFlowOptions(const char *configFile);
-      // Function that reads processing information.
-      bool ReadProcessingOptions(const char *configFile);
-      // Function that reads modified boundary condition information.
-      bool ReadModifiedBCOptions(const char *configFile);
+    as3vector1d<as3double> ArtificialConvectionConstant;      ///< Artificial-convection constant coefficient(s) (max Mach at boundary).
+    as3vector1d<as3double> ArtificialConvectionExponent;      ///< Artificial-convection exponential coefficient(s).
+    as3vector1d<bool>      ArtificialConvection;              ///< Option for using an artificial-convection (supersonic) layer.
+
+		/*!
+		 * @brief Function that maps TypeZoneData from string to enum.
+		 */
+    void MapTypeZoneData(void);
+    /*!
+		 * @brief Function that maps TypeDOFs from string to enum.
+		 */
+    void MapTypeDOFs(void);
+    /*!
+		 * @brief Function that maps NameMarkerZoneData from string to enum.
+		 */
+    void MapTypeZone(void);
+    /*!
+		 * @brief Function that maps RiemannSolver from string to enum.
+		 */
+    void MapRiemannSolver(void);
+    /*!
+		 * @brief Function that maps TemporalScheme from string to enum.
+		 */
+    void MapTemporalScheme(void);
+    /*!
+		 * @brief Function that maps TypeIC from string to enum.
+		 */
+    void MapTypeIC(void);
+    /*!
+		 * @brief Function that maps TypeExternalBC from string to enum.
+		 */
+    void MapTypeExternalBC(void);
+    /*!
+		 * @brief Function that maps TypeProcessData from string to enum.
+		 */
+    void MapTypeProcessData(void);
+    /*!
+		 * @brief Function that maps TypeFilterSolution from string to enum.
+		 */
+    void MapTypeFilterSolution(void);
+    /*!
+		 * @brief Function that maps TypeBufferLayer from string to enum.
+		 */
+    void MapTypeBufferLayer(void);
+    /*!
+		 * @brief Function that maps TypeModifyBC from string to enum.
+		 */
+    void MapTypeModifyBC(void);
+		/*!
+		 * @brief Function that maps NameMarkerSampleSurface from string to enum.
+		 */
+		void MapSampleDataBoundaryID(void);
+		/*!
+		 * @brief Function that maps NameFileFormatVTK from string to enum.
+		 */
+		void MapTypeFileFormatVTK(void);
+		/*!
+		 * @brief Function that maps NameFileFormatSolution from string to enum.
+		 */
+		void MapTypeFileFormatSolution(void);
+		/*!
+		 * @brief Function that maps NameFileFormatZone from string to enum.
+		 */
+		void MapTypeFileFormatZone(void);
+		/*!
+		 * @brief Function that maps ProbeVariable from string to enum.
+		 */
+		void MapTypeProbeVariable(void);
+		// Function that maps NameFileFormatProcessedProbed from string to enum.
+		void MapTypeFileFormatProcessedProbed(void);
+		// Function that maps NameProcessLocation from string to enum.
+		void MapTypeProcessLocation(void);
+		// Function that maps NameOutputVTKVariable from string to enum.
+		void MapTypeOutputVTKVariable(void);
+
+    /*!
+		 * @brief Function that determines the multizone strategy adopted.
+		 */
+    void DetermineMultizoneStrategy(void);
+    /*!
+		 * @brief Function that checks the element ratios specified according to specified multizone strategy.
+		 */
+    void CheckElementRatio(void);
+    /*!
+		 * @brief Function that processes the zone conformity in the specified elements.
+		 */
+    void ProcessZoneConformity(void);
+    /*!
+		 * @brief Function that processes the boundary conditions per each zone.
+		 */
+    void ProcessBoundaryConditions(void);
+    /*!
+		 * @brief Function that matches each iZone iBoundary with its counterpart in jZone jBoundary.
+		 *
+		 * @param[in] iZone zone ID.
+		 * @param[in] iFace boundary/face ID.
+		 *
+		 * @return the corresponding matching face which interconnects the zones and boundaries.
+		 */
+    as3vector1d<unsigned short> MatchInterface(unsigned short iZone,
+                                               unsigned short iFace);
+
+    /*!
+		 * @brief Function that reads the Integration rule data.
+		 *
+		 * @param[in] configFile input configuration/dictionary file. 
+		 */
+    void ReadIntegrationRuleOptions(const char *configFile);
+    /*!
+		 * @brief Function that reads the filtering data.
+		 *
+		 * @param[in] configFile input configuration/dictionary file.
+		 */
+    void ReadFilteringOptions(const char *configFile);
+    /*!
+		 * @brief Function that reads the buffer-layer data.
+		 *
+		 * @param[in] configFile input configuration/dictionary file.
+		 */
+    void ReadBufferLayerOptions(const char *configFile);
+    /*!
+		 * @brief Function that reads the boundary conditions data.
+		 *
+		 * @param[in] configFile input configuration/dictionary file.
+		 */
+    void ReadBoundaryConditionOptions(const char *configFile);
+    /*!
+		 * @brief Function that reads the sponge-damping data.
+		 *
+		 * @param[in] configFile input configuration/dictionary file.
+		 */
+    void ReadSpongeDampingOptions(const char *configFile);
+    /*!
+		 * @brief Function that reads the grid-stretching data.
+		 *
+		 * @param[in] configFile input configuration/dictionary file.
+		 */
+    void ReadGridStretchingOptions(const char *configFile);
+    /*! @brief Function that reads the artificial-convection data.
+		 *
+		 * @param[in] configFile input configuration/dictionary file.
+		 */
+    void ReadArtificialConvectionOptions(const char *configFile);
+    /*!
+		 * @brief Function that reads the NSCBC data.
+		 *
+		 * @param[in] configFile input configuration/dictionary file.
+		 */
+    void ReadCharacteristicBoundaryOptions(const char *configFile);
+		/*!
+		 * @brief Function that reads the characteristic layer data.
+		 *
+		 * @param[in] configFile input configuration/dictionary file.
+		 */
+		void ReadCharacteristicLayerOptions(const char *configFile);
+
+    /*!
+		 * @brief Function that reads grid options.
+		 *
+		 * @return bool whether operation failed/succeeded.
+		 */
+    bool ReadGridOptions(const char *configFile);
+    /*!
+		 * @brief Function that reads input/output options.
+		 *
+		 * @return bool whether operation failed/succeeded.
+		 */
+  	bool ReadIOOptions(const char *configFile);
+  	/*!
+		 * @brief Function that reads solver options.
+		 *
+		 * @return bool whether operation failed/succeeded.
+		 */
+  	bool ReadSolverOptions(const char *configFile);
+  	/*!
+		 * @brief Function that reads boundary options.
+		 *
+		 * @return bool whether operation failed/succeeded.
+		 */
+  	bool ReadBoundaryOptions(const char *configFile);
+  	/*!
+		 * @brief Function that reads temporal options.
+		 *
+		 * @return bool whether operation failed/succeeded.
+		 */
+  	bool ReadTemporalOptions(const char *configFile);
+  	/*!
+		 * @brief Function that reads initial condition options.
+		 *
+		 * @return bool whether operation failed/succeeded.
+		 */
+  	bool ReadICOptions(const char *configFile);
+    /*!
+		 * @brief Function that reads flow characteristics options.
+		 *
+		 * @return bool whether operation failed/succeeded.
+		 */
+    bool ReadFlowOptions(const char *configFile);
+    /*!
+		 * @brief Function that reads processing information.
+		 *
+		 * @return bool whether operation failed/succeeded.
+		 */
+    bool ReadProcessingOptions(const char *configFile);
+    /*!
+		 * @brief Function that reads modified boundary condition information.
+		 *
+		 * @return bool whether operation failed/succeeded.
+		 */
+    bool ReadModifiedBCOptions(const char *configFile);
 };
 
 

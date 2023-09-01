@@ -1,5 +1,10 @@
 #pragma once
 
+/*!
+ * @file boundary_structure.hpp
+ * @brief The file containing all the boundary condition information.
+ */
+
 #include "option_structure.hpp"
 #include "config_structure.hpp"
 #include "geometry_structure.hpp"
@@ -12,11 +17,22 @@
 class CSolver;
 class CInitial;
 
-
+/*!
+ * @brief A class used as an interface for different boundary conditions.
+ */
 class CBoundary {
 
 	public:
-		// Constructor.
+		/*!
+		 * @brief Default constructor of CBoundary, which initializes a generic boundary interface.
+		 *
+		 * @param[in] config_container pointer to input configuration/dictionary file.
+		 * @param[in] geometry_container pointer to the geometry container.
+		 * @param[in] initial_container pointer to the current zone initial condition container.
+		 * @param[in] element_container pointer to input standard element container.
+		 * @param[in] iZone current zone ID.
+		 * @param[in] iBoundary current boundary ID.
+		 */
 		CBoundary(CConfig       *config_container,
 							CGeometry     *geometry_container,
               CInitial      *initial_container,
@@ -24,11 +40,29 @@ class CBoundary {
 							unsigned short iZone,
 							unsigned short iBoundary);
 
-		// Destructor.
+		/*!
+		 * @brief Destructor, which frees any allocated memory.
+		 */
 		virtual ~CBoundary(void);
 
-    // Pure virtual function that applies the boundary condition.
-    // Must be overriden by a derived class.
+		/*!
+		 * @brief Getter function which returns the value of ElemIndexI.
+		 *
+		 * @return ElemIndexI
+		 */
+		const as3vector1d<unsigned long> &GetElemIndexI(void) const {return ElemIndexI;}
+
+    /*!
+		 * @brief Pure virtual function that applies the boundary condition. 
+		 * Must be overriden by a derived class.
+		 *
+		 * @param[in] config_container pointer to the configuration/dictionary file.
+		 * @param[in] geometry_container pointer to the geometry container.
+		 * @param[in] solver_container pointer to the solver container.
+		 * @param[in] element_container pointer to the standard element container.
+		 * @param[in] spatial_container pointer to the spatial container.
+		 * @param[in] localTime current physical time.
+		 */
     virtual void ImposeBoundaryCondition(CConfig    *config_container,
                                          CGeometry  *geometry_container,
                                          CSolver   **solver_container,
@@ -37,35 +71,41 @@ class CBoundary {
                                          as3double   localTime) = 0;
 
 	protected:
-		// Zone ID.
-		unsigned short zoneID;
-		// Boundary ID.
-		unsigned short boundaryID;
-    // Type of zone.
-    unsigned short typeZone;
-    // Number of solution nodes in 1D in this zone.
-    unsigned short nDOFsSol1D;
-    // Number of integration nodes in 1D in this zone.
-		unsigned short nDOFsInt1D;
-    // Unit-normal on this boundary.
-    as3vector1d<as3double> UnitNormal;
+		unsigned short             zoneID;      ///< Zone ID of this boundary.
+		unsigned short             boundaryID;  ///< Current boundary ID.
+    unsigned short             typeZone;    ///< Type of zone containing this boundary.
+    unsigned short             nDOFsSol1D;  ///< Number of solution DOFs in 1D on this boundary.
+		unsigned short             nDOFsInt1D;  ///< Number of integration points in 1D on this boundary.
+    as3vector1d<as3double>     UnitNormal;  ///< Unit-normal of this boundary.
 
-    // Kronecker-delta used in the formulation of the normal/transverse terms.
-    as3double KronDelta11; // i.e. ||nx|| = 1,   ny   = 0.
-    as3double KronDelta22; // i.e.   nx   = 0, ||ny|| = 1.
+    as3double                  KronDelta11; ///< Kronecker-delta used in the formulation of the NSCBC normal/transverse terms.
+																						///< This coefficient (11) implies: ||nx|| = 1,   ny   = 0.
+    as3double                  KronDelta22; ///< Kronecker-delta used in the formulation of the NSCBC normal/transverse terms.
+																						///< This coefficient (22) implies:   nx   = 0, ||ny|| = 1.
 
-    // Element indices that share this boundary.
-    as3vector1d<unsigned long> ElemIndexI;
+    as3vector1d<unsigned long> ElemIndexI;  ///< Vector containing all the element indices that share this boundary.
 
 	private:
 
 };
 
 
+/*!
+ * @brief A generic class used for implementing different Euler-equation (EE) boundary conditions.
+ */
 class CEEBoundary : public CBoundary {
 
 	public:
-		// Constructor.
+		/*!
+		 * @brief Default constructor of CEEBoundary, which initializes a generic Euler-equation (EE) boundary.
+		 *
+		 * @param[in] config_container pointer to input configuration/dictionary file.
+		 * @param[in] geometry_container pointer to the geometry container.
+		 * @param[in] initial_container pointer to the current zone initial condition container.
+		 * @param[in] element_container pointer to input standard element container.
+		 * @param[in] iZone current zone ID.
+		 * @param[in] iBoundary current boundary ID.
+		 */	
 		CEEBoundary(CConfig       *config_container,
 								CGeometry     *geometry_container,
                 CInitial      *initial_container,
@@ -73,23 +113,30 @@ class CEEBoundary : public CBoundary {
 								unsigned short iZone,
 								unsigned short iBoundary);
 
-		// Destructor.
+		/*!
+		 * @brief Destructor, which frees any allocated memory.
+		 */
 		virtual ~CEEBoundary(void) override;
 
   protected:
-  // Prescribed data on this boundary at integration points.
-  // Dimension: [iElem][iVar][iNode].
-  as3data2d<as3double> DataDOFsIntBoundary;
+  as3data2d<as3double> DataDOFsIntBoundary; ///< Prescribed data on this boundary, at the integration points (1D).
+																						///< Dimension: [iElem][iVar][iNode].
+  as3data2d<as3double> OrigDOFsIntBoundary; ///< Prescribed original data on this boundary, at integration points (1D).
+																						///< Note, this is only used in case a modified boundary condition is specified.
+																						///< Dimension: [iElem][iVar][iNode].
+  as3data2d<as3double> GridDOFsIntBoundary; ///< Coordinates of integration points (1D) on this boundary.
+																						///< Dimension: [iElem][iDim][iNode].
 
-  // Prescribed original data on this boundary at integration points.
-  // Dimension: [iElem][iVar][iNode].
-  as3data2d<as3double> OrigDOFsIntBoundary;
-
-  // Coordinates on this boundary at integration points.
-  // Dimension: [iElem][iDim][iNode].
-  as3data2d<as3double> GridDOFsIntBoundary;
-
-  // Function that initializes and computes the target-state at the boundary.
+  /*!
+	 * @brief Function that initializes and computes the target-state at the boundary.
+	 *
+	 * @param[in] config_container pointer to input configuration/dictionary file.
+	 * @param[in] geometry_container pointer to the geometry container.
+	 * @param[in] element_container pointer to current zone standard element container.
+	 * @param[in] initial_container pointer to the current zone initial condition container.
+	 * @param[in] iZone current zone ID.
+	 * @param[in] iBoundary current boundary ID.
+	 */
   void InitializePrescribedState(CConfig       *config_container,
                                  CGeometry     *geometry_container,
                                  CElement      *element_container,
@@ -97,16 +144,34 @@ class CEEBoundary : public CBoundary {
                                  unsigned short iZone,
                                  unsigned short iBoundary);
 
-  // Function that initializes the modified prescribed boundary condition data.
-  void InitializeModifiedBC(CConfig       *config_container,
+  /*!
+	 * @brief Function that initializes the modified prescribed boundary condition data.
+	 *
+	 * @param[in] config_container pointer to input configuration/dictionary file.
+	 * @param[in] geometry_container pointer to the geometry container.
+	 * @param[in] element_container pointer to current zone standard element container.
+	 * @param[in] initial_container pointer to the current zone initial condition container.
+	 * @param[in] iZone current zone ID.
+	 * @param[in] iBoundary current boundary ID.
+	 */ 
+	void InitializeModifiedBC(CConfig       *config_container,
                             CGeometry     *geometry_container,
                             CElement      *element_container,
                             CInitial      *initial_container,
                             unsigned short iZone,
                             unsigned short iBoundary);
 
-  // Function that modifies the boundary condition.
-  void ModifyBoundaryCondition(CConfig    *config_container,
+  /*!
+	 * @brief Function that modifies the boundary condition.
+	 *
+	 * @param[in] config_container pointer to input configuration/dictionary file.
+	 * @param[in] geometry_container pointer to the geometry container.
+	 * @param[in] solver_container pointer to the current zone solver container.
+	 * @param[in] element_container pointer to the current zone standard element container.
+	 * @param[in] spatial_container pointer to the currrent zone spatial container.
+	 * @param[in] localTime current physical time.
+	 */ 
+	void ModifyBoundaryCondition(CConfig    *config_container,
                                CGeometry  *geometry_container,
                                CSolver    *solver_container,
                                CElement   *element_container,
@@ -118,10 +183,22 @@ class CEEBoundary : public CBoundary {
 };
 
 
+/*!
+ * @brief A class used for implementing interface/periodic boundary conditions.
+ */
 class CEEInterfaceBoundary : public CEEBoundary {
 
 	public:
-		// Constructor.
+		/*!
+		 * @brief Default constructor of CEEInterfaceBoundary, which initializes an interface BC.
+		 *
+		 * @param[in] config_container pointer to input configuration/dictionary file.
+		 * @param[in] geometry_container pointer to the geometry container.
+		 * @param[in] initial_container pointer to the current zone initial condition container.
+		 * @param[in] element_container pointer to input standard element container.
+		 * @param[in] iZone current zone ID.
+		 * @param[in] iBoundary current boundary ID.
+		 */	
 		CEEInterfaceBoundary(CConfig       *config_container,
 												 CGeometry     *geometry_container,
                          CInitial      *initial_container,
@@ -129,43 +206,60 @@ class CEEInterfaceBoundary : public CEEBoundary {
 												 unsigned short iZone,
 												 unsigned short iBoundary);
 
-		// Destructor.
-		~CEEInterfaceBoundary(void) override;
+		/*!
+		 * @brief Destructor, which frees any allocated memory.
+		 */	
+		~CEEInterfaceBoundary(void) final;
 
-    // Function that applies an interface boundary condition.
+    /*!
+		 * @brief Function that applies an interface boundary condition.
+		 *
+		 * @param[in] config_container pointer to the configuration/dictionary file.
+		 * @param[in] geometry_container pointer to the geometry container.
+		 * @param[in] solver_container pointer to the solver container.
+		 * @param[in] element_container pointer to the standard element container.
+		 * @param[in] spatial_container pointer to the spatial container.
+		 * @param[in] localTime current physical time.
+		 */
     void ImposeBoundaryCondition(CConfig    *config_container,
                                  CGeometry  *geometry_container,
                                  CSolver   **solver_container,
                                  CElement  **element_container,
                                  CSpatial  **spatial_container,
-                                 as3double   localTime) override;
+                                 as3double   localTime) final;
 	protected:
-		// Matching zone ID.
-		unsigned short zoneMatchID;
-		// Boundary match ID.
-		unsigned short boundaryMatchID;
-    // Type of zone for matching zone ID.
-    unsigned short typeZoneMatch;
-    // Number of solution nodes in 1D in the matching zone.
-    unsigned short nDOFsSol1DMatch;
-
-    // Element indices that share the matching boundary.
-    as3vector1d<unsigned long> ElemIndexJ;
-
-    // Lagrange polynomials in 1D(transposed): interpolates from
-    // SolDOFs of the matching zone to IntDOFs of this current zone.
-    as3double *lagrangeIntExt1DTranspose = nullptr;
+		unsigned short             zoneMatchID;                         ///< Matching zone ID.
+		unsigned short             boundaryMatchID;                     ///< Matching boundary ID.
+    unsigned short             typeZoneMatch;                       ///< Type of zone that is coupled to this one through this interface boundary.
+    unsigned short             nDOFsSol1DMatch;                     ///< Number of solution DOFs in 1D in the matching zone.
+    as3vector1d<unsigned long> ElemIndexJ;                          ///< Element indices that share the matching boundary in the matching zone.
+    as3double                 *lagrangeIntExt1DTranspose = nullptr; ///< Lagrange polynomial in 1D (transposed), whih interpolates from solution to integration points in 1D.
+																																		///< Note, the solution DOFs belong to this zone and the integration points are that of the matching zone.
 
 	private:
-    // Function that reports information on this boundary.
+    /*!
+		 * @brief Function that reports information on this boundary.
+		 */
     void ReportOutput(void);
 };
 
 
+/*!
+ * @brief A class used for implementing symmetry boundary conditions.
+ */
 class CEESymmetryBoundary : public CEEBoundary {
 
 	public:
-		// Constructor.
+		/*!
+		 * @brief Default constructor of CEESymmetryBoundary, which initializes a symmetry BC.
+		 *
+		 * @param[in] config_container pointer to input configuration/dictionary file.
+		 * @param[in] geometry_container pointer to the geometry container.
+		 * @param[in] initial_container pointer to the current zone initial condition container.
+		 * @param[in] element_container pointer to input standard element container.
+		 * @param[in] iZone current zone ID.
+		 * @param[in] iBoundary current boundary ID.
+		 */
 		CEESymmetryBoundary(CConfig       *config_container,
 												CGeometry     *geometry_container,
                         CInitial      *initial_container,
@@ -173,11 +267,22 @@ class CEESymmetryBoundary : public CEEBoundary {
 												unsigned short iZone,
 												unsigned short iBoundary);
 
-		// Destructor.
+		/*!
+		 * @brief Destructor, which frees any allocated memory.
+		 */	
 		~CEESymmetryBoundary(void) final;
 
-    // Function that applies a symmetry boundary condition.
-    void ImposeBoundaryCondition(CConfig    *config_container,
+    /*!
+		 * @brief Function that applies a symmetry boundary condition.
+		 *
+		 * @param[in] config_container pointer to the configuration/dictionary file.
+		 * @param[in] geometry_container pointer to the geometry container.
+		 * @param[in] solver_container pointer to the solver container.
+		 * @param[in] element_container pointer to the standard element container.
+		 * @param[in] spatial_container pointer to the spatial container.
+		 * @param[in] localTime current physical time.
+		 */   
+		void ImposeBoundaryCondition(CConfig    *config_container,
                                  CGeometry  *geometry_container,
                                  CSolver   **solver_container,
                                  CElement  **element_container,
@@ -190,10 +295,22 @@ class CEESymmetryBoundary : public CEEBoundary {
 };
 
 
+/*!
+ * @brief A class used for implementing Riemann-extrapolation static outlet boundary conditions.
+ */
 class CEEStaticOutletBoundary : public CEEBoundary {
 
 	public:
-		// Constructor.
+		/*!
+		 * @brief Default constructor of CEEStaticOutletBoundary, which initializes a Riemann-extrapolation static outlet BC.
+		 *
+		 * @param[in] config_container pointer to input configuration/dictionary file.
+		 * @param[in] geometry_container pointer to the geometry container.
+		 * @param[in] initial_container pointer to the current zone initial condition container.
+		 * @param[in] element_container pointer to input standard element container.
+		 * @param[in] iZone current zone ID.
+		 * @param[in] iBoundary current boundary ID.
+		 */
 		CEEStaticOutletBoundary(CConfig       *config_container,
     											  CGeometry     *geometry_container,
                             CInitial      *initial_container,
@@ -201,11 +318,22 @@ class CEEStaticOutletBoundary : public CEEBoundary {
     											  unsigned short iZone,
     											  unsigned short iBoundary);
 
-		// Destructor.
+		/*!
+		 * @brief Destructor, which frees any allocated memory.
+		 */	
 		~CEEStaticOutletBoundary(void) final;
 
-    // Function that applies a subsonic static-based inlet boundary condition.
-    void ImposeBoundaryCondition(CConfig    *config_container,
+    /*!
+		 * @brief Function that applies a subsonic Riemann-extrapolation static outlet boundary condition.
+		 *
+		 * @param[in] config_container pointer to the configuration/dictionary file.
+		 * @param[in] geometry_container pointer to the geometry container.
+		 * @param[in] solver_container pointer to the solver container.
+		 * @param[in] element_container pointer to the standard element container.
+		 * @param[in] spatial_container pointer to the spatial container.
+		 * @param[in] localTime current physical time.
+		 */    
+		void ImposeBoundaryCondition(CConfig    *config_container,
                                  CGeometry  *geometry_container,
                                  CSolver   **solver_container,
                                  CElement  **element_container,
@@ -217,10 +345,22 @@ class CEEStaticOutletBoundary : public CEEBoundary {
 };
 
 
+/*!
+ * @brief A class used for implementing supersonic outlet boundary conditions.
+ */
 class CEESupersonicOutletBoundary : public CEEBoundary {
 
 	public:
-		// Constructor.
+		/*!
+		 * @brief Default constructor of CEESupersonicOutletBoundary, which initializes a supersonic outlet BC.
+		 *
+		 * @param[in] config_container pointer to input configuration/dictionary file.
+		 * @param[in] geometry_container pointer to the geometry container.
+		 * @param[in] initial_container pointer to the current zone initial condition container.
+		 * @param[in] element_container pointer to input standard element container.
+		 * @param[in] iZone current zone ID.
+		 * @param[in] iBoundary current boundary ID.
+		 */
 		CEESupersonicOutletBoundary(CConfig       *config_container,
         											  CGeometry     *geometry_container,
                                 CInitial      *initial_container,
@@ -228,10 +368,21 @@ class CEESupersonicOutletBoundary : public CEEBoundary {
         											  unsigned short iZone,
         											  unsigned short iBoundary);
 
-		// Destructor.
+		/*!
+		 * @brief Destructor, which frees any allocated memory.
+		 */	
 		~CEESupersonicOutletBoundary(void) final;
 
-    // Function that applies a supersonic outlet boundary condition.
+    /*!
+		 * @brief Function that applies a supersonic outlet boundary condition.
+		 *
+		 * @param[in] config_container pointer to the configuration/dictionary file.
+		 * @param[in] geometry_container pointer to the geometry container.
+		 * @param[in] solver_container pointer to the solver container.
+		 * @param[in] element_container pointer to the standard element container.
+		 * @param[in] spatial_container pointer to the spatial container.
+		 * @param[in] localTime current physical time.
+		 */
     void ImposeBoundaryCondition(CConfig    *config_container,
                                  CGeometry  *geometry_container,
                                  CSolver   **solver_container,
@@ -245,10 +396,22 @@ class CEESupersonicOutletBoundary : public CEEBoundary {
 };
 
 
+/*!
+ * @brief A class used for implementing Riemann-extrapolation static inlet boundary conditions.
+ */
 class CEEStaticInletBoundary : public CEEBoundary {
 
 	public:
-		// Constructor.
+		/*!
+		 * @brief Default constructor of CEEStaticInletBoundary, which initializes a Riemann-extrapolation static inlet BC.
+		 *
+		 * @param[in] config_container pointer to input configuration/dictionary file.
+		 * @param[in] geometry_container pointer to the geometry container.
+		 * @param[in] initial_container pointer to the current zone initial condition container.
+		 * @param[in] element_container pointer to input standard element container.
+		 * @param[in] iZone current zone ID.
+		 * @param[in] iBoundary current boundary ID.
+		 */
 		CEEStaticInletBoundary(CConfig       *config_container,
     											 CGeometry     *geometry_container,
                            CInitial      *initial_container,
@@ -256,10 +419,21 @@ class CEEStaticInletBoundary : public CEEBoundary {
     											 unsigned short iZone,
     											 unsigned short iBoundary);
 
-		// Destructor.
+		/*!
+		 * @brief Destructor, which frees any allocated memory.
+		 */		
 		~CEEStaticInletBoundary(void) final;
 
-    // Function that applies a subsonic static-based inlet boundary condition.
+    /*!
+		 * @brief Function that applies a subsonic Riemann-extrapolation static inlet boundary condition.
+		 *
+		 * @param[in] config_container pointer to the configuration/dictionary file.
+		 * @param[in] geometry_container pointer to the geometry container.
+		 * @param[in] solver_container pointer to the solver container.
+		 * @param[in] element_container pointer to the standard element container.
+		 * @param[in] spatial_container pointer to the spatial container.
+		 * @param[in] localTime current physical time.
+		 */
     void ImposeBoundaryCondition(CConfig    *config_container,
                                  CGeometry  *geometry_container,
                                  CSolver   **solver_container,
@@ -273,10 +447,22 @@ class CEEStaticInletBoundary : public CEEBoundary {
 };
 
 
+/*!
+ * @brief A class used for implementing Riemann-extrapolation total/stagnation inlet boundary conditions.
+ */
 class CEETotalInletBoundary : public CEEBoundary {
 
 	public:
-		// Constructor.
+		/*!
+		 * @brief Default constructor of CEETotalInletBoundary, which initializes a Riemann-extrapolation total/stagnation inlet BC.
+		 *
+		 * @param[in] config_container pointer to input configuration/dictionary file.
+		 * @param[in] geometry_container pointer to the geometry container.
+		 * @param[in] initial_container pointer to the current zone initial condition container.
+		 * @param[in] element_container pointer to input standard element container.
+		 * @param[in] iZone current zone ID.
+		 * @param[in] iBoundary current boundary ID.
+		 */
 		CEETotalInletBoundary(CConfig       *config_container,
   											  CGeometry     *geometry_container,
                           CInitial      *initial_container,
@@ -284,10 +470,21 @@ class CEETotalInletBoundary : public CEEBoundary {
   											  unsigned short iZone,
   											  unsigned short iBoundary);
 
-		// Destructor.
+		/*!
+		 * @brief Destructor, which frees any allocated memory.
+		 */		
 		~CEETotalInletBoundary(void) final;
 
-    // Function that applies a subsonic total-condition inlet boundary condition.
+    /*!
+		 * @brief Function that applies a subsonic Riemann-extrapolation total/stagnation inlet boundary condition.
+		 *
+		 * @param[in] config_container pointer to the configuration/dictionary file.
+		 * @param[in] geometry_container pointer to the geometry container.
+		 * @param[in] solver_container pointer to the solver container.
+		 * @param[in] element_container pointer to the standard element container.
+		 * @param[in] spatial_container pointer to the spatial container.
+		 * @param[in] localTime current physical time.
+		 */
     void ImposeBoundaryCondition(CConfig    *config_container,
                                  CGeometry  *geometry_container,
                                  CSolver   **solver_container,
@@ -297,19 +494,28 @@ class CEETotalInletBoundary : public CEEBoundary {
 	protected:
 
 	private:
-    // Flow direction.
-    as3double udir;
-    as3double vdir;
-
-    // Dot product between the normal and velocity direction.
-    as3double alpha;
+    as3double udir;  ///< Flow direction, x-component.
+    as3double vdir;  ///< Flow direction, y-component.
+    as3double alpha; ///< Dot product between the normal and velocity direction.
 };
 
 
+/*!
+ * @brief A class used for implementing supersonic inlet boundary conditions.
+ */
 class CEESupersonicInletBoundary : public CEEBoundary {
 
 	public:
-		// Constructor.
+		/*!
+		 * @brief Default constructor of CEESupersonicInletBoundary, which initializes a supersonic inlet BC.
+		 *
+		 * @param[in] config_container pointer to input configuration/dictionary file.
+		 * @param[in] geometry_container pointer to the geometry container.
+		 * @param[in] initial_container pointer to the current zone initial condition container.
+		 * @param[in] element_container pointer to input standard element container.
+		 * @param[in] iZone current zone ID.
+		 * @param[in] iBoundary current boundary ID.
+		 */	
 		CEESupersonicInletBoundary(CConfig       *config_container,
         											 CGeometry     *geometry_container,
                                CInitial      *initial_container,
@@ -317,11 +523,22 @@ class CEESupersonicInletBoundary : public CEEBoundary {
         											 unsigned short iZone,
         											 unsigned short iBoundary);
 
-		// Destructor.
+		/*!
+		 * @brief Destructor, which frees any allocated memory.
+		 */		
 		~CEESupersonicInletBoundary(void) final;
 
-    // Function that applies a supersonic inlet boundary condition.
-    void ImposeBoundaryCondition(CConfig    *config_container,
+    /*!
+		 * @brief Function that applies a supersonic inlet boundary condition.
+		 *
+ 		 * @param[in] config_container pointer to the configuration/dictionary file.
+		 * @param[in] geometry_container pointer to the geometry container.
+		 * @param[in] solver_container pointer to the solver container.
+		 * @param[in] element_container pointer to the standard element container.
+		 * @param[in] spatial_container pointer to the spatial container.
+		 * @param[in] localTime current physical time.
+		 */
+		void ImposeBoundaryCondition(CConfig    *config_container,
                                  CGeometry  *geometry_container,
                                  CSolver   **solver_container,
                                  CElement  **element_container,
@@ -334,48 +551,71 @@ class CEESupersonicInletBoundary : public CEEBoundary {
 };
 
 
+/*!
+ * @brief A generic class used for implementing characteristic boundary conditions.
+ */
 class CEECharacteristicBoundary : public CEEBoundary {
 
   public:
-    // Constructor.
-    CEECharacteristicBoundary(CConfig       *config_container,
+ 		/*!
+		 * @brief Default constructor of CEECharacteristicBoundary, which initializes a generic NSCBC.
+		 *
+		 * @param[in] config_container pointer to input configuration/dictionary file.
+		 * @param[in] geometry_container pointer to the geometry container.
+		 * @param[in] initial_container pointer to the current zone initial condition container.
+		 * @param[in] element_container pointer to input standard element container.
+		 * @param[in] iZone current zone ID.
+		 * @param[in] iBoundary current boundary ID.
+		 */	
+		CEECharacteristicBoundary(CConfig       *config_container,
                               CGeometry     *geometry_container,
                               CInitial      *initial_container,
                               CElement     **element_container,
                               unsigned short iZone,
                               unsigned short iBoundary);
 
-    // Destructor.
+		/*!
+		 * @brief Destructor, which frees any allocated memory.
+		 */		
     ~CEECharacteristicBoundary(void) override;
 
   protected:
-    // Number of data values in the working array.
-    // Data: sol, dSolDx, dSolDy.
-    unsigned short nData = 3;
-    // Working data.
-    // Dimension: [iData][iVar][iInt1D].
-    as3data2d<as3double> WorkingDataInt1D;
+    unsigned short       nData = 3;         ///< Number of data values in the working array. Data: sol, dSolDx, dSolDy.
+    as3data2d<as3double> WorkingDataInt1D;  ///< Working data variables at integration points (1D).
+																					  ///< Dimension: [iData][iVar][iInt1D].
 
-    // Least-squares matrix used in the PC-formulation, referred to as C.
-    as3double *MatrixC = nullptr;
-    // Normal Lagrange gradient 1D coefficient.
-    as3double Coef_dell;
+    as3double           *MatrixC = nullptr; ///< Least-squares matrix used in the PC-formulation, referred to as C.
+    as3double            Coef_dell;         ///< Coefficient of the normal Lagrange gradient in 1D.
 
-    // Index of the incoming acoustic wave.
-    unsigned short PsiIndex;
-    // Indices used to identify the normal gradient on this boundary.
-    unsigned short IndexNormal;
-    // Indices used to identify the transverse gradient on this boundary.
-    unsigned short IndexTransverse;
+    unsigned short       PsiIndex;          ///< Index of the incoming acoustic wave.
+    unsigned short       IndexNormal;       ///< Indices used to identify the normal gradient on this boundary.
+    unsigned short       IndexTransverse;   ///< Indices used to identify the transverse gradient on this boundary.
 
-    // Safety-factor relaxation coefficient for the transverse terms.
-    as3double Coef_eta;
+    as3double            Coef_eta;          ///< Safety-factor relaxation coefficient for the transverse terms.
 
-    // Function that computes the average of the Mach number on each element boundary.
+    /*!
+		 * @brief Function that computes the average of the Mach number on each element boundary.
+		 *
+		 * @param[in] weights reference to the integration weights in 1D.
+		 * @param[in] Var pointer to the working variables on this boundary (1D).
+		 *
+		 * @return average of the Mach number on this element boundary surface.
+		 */
     as3double ComputeAverageMachLocal(const as3vector1d<as3double> &weights,
                                       as3double                   **Var);
 
-    // Function that computes the average of the Mach number on entire boundary.
+    /*!
+		 * @brief Function that computes the average of the Mach number on entire boundary.
+		 *
+		 * @param[in] geometry_zone pointer to the grid geometry in the current zone.
+		 * @param[in] data_container reference to the data container in this zone.
+		 * @param[in] weights reference to the integration weights in 1D.
+		 * @param[in] FaceIndexI reference to the indices of the solution DOFs on this boundary in 1D.
+		 * @param[in] ellT pointer to the transpose of the Lagrange interpolating polynomial in 1D.
+		 * @param[in] Var pointer to the working variables.
+		 *
+		 * @return average of the Mach number over this entire boundary.
+		 */
     as3double ComputeAverageMachGlobal(const CGeometryZone               *geometry_zone,
                                        const as3element                  &data_container,
                                        const as3vector1d<as3double>      &weights,
@@ -384,7 +624,14 @@ class CEECharacteristicBoundary : public CEEBoundary {
                                        as3double                        **Var);
 
 
-     // Function that computes the least-squares matrix needed in the NSCBC, if required.
+     /*!
+			* @brief Function that computes the least-squares matrix needed in the NSCBC, if required.
+			*
+			* @param[in] lagrangeInt1D pointer to the Lagrange interpolating polynomial in 1D.
+			* @param[in] lagrangeInt1DTranspose pointer to the transpose of the Lagrange interpolating polynomial in 1D.
+			* @param[in] dell coefficient of the derivative of the Lagrange polynomial acting on a boundary.
+			* @param[out] MatrixLeastSquares pointer to the least-squares matrix (C) that is computed. 
+			*/
      void ComputeLeastSquaresMatrix(const as3double *lagrangeInt1D,
                                     const as3double *lagrangeInt1DTranspose,
                                     const as3double  dell,
@@ -395,21 +642,44 @@ class CEECharacteristicBoundary : public CEEBoundary {
 };
 
 
+/*!
+ * @brief A class used for implementing characteristic static outlet boundary conditions.
+ */
 class CEEOutletCBC : public CEECharacteristicBoundary {
 
   public:
-    // Constructor.
-    CEEOutletCBC(CConfig       *config_container,
+ 		/*!
+		 * @brief Default constructor of CEEOutletCBC, which initializes a static outlet NSCBC.
+		 *
+		 * @param[in] config_container pointer to input configuration/dictionary file.
+		 * @param[in] geometry_container pointer to the geometry container.
+		 * @param[in] initial_container pointer to the current zone initial condition container.
+		 * @param[in] element_container pointer to input standard element container.
+		 * @param[in] iZone current zone ID.
+		 * @param[in] iBoundary current boundary ID.
+		 */   
+		CEEOutletCBC(CConfig       *config_container,
                  CGeometry     *geometry_container,
                  CInitial      *initial_container,
                  CElement     **element_container,
                  unsigned short iZone,
                  unsigned short iBoundary);
 
-    // Destructor.
-    ~CEEOutletCBC(void) final;
+ 		/*!
+		 * @brief Destructor, which frees any allocated memory.
+		 */		   
+		~CEEOutletCBC(void) final;
 
-    // Function that applies an outlet CBC boundary condition.
+    /*!
+		 * @brief Function that applies an outlet CBC boundary condition.
+		 *
+ 		 * @param[in] config_container pointer to the configuration/dictionary file.
+		 * @param[in] geometry_container pointer to the geometry container.
+		 * @param[in] solver_container pointer to the solver container.
+		 * @param[in] element_container pointer to the standard element container.
+		 * @param[in] spatial_container pointer to the spatial container.
+		 * @param[in] localTime current physical time.
+		 */
     void ImposeBoundaryCondition(CConfig    *config_container,
                                  CGeometry  *geometry_container,
                                  CSolver   **solver_container,
@@ -419,35 +689,82 @@ class CEEOutletCBC : public CEECharacteristicBoundary {
   protected:
 
   private:
-    // Condition for adaptive coupled-transverse term relaxation.
-    bool AdaptiveBeta_l;
-    // Condition for adaptive uncoupled-transverse term relaxation.
-    bool AdaptiveBeta_t;
-    // Relaxation coefficient for coupled transverse terms.
-    as3double beta_l; // eta*beta_l
-    // Relaxation coefficient for uncoupled transverse terms.
-    as3double beta_t; // eta*beta_t
-    // Relaxation coefficient for normal terms.
-    as3double coefK; // sigma/(2*len)
-
+    bool      AdaptiveBeta_l; ///< Option for adaptive coupled transverse term relaxation.
+    bool      AdaptiveBeta_t; ///< Option for adaptive uncoupled transverse term relaxation.
+    as3double beta_l;         ///< Relaxation coefficient for coupled transverse terms.
+    as3double beta_t;         ///< Relaxation coefficient for uncoupled transverse terms.
+    as3double coefK;          ///< Relaxation coefficient for normal terms, such that: coefK = sigma/(2*len).
 };
 
 
+/*!
+ * @brief An interface class used for implementing characteristic inlet boundary conditions.
+ */
 class CEEInletCBC : public CEECharacteristicBoundary {
 
   public:
-    // Constructor.
-    CEEInletCBC(CConfig       *config_container,
+ 		/*!
+		 * @brief Default constructor of CEEInletCBC, which initializes a generic inlet NSCBC.
+		 *
+		 * @param[in] config_container pointer to input configuration/dictionary file.
+		 * @param[in] geometry_container pointer to the geometry container.
+		 * @param[in] initial_container pointer to the current zone initial condition container.
+		 * @param[in] element_container pointer to input standard element container.
+		 * @param[in] iZone current zone ID.
+		 * @param[in] iBoundary current boundary ID.
+		 */   
+		CEEInletCBC(CConfig       *config_container,
                  CGeometry     *geometry_container,
                  CInitial      *initial_container,
                  CElement     **element_container,
                  unsigned short iZone,
                  unsigned short iBoundary);
 
-    // Destructor.
-    ~CEEInletCBC(void) final;
+ 		/*!
+		 * @brief Destructor, which frees any allocated memory.
+		 */
+    virtual ~CEEInletCBC(void) override;
+};
 
-    // Function that applies an inlet CBC boundary condition.
+
+/*!
+ * @brief A class used for implementing characteristic static inlet boundary conditions.
+ */
+class CEEStaticInletCBC : public CEEInletCBC {
+
+  public:
+ 		/*!
+		 * @brief Default constructor of CEEStaticInletCBC, which initializes a static inlet NSCBC.
+		 *
+		 * @param[in] config_container pointer to input configuration/dictionary file.
+		 * @param[in] geometry_container pointer to the geometry container.
+		 * @param[in] initial_container pointer to the current zone initial condition container.
+		 * @param[in] element_container pointer to input standard element container.
+		 * @param[in] iZone current zone ID.
+		 * @param[in] iBoundary current boundary ID.
+		 */   
+    CEEStaticInletCBC(CConfig       *config_container,
+                      CGeometry     *geometry_container,
+                      CInitial      *initial_container,
+                      CElement     **element_container,
+                      unsigned short iZone,
+                      unsigned short iBoundary);
+
+ 		/*!
+		 * @brief Destructor, which frees any allocated memory.
+		 */
+    ~CEEStaticInletCBC(void) final;
+
+    /*!
+		 * @brief Function that applies a static inlet characteristic boundary condition.
+		 *
+ 		 * @param[in] config_container pointer to the configuration/dictionary file.
+		 * @param[in] geometry_container pointer to the geometry container.
+		 * @param[in] solver_container pointer to the solver container.
+		 * @param[in] element_container pointer to the standard element container.
+		 * @param[in] spatial_container pointer to the spatial container.
+		 * @param[in] localTime current physical time.
+		 */
     void ImposeBoundaryCondition(CConfig    *config_container,
                                  CGeometry  *geometry_container,
                                  CSolver   **solver_container,
@@ -458,40 +775,62 @@ class CEEInletCBC : public CEECharacteristicBoundary {
   protected:
 
   private:
-    // Condition for adaptive uncoupled-transverse term relaxation.
-    bool AdaptiveBeta_t;
-    // Relaxation coefficient for uncoupled transverse terms.
-    as3double beta_t; // eta*beta_t
-    // Relaxation coefficient for normal acoustic terms.
-    as3double coefS; // sign(+,-)*sigma/(2*len)
-    // Relaxation coefficient for normal vorticity/entropy terms.
-    as3double coefE; // sigma/len
+    as3double coefS;  ///< Relaxation coefficient for normal acoustic terms.
+    as3double coefE;  ///< Relaxation coefficient for normal vorticity/entropy terms.
 };
 
 
+/*!
+ * @brief A class used for implementing characteristic total/stagnation inlet boundary conditions.
+ */
+class CEETotalInletCBC : public CEEInletCBC {
 
-class CEEPMLInterfaceBoundary : public CEEInterfaceBoundary {
+  public:
+ 		/*!
+		 * @brief Default constructor of CEETotalInletCBC, which initializes a total/stagnation inlet NSCBC.
+		 *
+		 * @param[in] config_container pointer to input configuration/dictionary file.
+		 * @param[in] geometry_container pointer to the geometry container.
+		 * @param[in] initial_container pointer to the current zone initial condition container.
+		 * @param[in] element_container pointer to input standard element container.
+		 * @param[in] iZone current zone ID.
+		 * @param[in] iBoundary current boundary ID.
+		 */ 
+    CEETotalInletCBC(CConfig       *config_container,
+                     CGeometry     *geometry_container,
+                     CInitial      *initial_container,
+                     CElement     **element_container,
+                     unsigned short iZone,
+                     unsigned short iBoundary);
 
-	public:
-		// Constructor.
-		CEEPMLInterfaceBoundary(CConfig       *config_container,
-  												  CGeometry     *geometry_container,
-                            CInitial      *initial_container,
-  												  CElement     **element_container,
-  												  unsigned short iZone,
-  												  unsigned short iBoundary);
+ 		/*!
+		 * @brief Destructor, which frees any allocated memory.
+		 */
+    ~CEETotalInletCBC(void) final;
 
-		// Destructor.
-		~CEEPMLInterfaceBoundary(void) final;
-
-    // Function that applies a PML interface boundary condition.
+    /*!
+		 * @brief Function that applies a total/stagnation inlet characteristic boundary condition.
+		 *
+ 		 * @param[in] config_container pointer to the configuration/dictionary file.
+		 * @param[in] geometry_container pointer to the geometry container.
+		 * @param[in] solver_container pointer to the solver container.
+		 * @param[in] element_container pointer to the standard element container.
+		 * @param[in] spatial_container pointer to the spatial container.
+		 * @param[in] localTime current physical time.
+		 */
     void ImposeBoundaryCondition(CConfig    *config_container,
                                  CGeometry  *geometry_container,
                                  CSolver   **solver_container,
                                  CElement  **element_container,
                                  CSpatial  **spatial_container,
                                  as3double   localTime) final;
-	protected:
 
-	private:
+  protected:
+
+  private:
+    as3double      coefK;     ///< Relaxation coefficient for normal acoustic terms.
+		unsigned short PhiIndex;  ///< Outgoing acoustic index.
 };
+
+
+

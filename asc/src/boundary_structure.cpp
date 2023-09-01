@@ -1145,8 +1145,8 @@ CEETotalInletBoundary::CEETotalInletBoundary
                          iZone, iBoundary);
 
   // Extract reference data needed.
-  const as3double uInf = initial_container->GetVelocityNormal();
-  const as3double vInf = initial_container->GetVelocityTransverse();
+  const as3double uInf = initial_container->GetUinf();
+  const as3double vInf = initial_container->GetVinf();
 
   // Determine velocity magnitude and its inverse.
   const as3double umag   = sqrt( uInf*uInf + vInf*vInf );
@@ -1595,7 +1595,6 @@ as3double CEECharacteristicBoundary::ComputeAverageMachLocal
   as3double Mavg = 0.0;
 
   // Loop over all integration points on the surface.
-#pragma omp simd
   for(unsigned short l=0; l<nDOFsInt1D; l++){
 
     // Extract primitive data.
@@ -1712,21 +1711,19 @@ CEEOutletCBC::CEEOutletCBC
   // Extract tuning paramers.
   auto& ParamTuning = config_container->GetParamOutletNSCBC();
 
-  // Extract the normalized length scale.
-  const as3double lenInv = 1.0/ParamTuning[3];
   // Transverse safety-factor coefficient.
   Coef_eta       = ParamTuning[4];
   // Check if the coupled transverse terms are adaptive or not.
-  AdaptiveBeta_l = ( ParamTuning[1] < 0 ) ? true : false;
+  AdaptiveBeta_l = ( ParamTuning[1] < -1.0e-10 ) ? true : false;
   // Check if the uncoupled transverse terms are adaptive or not.
-  AdaptiveBeta_t = ( ParamTuning[2] < 0 ) ? true : false;
+  AdaptiveBeta_t = ( ParamTuning[2] < -1.0e-10 ) ? true : false;
 
   // Coupled transverse term relaxation coefficient.
   beta_l  = Coef_eta*ParamTuning[1];
   // Uncoupled transverse term relaxation coefficient.
   beta_t  = Coef_eta*ParamTuning[2];
   // Normal term relaxation coefficient.
-  coefK   = 0.5*lenInv*ParamTuning[0];
+  coefK   = 0.5*ParamTuning[0]/ParamTuning[3];
 }
 
 
@@ -1879,7 +1876,7 @@ void CEEOutletCBC::ImposeBoundaryCondition
       const as3double ovrhoa = ovrho*ova;
 
       // Reserve memory for the wave amplitudes.
-      as3double vecL[nVar], vecLt[nVar], vecT[nVar];
+      as3double vecL[nVar], vecLt[nVar], vecTt[nVar];
 
       // Select the velocity component in the normal direction.
       const as3double un = d11*u + d22*v;
@@ -1912,15 +1909,15 @@ void CEEOutletCBC::ImposeBoundaryCondition
 
       // Step 4b: compute the coupled transverse wave-amplitudes.
       vecLt[0] = 0.5*ut*( ovrhoa*dpdt - dundt  );
-      vecLt[1] =     ut*( d11*dsdt + d22*dutdt );
-      vecLt[2] =     ut*( d11*dutdt + d22*dsdt );
+      //vecLt[1] =     ut*( d11*dsdt + d22*dutdt );
+      //vecLt[2] =     ut*( d11*dutdt + d22*dsdt );
       vecLt[3] = 0.5*ut*( ovrhoa*dpdt + dundt  );
 
       // Step 4c: compute the uncoupled transverse wave-amplitudes.
-      vecT[0] =    -0.5*a*dutdt;
-      vecT[1] = -d22*ovrho*dpdt;
-      vecT[2] = -d11*ovrho*dpdt;
-      vecT[3] =         vecT[0];
+      vecTt[0] =    -0.5*a*dutdt;
+      //vecTt[1] = -d22*ovrho*dpdt;
+      //vecTt[2] = -d11*ovrho*dpdt;
+      vecTt[3] =         vecTt[0];
 
       // Extract reference data needed.
       const as3double pInf = DataDOFsIntBoundary[i][3][l];
@@ -1928,7 +1925,7 @@ void CEEOutletCBC::ImposeBoundaryCondition
       // Step 5: apply boundary condition through incoming acoustic wave-amplitude.
       vecL[PsiIndex] = coefK*ovrho*omM2*( p - pInf )
                      - beta_l*vecLt[PsiIndex]
-                     + beta_t*vecT[PsiIndex];
+                     + beta_t*vecTt[PsiIndex];
 
       // More abbvreviations.
       const as3double rhoa   = rho*a;
@@ -2022,27 +2019,6 @@ CEEInletCBC::CEEInletCBC
                          element_container[iZone],
                          initial_container,
                          iZone, iBoundary);
-
-  // Extract tuning paramers.
-  auto& ParamTuning = config_container->GetParamInletNSCBC();
-
-  // Extract the normalized length scale.
-  const as3double lenInv = 1.0/ParamTuning[2];
-  // Transverse safety-factor coefficient.
-  Coef_eta       = ParamTuning[3];
-  // Check if the uncoupled transverse terms are adaptive or not.
-  AdaptiveBeta_t = ( ParamTuning[1] < 0 ) ? true : false;
-
-  // Transverse term relaxation coefficient.
-  beta_t = Coef_eta*ParamTuning[1];
-  // Normal acoustic term relaxation coefficient.
-  coefS  = 0.5*lenInv*ParamTuning[0];
-  // Normal vorticity/entropy term relaxation coefficient.
-  coefE  = lenInv*ParamTuning[0];
-
-  // Account for -ve sign, in case this is a max boundary face. The reason is
-  // due to (ovrhoa*dp +/- du), if it is -ve, then account for that.
-  if( PsiIndex == 0 ) coefS *= -1.0;
 }
 
 
@@ -2058,7 +2034,56 @@ CEEInletCBC::~CEEInletCBC
 }
 
 
-void CEEInletCBC::ImposeBoundaryCondition
+CEEStaticInletCBC::CEEStaticInletCBC
+(
+ CConfig       *config_container,
+ CGeometry     *geometry_container,
+ CInitial      *initial_container,
+ CElement     **element_container,
+ unsigned short iZone,
+ unsigned short iBoundary
+)
+	:
+		CEEInletCBC
+		(
+		 config_container,
+		 geometry_container,
+     initial_container,
+		 element_container,
+		 iZone,
+		 iBoundary
+		)
+ /*
+	* Constructor, used to initialize CEEStaticInletCBC per zone: iZone.
+	*/
+{
+  // Extract tuning paramers.
+  auto& ParamTuning = config_container->GetParamInletNSCBC();
+
+  // Normal acoustic term relaxation coefficient.
+  coefS  = 0.5*ParamTuning[0]/ParamTuning[1];
+  // Normal vorticity/entropy term relaxation coefficient.
+  coefE  =     ParamTuning[0]/ParamTuning[1];
+
+  // Account for -ve sign, in case this is a max boundary face. The reason is
+  // due to (ovrhoa*dp +/- du), if it is -ve, then account for that.
+  if( PsiIndex == 0 ) coefS *= -1.0;
+}
+
+
+CEEStaticInletCBC::~CEEStaticInletCBC
+(
+ void
+)
+ /*
+	* Destructor for CEEStaticInletCBC class, frees allocated memory.
+	*/
+{
+
+}
+
+
+void CEEStaticInletCBC::ImposeBoundaryCondition
 (
  CConfig    *config_container,
  CGeometry  *geometry_container,
@@ -2068,7 +2093,7 @@ void CEEInletCBC::ImposeBoundaryCondition
  as3double   localTime
 )
  /*
-	* Function that imposes the current inlet CBC boundary condition.
+	* Function that imposes the current static inlet CBC boundary condition.
 	*/
 {
   // Some abbreviations.
@@ -2115,8 +2140,6 @@ void CEEInletCBC::ImposeBoundaryCondition
                                                   weights, FaceIndexI, ellT, Var);
   // Abbreviation involving Mavg.
   const as3double omM2 = 1.0 - Mavg*Mavg;
-  // Override relaxation term specification, if specified.
-  if( AdaptiveBeta_t ) beta_t = Coef_eta*Mavg;
 
   // Loop over all elements on this boundary.
   for(unsigned long i=0; i<ElemIndexI.size(); i++){
@@ -2129,9 +2152,8 @@ void CEEInletCBC::ImposeBoundaryCondition
     // Extract element sizes explicitly.
     const as3double hx = ElemSize[0];
     const as3double hy = ElemSize[1];
-    // Compute Jacobians on this element in normal and transverse terms.
+    // Compute Jacobian on this element in normal direction.
     const as3double Jn = d11*(2.0/hx) + d22*(2.0/hy);
-    const as3double Jt = d11*(2.0/hy) + d22*(2.0/hx);
 
     // Abbreviation for inverse of normal Jacobian component.
     const as3double ovJn = 1.0/Jn;
@@ -2152,13 +2174,12 @@ void CEEInletCBC::ImposeBoundaryCondition
                                 WorkingDataInt1D[1].data(),
                                 WorkingDataInt1D[2].data());
 
-    // Step 1b: convert the parametric gradients into physical space.
-    for(unsigned short iVar=0; iVar<nVar; iVar++){
+    // Step 1b: convert the parametric gradients into Cartesian coordinates
+		// for only the normal components.
+    for(unsigned short iVar=0; iVar<nVar; iVar++)
+		{
 #pragma omp simd
-      for(unsigned short l=0; l<nDOFsInt1D; l++){
-        dVarDn[iVar][l] *= Jn;
-        dVarDt[iVar][l] *= Jt;
-      }
+      for(unsigned short l=0; l<nDOFsInt1D; l++) dVarDn[iVar][l] *= Jn;
     }
 
     // Loop over all the integration points living on this element face.
@@ -2187,15 +2208,6 @@ void CEEInletCBC::ImposeBoundaryCondition
       										 -        v*dVarDn[2][l]
       										 +          dVarDn[3][l] );
 
-      // Step 3b: compute the primitive gradient from conservative in transverse direction.
-      const as3double drdt = dVarDt[0][l];
-      const as3double dudt = ovrho*( dVarDt[1][l] - u*drdt );
-      const as3double dvdt = ovrho*( dVarDt[2][l] - v*drdt );
-      const as3double dpdt = gm1*( ek*dVarDt[0][l]
-                           -  		  u*dVarDt[1][l]
-                           -        v*dVarDt[2][l]
-                           +          dVarDt[3][l] );
-
       // Compute the local speed of sound and its square.
       const as3double a2 = GAMMA*p*ovrho;
       const as3double a  = sqrt(a2);
@@ -2207,41 +2219,30 @@ void CEEInletCBC::ImposeBoundaryCondition
       // const as3double rrova2 = GAS_CONSTANT*rho*ova2;
 
       // Reserve memory for the wave amplitudes.
-      as3double vecL[nVar], vecT[nVar];
+      as3double vecL[] = { 0.0, 0.0, 0.0, 0.0 };
 
       // Select the velocity component in the normal direction.
-      const as3double un = d11*u + d22*v;
-      // Select the velocity component in the transverse direction.
-      const as3double ut = d22*u + d11*v;
+      const as3double un    = d11*u + d22*v;
       // Select the derivative w.r.t. normal direction of the normal velocity component.
       const as3double dundn = d11*dudn + d22*dvdn;
-      // Select the derivative w.r.t. transverse direction of the normal velocity component.
-      const as3double dundt = d11*dudt + d22*dvdt;
       // Select the derivative w.r.t. normal direction of the transverse velocity component.
       const as3double dutdn = d11*dvdn + d22*dudn;
-      // Select the derivative w.r.t. transverse direction of the transverse velocity component.
-      const as3double dutdt = d11*dvdt + d22*dudt;
       // Compute entropy change in the normal direction.
       const as3double dsdn  = drdn - ova2*dpdn;
-      // Compute entropy change in the transverse direction.
-      const as3double dsdt  = drdt - ova2*dpdt;
 
       // Compute the eigenvalues in the normal direction.
       const as3double lmb1 = un - a;
       const as3double lmb2 = un;
       const as3double lmb3 = un + a;
 
-      // Step 4a: compute the normal wave-amplitudes.
-      vecL[0] = 0.5*lmb1*( ovrhoa*dpdn - dundn  );
-      vecL[1] =     lmb2*( d11*dsdn + d22*dutdn );
-      vecL[2] =     lmb2*( d11*dutdn + d22*dsdn );
-      vecL[3] = 0.5*lmb3*( ovrhoa*dpdn + dundn  );
-
-      // Step 4b: compute the coupled transverse wave-amplitudes.
-      vecT[0] = 0.5*ut*( ovrhoa*dpdt - dundt  ) +    0.5*a*dutdt;
-      vecT[1] =     ut*( d11*dsdt + d22*dutdt ) + d22*ovrho*dpdt;
-      vecT[2] =     ut*( d11*dutdt + d22*dsdt ) + d11*ovrho*dpdt;
-      vecT[3] = 0.5*ut*( ovrhoa*dpdt + dundt  ) +    0.5*a*dutdt;
+      // Compute the normal wave-amplitudes.
+			if( !config_container->GetInletNRBC() )
+			{
+				vecL[0] = 0.5*lmb1*( ovrhoa*dpdn - dundn  );
+      	//vecL[1] =     lmb2*( d11*dsdn + d22*dutdn );
+      	//vecL[2] =     lmb2*( d11*dutdn + d22*dsdn );
+      	vecL[3] = 0.5*lmb3*( ovrhoa*dpdn + dundn  );
+			}
 
       // Extract reference data needed.
       const as3double rhoInf = DataDOFsIntBoundary[i][0][l];
@@ -2252,20 +2253,15 @@ void CEEInletCBC::ImposeBoundaryCondition
       // const as3double Tinf   = pInf*ovrg/rhoInf;
 
       // Step 5a: apply boundary condition through incoming acoustic wave-amplitude.
-      vecL[PsiIndex] = coefS*a*omM2*( d11*(u - uInf) + d22*(v - vInf) )
-                     - beta_t*vecT[PsiIndex];
+      vecL[PsiIndex] = coefS*a*omM2*( d11*(u - uInf) + d22*(v - vInf) );
 
       // Step 5b: apply boundary condition through incoming entropy/vorticity wave-amplitude.
-      // vecL[1] = coefE*a*( -d11*rrova2*(T - Tinf) + d22*(u - uInf) )
-      //         - beta_t*vecT[1];
-      vecL[1] = coefE*a*( d11*(rho - rhoInf) + d22*(u - uInf) )
-              - beta_t*vecT[1];
+      // vecL[1] = coefE*a*( -d11*rrova2*(T - Tinf) + d22*(u - uInf) );
+      vecL[1] = coefE*a*( d11*(rho - rhoInf) + d22*(u - uInf) );
 
       // Step 5c: apply boundary condition through incoming entropy/vorticity wave-amplitude.
-      // vecL[2] = coefE*a*( d11*(v - vInf) - d22*rrova2*(T - Tinf) )
-      //         - beta_t*vecT[2];
-      vecL[2] = coefE*a*( d11*(v - vInf) + d22*(rho - rhoInf) )
-              - beta_t*vecT[2];
+      // vecL[2] = coefE*a*( d11*(v - vInf) - d22*rrova2*(T - Tinf) );
+      vecL[2] = coefE*a*( d11*(v - vInf) + d22*(rho - rhoInf) );
 
       // More abbvreviations.
       const as3double rhoa   = rho*a;
@@ -2327,7 +2323,8 @@ void CEEInletCBC::ImposeBoundaryCondition
 }
 
 
-CEEPMLInterfaceBoundary::CEEPMLInterfaceBoundary
+
+CEETotalInletCBC::CEETotalInletCBC
 (
  CConfig       *config_container,
  CGeometry     *geometry_container,
@@ -2337,7 +2334,7 @@ CEEPMLInterfaceBoundary::CEEPMLInterfaceBoundary
  unsigned short iBoundary
 )
 	:
-		CEEInterfaceBoundary
+		CEEInletCBC
 		(
 		 config_container,
 		 geometry_container,
@@ -2347,26 +2344,33 @@ CEEPMLInterfaceBoundary::CEEPMLInterfaceBoundary
 		 iBoundary
 		)
  /*
-	* Constructor, used to initialize CEEPMLInterfaceBoundary per zone: iZone.
+	* Constructor, used to initialize CEETotalInletCBC per zone: iZone.
 	*/
 {
+  // Extract tuning paramers.
+  auto& ParamTuning = config_container->GetParamInletNSCBC();
 
+  // Normal acoustic term relaxation coefficient.
+  coefK = -ParamTuning[0]/ParamTuning[1];
+
+	// Deduce the outgoing acoustic index.
+  if( PsiIndex == 0 ) PhiIndex = 3; else PhiIndex = 0;
 }
 
 
-CEEPMLInterfaceBoundary::~CEEPMLInterfaceBoundary
+CEETotalInletCBC::~CEETotalInletCBC
 (
  void
 )
  /*
-	* Destructor for CEEPMLInterfaceBoundary class, frees allocated memory.
+	* Destructor for CEETotalInletCBC class, frees allocated memory.
 	*/
 {
 
 }
 
 
-void CEEPMLInterfaceBoundary::ImposeBoundaryCondition
+void CEETotalInletCBC::ImposeBoundaryCondition
 (
  CConfig    *config_container,
  CGeometry  *geometry_container,
@@ -2376,36 +2380,310 @@ void CEEPMLInterfaceBoundary::ImposeBoundaryCondition
  as3double   localTime
 )
  /*
-	* Function that imposes the current PML interface boundary condition.
+	* Function that imposes the current total inlet CBC boundary condition.
 	*/
 {
+  // Some abbreviations.
+  const as3double gm1    = GAMMA_MINUS_ONE;
+  const as3double ovgm1  = 1.0/GAMMA_MINUS_ONE;
+  const as3double ovrg   = 1.0/GAS_CONSTANT;
+  const as3double ovcp   = 1.0/CP_CONSTANT;
+	const as3double govgm1 = GAMMA*ovgm1;
+
+  // If this boundary condition needs modification, do so.
+  if( OrigDOFsIntBoundary.size() )
+    ModifyBoundaryCondition(config_container,
+                            geometry_container,
+                            solver_container[zoneID],
+                            element_container[zoneID],
+                            spatial_container[zoneID],
+                            localTime);
+
+  // Geometry in current zone.
+  auto* geometry_zone = geometry_container->GetGeometryZone(zoneID);
+
   // Get data of current zone.
   auto& dataI = solver_container[zoneID]->GetDataContainer();
-  // Get data of matching zone.
-  auto& dataJ = solver_container[zoneMatchID]->GetDataContainer();
-  // Get the indicial number for the solution on the matching zone and face.
-  auto& FaceIndexJ = element_container[zoneMatchID]->GetIndexDOFsSol(boundaryMatchID);
+  // Get the indicial number for the solution in each element sharing this face.
+  auto& FaceIndexI = element_container[zoneID]->GetIndexDOFsSol(boundaryID);
+  // Get the 1D lagrange interpolation operator.
+  auto* ellT    = element_container[zoneID]->GetLagrangeInt1DTranspose();
+  // Get the 1D differentiation lagrange operator.
+  auto* dellT   = element_container[zoneID]->GetDerLagrangeInt1DTranspose();
+  // Get the 1D surface differentiation operator.
+  auto* dellS   = element_container[zoneID]->GetDerLagrangeDOFsSol1DFace(boundaryID);
+  // Get the integration weights in 1D.
+  auto& weights = element_container[zoneID]->GetwDOFsInt1D();
 
-  // Loop over all elements sharing this boundary.
+  // Abbreviations.
+  const as3double d11  = KronDelta11;
+  const as3double d22  = KronDelta22;
+
+  // Assign the correct indices of the working array w.r.t. the boundary orientation.
+  as3double **Var    = WorkingDataInt1D[0].data();
+  as3double **dVarDn = WorkingDataInt1D[IndexNormal].data();
+  as3double **dVarDt = WorkingDataInt1D[IndexTransverse].data();
+
+  // Loop over all elements on this boundary.
   for(unsigned long i=0; i<ElemIndexI.size(); i++){
 
-    // Deduce current element index.
+    // Deduce current element global index.
     unsigned long iElem = ElemIndexI[i];
-    // Deduce matching element index.
-    unsigned long jElem = ElemIndexJ[i];
 
-    // Extract current element integration points of the current boundary.
+    // Extract current element size.
+    auto ElemSize = geometry_zone->GetGeometryElem(iElem)->GetElemSize();
+    // Extract element sizes explicitly.
+    const as3double hx = ElemSize[0];
+    const as3double hy = ElemSize[1];
+    // Compute Jacobian on this element in normal direction.
+    const as3double Jn = d11*(2.0/hx) + d22*(2.0/hy);
+
+    // Abbreviation for inverse of normal Jacobian component.
+    const as3double ovJn = 1.0/Jn;
+    // Include the normal gradient with metric.
+    const as3double dell = Coef_dell*Jn;
+
+    // Step 0a: extract current element integration points of the current boundary.
+    auto& dataSolI = dataI[iElem]->GetDataDOFsSol();
+    // Step 0b: extract current element integration points of the current boundary.
     auto& dataIntI = dataI[iElem]->GetDataDOFsIntFace(boundaryID);
-    // Extract matching element's solution.
-    auto& dataSolJ = dataJ[jElem]->GetDataDOFsSol();
 
-    // Interpolate matching solution to current element's integration
-    // points of the current boundary.
-    TensorProductSolAndGradFace(boundaryMatchID, nDOFsInt1D, nVar, nDOFsSol1DMatch,
-                                FaceIndexJ.data(), lagrangeIntExt1DTranspose,
-                                nullptr, nullptr,
-                                dataSolJ.data(), dataIntI.data(),
-                                nullptr, nullptr);
+    // Step 1a: compute the data and the gradients at the integration points.
+    // Note, these are in parametric coordinates.
+    TensorProductSolAndGradFace(boundaryID, nDOFsInt1D, nVar, nDOFsSol1D,
+                                FaceIndexI.data(),
+                                ellT, dellT, dellS,
+                                dataSolI.data(), WorkingDataInt1D[0].data(),
+                                WorkingDataInt1D[1].data(),
+                                WorkingDataInt1D[2].data());
+
+    // Step 1b: convert the normal parametric gradients into Cartesian coordinates.
+    for(unsigned short iVar=0; iVar<nVar; iVar++)
+		{
+#pragma omp simd
+      for(unsigned short l=0; l<nDOFsInt1D; l++) dVarDn[iVar][l] *= Jn;
+    }
+
+		// Extract the reference flow angle in degrees.
+		const as3double theta = config_container->GetFlowAngle();
+		// Deduce the sin of the angle in radians.
+		const as3double sinthetaInf = sin( theta*PI_CONSTANT/180.0 );
+    
+		// Loop over all the integration points living on this element face.
+#pragma omp simd
+    for(unsigned short l=0; l<nDOFsInt1D; l++){
+
+      // Extract reference data needed.
+      const as3double R0   = DataDOFsIntBoundary[i][0][l];
+      const as3double U0   = DataDOFsIntBoundary[i][1][l];
+      const as3double V0   = DataDOFsIntBoundary[i][2][l];
+      const as3double P0   = DataDOFsIntBoundary[i][3][l];
+
+      // Abbreviation: 1/rho.
+      const as3double OVR0 = 1.0/R0;
+      // Deduce reference temperature.
+      const as3double T0   = P0*ovrg/R0;
+      // Deduce reference magnitude of the velocity squared.
+      const as3double UM02 = U0*U0 + V0*V0;;
+      // Deduce reference speed-of-sound squared.
+      const as3double C02  = GAMMA*P0*OVR0;
+      // Deduce reference Mach number squared.
+      const as3double M02  = UM02/C02;
+
+      // Abbreviation.
+      const as3double gg = 1.0 + 0.5*gm1*M02;
+
+      // Compute total pressure and temperature needed.
+      const as3double PtInf = P0*pow(gg, govgm1);
+      const as3double TtInf = T0*gg;
+
+
+      // Step 2: compute the primitive variables.
+      const as3double rho   = Var[0][l];
+      const as3double ovrho = 1.0/rho;
+      const as3double u     = ovrho*Var[1][l];
+      const as3double v     = ovrho*Var[2][l];
+      const as3double p     = gm1*(Var[3][l]
+                            - 0.5*(u*Var[1][l] + v*Var[2][l]) );
+
+    	// Kinetic energy.
+    	const as3double ek = 0.5*(u*u + v*v);
+
+      // Step 3a: compute the primitive gradient from conservative in normal direction.
+      const as3double drdn = dVarDn[0][l];
+      const as3double dudn = ovrho*( dVarDn[1][l] - u*drdn);
+    	const as3double dvdn = ovrho*( dVarDn[2][l] - v*drdn);
+    	const as3double dpdn = gm1*( ek*dVarDn[0][l]
+      										 -  		  u*dVarDn[1][l]
+      										 -        v*dVarDn[2][l]
+      										 +          dVarDn[3][l] );
+
+			// Compute the local speed of sound and its square.
+      const as3double a2 = GAMMA*p*ovrho;
+      const as3double a  = sqrt(a2);
+
+      // Some abbreviations.
+      const as3double ova    = 1.0/a;
+      const as3double ova2   = ova*ova;
+      const as3double ovrhoa = ovrho*ova;
+      // const as3double rrova2 = GAS_CONSTANT*rho*ova2;
+
+
+      // Reserve memory for the wave amplitudes.
+      as3double vecL[] = { 0.0, 0.0, 0.0, 0.0 };
+
+      // Select the velocity component in the normal direction.
+      const as3double un    = d11*u + d22*v;
+      // Select the derivative w.r.t. normal direction of the normal velocity component.
+      const as3double dundn = d11*dudn + d22*dvdn;
+      // Select the derivative w.r.t. normal direction of the transverse velocity component.
+      const as3double dutdn = d11*dvdn + d22*dudn;
+      // Compute entropy change in the normal direction.
+      const as3double dsdn  = drdn - ova2*dpdn;
+
+      // Compute the eigenvalues in the normal direction.
+      const as3double lmb1 = un - a;
+      const as3double lmb2 = un;
+      const as3double lmb3 = un + a;
+
+      // Compute the normal wave-amplitudes.
+      if( !config_container->GetInletNRBC() )
+			{
+				vecL[0] = 0.5*lmb1*( ovrhoa*dpdn - dundn  );
+      	//vecL[1] =     lmb2*( d11*dsdn + d22*dutdn );
+      	//vecL[2] =     lmb2*( d11*dutdn + d22*dsdn );
+      	vecL[3] = 0.5*lmb3*( ovrhoa*dpdn + dundn  );
+			}
+
+			// Compute the magnitude of the velocity squared.
+			const as3double magu2 = 2.0*ek;
+			// Compute the magnitude of the velocity.
+			const as3double magu  = sqrt( magu2 );
+			// Compute the local Mach number squared.
+			const as3double M2    = magu2/a2;
+
+			// Abbreviation.
+      const as3double ff = 1.0 + 0.5*gm1*M2;
+
+			// Compute local temperature.
+			const as3double T = p*ovrg*ovrho;
+
+      // Compute local total pressure and temperature needed.
+      const as3double Pt = p*pow(ff, govgm1);
+      const as3double Tt = T*ff;
+
+			// Compute the local sin of the flow angle.
+			const as3double sintheta = v/magu; 
+		
+			// Compute the relaxed boundary variables.
+			const as3double dPt = coefK*a*( Pt       - PtInf );
+			const as3double dTt = coefK*a*( Tt       - TtInf );
+			const as3double dSt = coefK*a*( sintheta - sinthetaInf );
+
+			// Some useful abbreviations for the coefficients needed to solve
+			// the 3x3 system analytically.
+			const as3double PtovTt   = Pt/Tt;
+			const as3double ovrPtTt  = ovrg*PtovTt;
+			const as3double gplus    = gm1*ek*ova + u;
+			const as3double gminus   = gm1*ek*ova - u;
+			const as3double ovmagu2  = 1.0/magu2;
+			const as3double govaPt   = GAMMA*ova*Pt;
+			const as3double gm1ovaTt = gm1*ova*Tt;
+
+			const as3double A1 =  gplus*ovrPtTt  - govaPt;
+			const as3double A2 = -ovrg*ek*ovrho*PtovTt;
+			const as3double A3 = -ovrg*v*PtovTt;
+			const as3double A4 =  gminus*ovrPtTt - govaPt; 
+
+			const as3double B1 =  gplus*ovcp  - gm1ovaTt;
+			const as3double B2 =  Tt*ovrho - ovcp*ek*ovrho;
+			const as3double B3 = -ovcp*v;
+			const as3double B4 =  gminus*ovcp - gm1ovaTt;
+
+			const as3double C1 = -u*sintheta*ovmagu2;
+			const as3double C3 = (v*sintheta - magu)*ovmagu2;
+			const as3double C4 = -C1;
+
+			// Compute the right-hand side vector.
+			const as3double X1 = dPt - A1*vecL[PhiIndex];
+			const as3double X2 = dTt - B1*vecL[PhiIndex];
+			const as3double X3 = dSt - C1*vecL[PhiIndex];
+
+			const as3double ovC3 = 1.0/C3;
+
+			const as3double D0 =  X3*ovC3;
+			const as3double D4 = -C4*ovC3;
+
+			const as3double ovB2 = 1.0/B2;
+
+			const as3double E0 =  ( X2 - B3*D0 )*ovB2;
+			const as3double E4 = -( B4 + B3*D4 )*ovB2;
+
+			// Estimate the incoming acoustic wave amplitude.
+			vecL[PsiIndex] = ( X1 - A2*E0 - A3*D0 )/( A4 + A2*E4 + A3*D4 );
+
+			// Estimate the incoming vorticity wave amplitude.
+			vecL[2] = D0 + D4*vecL[PsiIndex];
+
+			// Estimate the incoming entropy wave amplitude.
+			vecL[1] = E0 + E4*vecL[PsiIndex];
+		
+			// More abbvreviations.
+      const as3double rhoa   = rho*a;
+      const as3double rhoova = rho*ova;
+      const as3double ovlmb1 = 1.0/lmb1;
+      const as3double ovlmb2 = ( fabs(lmb2) > EPS_VALUE ) ? 1.0/(lmb2 + EPS_VALUE) : 0.0;
+      const as3double ovlmb3 = 1.0/lmb3;
+
+      // Step 6: compute the primitive gradient from the normal wave-amplitude.
+      // Store this value inside the Var entry in the working array.
+
+      // First entry of the BC-imposed primitive gradient: drdn.
+      Var[0][l] =  ovlmb1*rhoova*vecL[0]
+                +  ovlmb2*(  d11*vecL[1]
+                +            d22*vecL[2] )
+                +  ovlmb3*rhoova*vecL[3];
+
+      // Second entry of the BC-imposed primitive gradient: dudn.
+      Var[1][l] = -ovlmb1*d11*vecL[0]
+                +  ovlmb2*d22*vecL[1]
+                +  ovlmb3*d11*vecL[3];
+
+      // Third entry of the BC-imposed primitive gradient: dvdn.
+      Var[2][l] = -ovlmb1*d22*vecL[0]
+                +  ovlmb2*d11*vecL[2]
+                +  ovlmb3*d22*vecL[3];
+
+      // Fourth entry of the BC-imposed primitive gradient: dpdn.
+      Var[3][l] =  ovlmb1*rhoa*vecL[0]
+                +  ovlmb3*rhoa*vecL[3];
+
+      // Step 7: compute the B matrix entry.
+      Var[0][l] -= ( drdn - rho*dell );
+      Var[1][l] -= ( dudn -   u*dell );
+      Var[2][l] -= ( dvdn -   v*dell );
+      Var[3][l] -= ( dpdn -   p*dell );
+    }
+
+    // Step 8: compute the boundary state from the B matrix using a least-squares approach.
+    for(unsigned short iVar=0; iVar<nVar; iVar++)
+      lgemv(nDOFsInt1D, nDOFsInt1D, ovJn, MatrixC, Var[iVar], dataIntI[iVar]);
+
+    // Step 9: convert back into the conservative variables.
+#pragma omp simd
+    for(unsigned short l=0; l<nDOFsInt1D; l++){
+
+      // Extract primitive variables.
+      const as3double rho = dataIntI[0][l];
+      const as3double u   = dataIntI[1][l];
+      const as3double v   = dataIntI[2][l];
+      const as3double p   = dataIntI[3][l];
+
+      // Compute the conservative variables.
+      dataIntI[1][l] = rho*u;
+      dataIntI[2][l] = rho*v;
+      dataIntI[3][l] = p*ovgm1 + 0.5*rho*( u*u + v*v );
+    }
   }
 }
 

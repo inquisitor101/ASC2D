@@ -1,7 +1,0 @@
-#!/bin/bash
-
-rm anim/*.vtk
-rm data/*.dat
-rm logs/*.log
-rm proc/*.dat
-rm proc/*.csv

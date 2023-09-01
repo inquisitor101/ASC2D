@@ -87,6 +87,22 @@ CElement::CElement
   InvVandermonde1D = new as3double[nDOFsSol1D*nDOFsSol1D]();
   // Compute inverse of Vandermonde1D matrix.
   ComputeInverseMatrix(nDOFsSol1D, Vandermonde1D, InvVandermonde1D);
+
+	// Reserve memory for the lagrange polynomial matrix in 1D: on SolDOFs only (it is an identity matrix).
+	lagrangeSol1D = new as3double[nDOFsSol1D*nDOFsSol1D]();
+
+	// Reserve memory for the lagrange derivative matrix in 1D: on SolDOFs only.
+	derLagrangeDOFsSol1D = new as3double[nDOFsSol1D*nDOFsSol1D]();
+
+	// Reserve memory for the lagrange derivative matrix (transposed) in 1D: on SolDOFs only.
+	derLagrangeDOFsSol1DTranspose = new as3double[nDOFsSol1D*nDOFsSol1D]();
+
+	// Compute lagrange polynomials in 1D that do not interpolate, just act on the SolDOFs.
+	LagrangeBasisFunctions(rDOFsSol1D, rDOFsSol1D,
+			                   nullptr, 
+												 derLagrangeDOFsSol1D, lagrangeSol1D,
+												 derLagrangeDOFsSol1DTranspose,
+												 nullptr, nullptr);
 }
 
 
@@ -98,14 +114,17 @@ CElement::~CElement
 	* Destructor for CElement class, frees allocated memory.
 	*/
 {
-  if( Vandermonde1D                != nullptr ) delete [] Vandermonde1D;
-  if( InvVandermonde1D             != nullptr ) delete [] InvVandermonde1D;
-  if( lagrangeInt1D                != nullptr ) delete [] lagrangeInt1D;
-  if( derLagrangeInt1D             != nullptr ) delete [] derLagrangeInt1D;
-  if( lagrangeInt1DTranspose       != nullptr ) delete [] lagrangeInt1DTranspose;
-	if( derLagrangeInt1DTranspose    != nullptr ) delete [] derLagrangeInt1DTranspose;
-	if( derLagrangeDOFsSol1DMinFace  != nullptr ) delete [] derLagrangeDOFsSol1DMinFace;
-	if( derLagrangeDOFsSol1DMaxFace  != nullptr ) delete [] derLagrangeDOFsSol1DMaxFace;
+  if( Vandermonde1D                 != nullptr ) delete [] Vandermonde1D;
+  if( InvVandermonde1D              != nullptr ) delete [] InvVandermonde1D;
+  if( lagrangeInt1D                 != nullptr ) delete [] lagrangeInt1D;
+	if( lagrangeSol1D                 != nullptr ) delete [] lagrangeSol1D;
+  if( derLagrangeInt1D              != nullptr ) delete [] derLagrangeInt1D;
+  if( derLagrangeDOFsSol1D          != nullptr ) delete [] derLagrangeDOFsSol1D;
+	if( lagrangeInt1DTranspose        != nullptr ) delete [] lagrangeInt1DTranspose;
+	if( derLagrangeInt1DTranspose     != nullptr ) delete [] derLagrangeInt1DTranspose;
+	if( derLagrangeDOFsSol1DTranspose != nullptr ) delete [] derLagrangeDOFsSol1DTranspose;
+	if( derLagrangeDOFsSol1DMinFace   != nullptr ) delete [] derLagrangeDOFsSol1DMinFace;
+	if( derLagrangeDOFsSol1DMaxFace   != nullptr ) delete [] derLagrangeDOFsSol1DMaxFace;
 }
 
 
@@ -145,7 +164,6 @@ void CElement::ComputeMassMatrix
           unsigned short iQuad = 0;
           // The below two loops are the equivalent to integration in 2D.
           for(unsigned short iQuadJ=0; iQuadJ<nDOFsInt1D; iQuadJ++){
-#pragma omp simd
             for(unsigned short iQuadI=0; iQuadI<nDOFsInt1D; iQuadI++){
 
               // Test function.
@@ -339,7 +357,7 @@ void CElement::LagrangeBasisFunctions
         const unsigned short idx  = iCol*nRow + iRow;
 
   			// Compute lagrange differentiation entry.
-  			derLagrangeDOFs1D[idx] = derLagrangeInt1DTranspose[idxT];
+				derLagrangeDOFs1D[idx] = derLagrangeDOFs1DTranspose[idxT];
   		}
   	}
   }

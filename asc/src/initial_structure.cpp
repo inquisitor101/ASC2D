@@ -80,6 +80,22 @@ CGaussianInitial::CGaussianInitial
 
   // Initialize dispersion-relaxation correction.
   betaPML = uInf/( aInf*aInf - uInf*uInf );
+
+	// Set the tuning constants to unity, by default. Implying a 2D pulse.
+	sigmax = 1.0;
+	sigmay = 1.0;
+
+	// Check if this is a 1D pulse or not.
+	if( config_container->GetTypeIC(iZone) == IC_GAUSSIAN_PRESSURE_1D_X ) sigmay = 0.0;
+	if( config_container->GetTypeIC(iZone) == IC_GAUSSIAN_PRESSURE_1D_Y ) sigmax = 0.0;
+
+	// Select whether or not to use a linear, 1-way acoustic pulse.
+	// Note, this is only for a 1D pulse in the x-direction and moving
+	// towards the right, i.e. w(+) = p' + rho*a*u'.
+	if( config_container->GetTypeIC(iZone) == IC_GAUSSIAN_PRESSURE_1D_X ) 
+		OneWayPulse = true;
+	else
+		OneWayPulse = false;
 }
 
 
@@ -117,6 +133,24 @@ void CGaussianInitial::ComputeTargetStatePrimitive
 }
 
 
+void CGaussianInitial::ComputeTargetStatePrimitivePerDOF
+(
+  const as3vector1d<as3double> &xy,
+  as3vector1d<as3double>       &Qinf
+)
+ /*
+  * Function that computes the target state in a Gaussian pulse.
+	* This only does the calculation on a single DOF.
+  */
+{    
+	// Prescribe the primitive data.
+	Qinf[0] = rhoInf;
+	Qinf[1] = uInf;
+	Qinf[2] = vInf;
+	Qinf[3] = pInf;
+}
+
+
 void CGaussianInitial::SetInitialCondition
 (
   const as3data1d<as3double> &grid_nodes,
@@ -130,34 +164,73 @@ void CGaussianInitial::SetInitialCondition
 {
   // Abbreviation.
   const as3double ovgm1 = 1.0/GAMMA_MINUS_ONE;
+	const as3double ovra  = 1.0/(rhoInf*aInf);
 
-	// Loop over every node and compute the solution.
-	for(unsigned short l=0; l<nNode; l++){
+	// Select whether to use a 1-way acoustic pulse or a generic pressure pulse.
+	if( OneWayPulse )
+	{	
+		// Loop over every node and compute the solution.
+		for(unsigned short l=0; l<nNode; l++){
 
-		// Coordinates x and y.
-		const as3double x = grid_nodes[0][l];
-		const as3double y = grid_nodes[1][l];
+			// Coordinates x and y.
+			const as3double x = grid_nodes[0][l];
+			const as3double y = grid_nodes[1][l];
 
-		// Compute relative position w.r.t. pulse center.
-		as3double rxPos2 = (x-x0); rxPos2 *= rxPos2;
-		as3double ryPos2 = (y-y0); ryPos2 *= ryPos2;
+			// Compute relative position w.r.t. pulse center.
+			as3double rxPos2 = (x-x0); rxPos2 *= rxPos2;
+			as3double ryPos2 = (y-y0); ryPos2 *= ryPos2;
 
-		// Radial distance squared.
-		const as3double r2 = rxPos2 + ryPos2;
+			// Radial distance squared.
+			const as3double r2 = sigmax*rxPos2 + sigmay*ryPos2;
 
-		// Compute initial condition in primitive form.
-		const as3double rho = rhoInf;
-		const as3double u   = uInf;
-		const as3double v   = vInf;
-		const as3double p   = pInf*( 1.0 + A0*exp(-kappa*r2) );
-		// Compute total energy.
-		const as3double rhoE = p*ovgm1 + 0.5*rho*( u*u + v*v );
+			// Gaussian profile perturbation, based on background pressure.
+			const as3double f = pInf*A0*exp( -kappa*r2 );
 
-		// Assemble conservative form.
-		data_nodes[0][l] = rho;
-		data_nodes[1][l] = rho*u;
-		data_nodes[2][l] = rho*v;
-		data_nodes[3][l] = rhoE;
+			// Compute initial condition in primitive form.
+			const as3double rho = rhoInf;
+			const as3double u   = uInf + f*ovra;
+			const as3double v   = vInf;
+			const as3double p   = pInf + f;
+			// Compute total energy.
+			const as3double rhoE = p*ovgm1 + 0.5*rho*( u*u + v*v );
+
+			// Assemble conservative form.
+			data_nodes[0][l] = rho;
+			data_nodes[1][l] = rho*u;
+			data_nodes[2][l] = rho*v;
+			data_nodes[3][l] = rhoE;
+		}
+	}
+	else
+	{
+		// Loop over every node and compute the solution.
+		for(unsigned short l=0; l<nNode; l++){
+
+			// Coordinates x and y.
+			const as3double x = grid_nodes[0][l];
+			const as3double y = grid_nodes[1][l];
+
+			// Compute relative position w.r.t. pulse center.
+			as3double rxPos2 = (x-x0); rxPos2 *= rxPos2;
+			as3double ryPos2 = (y-y0); ryPos2 *= ryPos2;
+
+			// Radial distance squared.
+			const as3double r2 = sigmax*rxPos2 + sigmay*ryPos2;
+
+			// Compute initial condition in primitive form.
+			const as3double rho = rhoInf;
+			const as3double u   = uInf;
+			const as3double v   = vInf;
+			const as3double p   = pInf*( 1.0 + A0*exp(-kappa*r2) );
+			// Compute total energy.
+			const as3double rhoE = p*ovgm1 + 0.5*rho*( u*u + v*v );
+
+			// Assemble conservative form.
+			data_nodes[0][l] = rho;
+			data_nodes[1][l] = rho*u;
+			data_nodes[2][l] = rho*v;
+			data_nodes[3][l] = rhoE;
+		}
 	}
 }
 
@@ -242,6 +315,24 @@ void CIsentropicVortexInitial::ComputeTargetStatePrimitive
     TargetState[2][l] = vInf;
     TargetState[3][l] = pInf;
   }
+}
+
+
+void CIsentropicVortexInitial::ComputeTargetStatePrimitivePerDOF
+(
+  const as3vector1d<as3double> &xy,
+  as3vector1d<as3double>       &Qinf
+)
+ /*
+  * Function that computes the target state in a Gaussian pulse.
+	* This only does the calculation on a single DOF.
+  */
+{
+	// Prescribe the primitive data.
+	Qinf[0] = rhoInf;
+	Qinf[1] = uInf;
+	Qinf[2] = vInf;
+	Qinf[3] = pInf;
 }
 
 
@@ -381,6 +472,24 @@ void CEntropyWave::ComputeTargetStatePrimitive
 }
 
 
+void CEntropyWave::ComputeTargetStatePrimitivePerDOF
+(
+  const as3vector1d<as3double> &xy,
+  as3vector1d<as3double>       &Qinf
+)
+ /*
+  * Function that computes the target state in a Gaussian pulse.
+	* This only does the calculation on a single DOF.
+  */
+{
+	// Prescribe the primitive data.
+	Qinf[0] = rhoInf;
+	Qinf[1] = uInf;
+	Qinf[2] = vInf;
+	Qinf[3] = pInf;
+}
+
+
 void CEntropyWave::SetInitialCondition
 (
   const as3data1d<as3double> &grid_nodes,
@@ -455,7 +564,7 @@ CVortexRollup::CVortexRollup
   // Background flow properties.
   Mach   = config_container->GetMachInf();
   Tinf   = 1.0;
-  pInf   = 1.0;
+  pInf   = 1.0/GAMMA;
   // Deduce density.
   rhoInf = 1.0;
 
@@ -483,12 +592,18 @@ CVortexRollup::CVortexRollup
   // Average velocity.
   Uavg  = 0.5*( U1 + U2 );
   // Initialize pulse strength, perctantage of background condition.
-  A0    = 5.0;
-  // Fraction of the duct normalization dimension.
+  A0    = config_container->GetDisturbanceRatio();
+  // Flow width coefficient, around the shear layer center.
   delta = 0.4;
 
   // Initialize dispersion-relaxation correction.
   betaPML = 1.0/1.4;
+
+  // Abbreviations.
+  tovd   = 2.0/delta;
+  ovujmp = 1.0/Ujmp;
+  ovgm1  = 1.0/GAMMA_MINUS_ONE;
+  gm1ov2 = 0.5*GAMMA_MINUS_ONE;
 }
 
 
@@ -514,11 +629,6 @@ void CVortexRollup::ComputeTargetStatePrimitive
   * Function that computes the target state in a vortex roll-up.
   */
 {
-  // Abbreviations.
-  const as3double tovd    = 2.0/delta;
-  const as3double ovujmp  = 1.0/Ujmp;
-  const as3double gm1ov2  = 0.5*GAMMA_MINUS_ONE;
-
   // Loop across all data points.
 #pragma omp simd
   for(unsigned short l=0; l<nData; l++){
@@ -532,15 +642,43 @@ void CVortexRollup::ComputeTargetStatePrimitive
     const as3double T   = T1*ovujmp*(u-U2) + T2*ovujmp*(U1-u) + gm1ov2*(U1-u)*(u-U2);
     // Compute density.
     const as3double rho = 1.0/T;
-    // Compute pressure.
-    const as3double p   = 1.0/GAMMA;
 
     // Prescribe the primitive data.
     TargetState[0][l] = rho;
     TargetState[1][l] = u;
     TargetState[2][l] = vInf;
-    TargetState[3][l] = p;
+    TargetState[3][l] = pInf;
   }
+}
+
+
+void CVortexRollup::ComputeTargetStatePrimitivePerDOF
+(
+  const as3vector1d<as3double> &xy,
+  as3vector1d<as3double>       &Qinf
+)
+ /*
+  * Function that computes the target state in a Gaussian pulse.
+	* This only does the calculation on a single DOF.
+  */
+{  
+	// Loop across all data points.
+    
+	// Extract the y-coordinate.
+  const as3double y = xy[1];
+
+  // Compute the u-velocity.
+  const as3double u   = Uavg + 0.5*Ujmp*tanh(y*tovd);
+  // Compute temperature.
+  const as3double T   = T1*ovujmp*(u-U2) + T2*ovujmp*(U1-u) + gm1ov2*(U1-u)*(u-U2);
+  // Compute density.
+  const as3double rho = 1.0/T;
+
+  // Prescribe the primitive data.
+  Qinf[0] = rho;
+  Qinf[1] = u;
+  Qinf[2] = vInf;
+  Qinf[3] = pInf;
 }
 
 
@@ -555,12 +693,6 @@ void CVortexRollup::SetInitialCondition
 	* Function that sets a vortex roll-up initial condition in this zone.
 	*/
 {
-  // Abbreviation.
-  const as3double tovd   = 2.0/delta;
-  const as3double ovujmp = 1.0/Ujmp;
-  const as3double ovgm1  = 1.0/GAMMA_MINUS_ONE;
-  const as3double gm1ov2 = 0.5*GAMMA_MINUS_ONE;
-
 	// Loop over every node and compute the solution.
 	for(unsigned short l=0; l<nNode; l++){
 
@@ -573,7 +705,7 @@ void CVortexRollup::SetInitialCondition
     // Compute density.
     const as3double rho  = 1.0/T;
     // Compute pressure.
-    const as3double p    = 1.0/GAMMA;
+    const as3double p    = pInf;
     // Use background v-velocity.
     const as3double v    = vInf;
     // Compute total energy.
@@ -679,6 +811,24 @@ void CAcousticPlane::ComputeTargetStatePrimitive
     TargetState[2][l] = vInf;
     TargetState[3][l] = pInf;
   }
+}
+
+
+void CAcousticPlane::ComputeTargetStatePrimitivePerDOF
+(
+  const as3vector1d<as3double> &xy,
+  as3vector1d<as3double>       &Qinf
+)
+ /*
+  * Function that computes the target state in a Gaussian pulse.
+	* This only does the calculation on a single DOF.
+  */
+{
+	// Prescribe the primitive data.
+	Qinf[0] = rhoInf;
+	Qinf[1] = uInf;
+	Qinf[2] = vInf;
+	Qinf[3] = pInf;
 }
 
 
