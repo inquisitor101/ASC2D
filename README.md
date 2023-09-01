@@ -1,5 +1,10 @@
 # ASC2D
-ASC2D stands for `a simple Cartesian 2D` solver. More specifically, this is a two-dimensional nodal discontinuous Galerkin (DG-FEM) solver. Its purpose is for testing different non-reflective boundary conditions (NRBCs) in the context of the non-linear Euler equations (EEs). Additional information and/or templates would be provided, if users are interested.
+ASC2D stands for `a simple Cartesian 2D` solver. More specifically, this is a two-dimensional nodal discontinuous Galerkin finite element method (DG-FEM) solver. Its purpose is for testing different non-reflective boundary conditions (NRBCs) in the context of the non-linear Euler equations (EEs).
+
+Additional information and/or templates would be provided, if users are interested. Keep in mind that ASC2D is written with flexibility and readability in mind over raw performance -- after all, this serves as a test code.
+
+> [!NOTE]
+> A link that provides detailed code documentation for `ASC2D` can be found [here](https://inquisitor101.github.io/ASC2D/).
 
 
 # Some Useful Information
@@ -9,7 +14,7 @@ ASC2D stands for `a simple Cartesian 2D` solver. More specifically, this is a tw
 
 * Additional tools for post-processing are found [here](https://github.com/inquisitor101/ASC2D/tree/main/tools).
 
-* A Github Pages link is available for the current project documentation via this [link](https://inquisitor101.github.io/ASC2D/).
+* A Github Pages website is available for the current project documentation via this [link](https://inquisitor101.github.io/ASC2D/).
 
 
 # Some Relevant Notes
@@ -31,7 +36,7 @@ ASC2D stands for `a simple Cartesian 2D` solver. More specifically, this is a tw
 # In a Nutshell
 * To download, clone this repository via: `git clone  https://github.com/inquisitor101/ASC2D`
 
-* To set-up Eigen library submodule, run: `git submodule init` followed by: `git submodule update`
+* To set-up the Eigen library submodule, run: `git submodule init` followed by: `git submodule update`
 
 * To install, enter `asc/` and run: `make`
 
@@ -48,9 +53,19 @@ ASC2D stands for `a simple Cartesian 2D` solver. More specifically, this is a tw
 * ... and most importantly: **HAVE FUN ! ! !**
 
 
-# Some Remarks
+# Final Remarks
 * Every time this code gets updated, it auto compiles and generates documentation via [GitHub Actions](https://github.com/features/actions).
 
 * The workflow in the Github Actions can be seen [here](https://github.com/inquisitor101/ASC2D/actions).
 
 * This code uses [Doxygen](https://www.doxygen.nl/) to generate documentation.
+
+* A default Doxygen configuration file is provided in `asc/Doxyfile`.
+
+* In order to generate the code documentation locally, do the following:
+  * Go to the project root directory: `ASC2D/`
+  * Run the Doxygen command: `doxygen asc/Doxyfile`
+  * The documentation can be accessed as a html file in: `doc/html/index.html`
+
+
+
