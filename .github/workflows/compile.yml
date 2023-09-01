@@ -1,0 +1,23 @@
+name: Compile Programs
+run-name: ${{ github.actor }} is testing out program compilation 🚀
+on: [push]
+jobs:
+  Build-Applications:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
+      - uses: actions/checkout@v1
+      - name: Clone Eigen Library Submodule
+        working-directory: ./asc
+        run: |
+          git submodule init
+          git submodule update
+      - name: Compile ASC2D
+        working-directory: ./asc
+        run: make all
+      - name: Compile CZD2D
+        working-directory: ./tools/compare_zone_data
+        run: make all
+      - name: Compile RSD2D
+        working-directory: ./tools/read_binary_surface_data
+        run: make all 

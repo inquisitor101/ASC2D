@@ -1,0 +1,13 @@
+#!/bin/bash
+
+rm anim/*.vtk
+rm data/*.txt
+rm data/*.bin
+rm logs/*.log
+rm proc/*.csv
+rm proc/*.bin
+rm zone/*.csv
+rm zone/*.bin
+rm zone_proc/*.bin
+rm -r surf/*
+rm gnuplot/*.dat
