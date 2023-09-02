@@ -1293,12 +1293,10 @@ void CBinaryFileVTK::DetermineVisualizationData
 						unsigned short II = J0+li;
 
 						// Compute the parametric derivative dvdx in r-direction.
-#pragma omp simd
 						for(unsigned short kk=0; kk<nDOFsSol1D; kk++)
 							dvdx[II] += primvar[2][J0+kk]*dell[I0+kk];
 
 						// Compute the parametric derivative of dudy in s-direction.
-#pragma omp simd
 						for(unsigned short kk=0; kk<nDOFsSol1D; kk++)
 							dudy[II] += primvar[1][kk*nDOFsSol1D+li]*dell[J0+kk];
 						
