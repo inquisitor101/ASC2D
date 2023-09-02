@@ -1,0 +1,22 @@
+<map id="CSolver" name="CSolver">
+<area shape="rect" id="Node000001" title="A class used for initializing a generic solver class." alt="" coords="221,755,397,1040"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,5,103,71"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="50,71,35,178,28,253,25,336,28,425,38,516,58,606,90,691,113,731,142,767,175,800,209,828,205,832,171,804,138,771,109,734,85,693,53,607,33,517,22,425,20,336,23,252,29,178,45,70"/>
+<area shape="rect" id="Node000005" href="$classCData.html" title="A generic class used for storing most of the data on each element." alt="" coords="96,239,321,519"/>
+<area shape="poly" id="edge5_Node000005_Node000002" title=" " alt="" coords="66,69,89,136,120,214,124,222,119,224,115,216,84,138,61,71"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="263,627,355,692"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="311,692,311,738,306,738,306,692"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="99,627,238,692"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="188,691,211,730,216,739,212,742,206,732,184,693"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="191,519,178,610,173,609,186,518"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="132,5,285,71"/>
+<area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="211,71,211,222,206,222,206,71"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="341,5,495,71"/>
+<area shape="poly" id="edge7_Node000005_Node000007" title=" " alt="" coords="421,71,416,140,406,179,391,216,366,254,335,287,331,284,362,250,386,213,401,177,410,139,416,70"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="519,5,685,71"/>
+<area shape="poly" id="edge8_Node000005_Node000008" title=" " alt="" coords="606,70,605,103,600,142,588,181,568,216,545,242,519,265,461,303,399,332,338,353,336,347,397,327,458,298,516,260,541,238,564,213,584,179,595,141,600,103,601,70"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="379,627,430,692"/>
+<area shape="poly" id="edge9_Node000001_Node000009" title=" " alt="" coords="394,693,375,740,370,738,389,691"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="454,627,611,692"/>
+<area shape="poly" id="edge10_Node000001_Node000010" title=" " alt="" coords="514,693,483,733,411,808,407,804,479,729,509,690"/>
+</map>

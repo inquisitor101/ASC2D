@@ -1,0 +1,15 @@
+<map id="CEECharacteristicBoundary" name="CEECharacteristicBoundary">
+<area shape="rect" id="Node000001" title="A generic class used for implementing characteristic boundary conditions." alt="" coords="186,572,386,857"/>
+<area shape="rect" id="Node000004" href="$classCEEInletCBC.html" title="An interface class used for implementing characteristic inlet boundary conditions." alt="" coords="141,955,257,1041"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="241,872,215,956,209,955,236,870"/>
+<area shape="rect" id="Node000007" href="$classCEEOutletCBC.html" title="A class used for implementing characteristic static outlet boundary conditions." alt="" coords="281,905,464,1091"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="336,870,347,905,342,906,331,872"/>
+<area shape="rect" id="Node000002" href="$classCEEBoundary.html" title="A generic class used for implementing different Euler&#45;equation (EE) boundary conditions." alt="" coords="197,339,375,524"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="289,538,289,572,283,572,283,538"/>
+<area shape="rect" id="Node000003" href="$classCBoundary.html" title="A class used as an interface for different boundary conditions." alt="" coords="195,5,377,291"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="289,305,289,339,283,339,283,305"/>
+<area shape="rect" id="Node000005" href="$classCEEStaticInletCBC.html" title="A class used for implementing characteristic static inlet boundary conditions." alt="" coords="5,1139,188,1264"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="174,1054,130,1140,126,1138,169,1052"/>
+<area shape="rect" id="Node000006" href="$classCEETotalInletCBC.html" title="A class used for implementing characteristic total/stagnation inlet boundary conditions." alt="" coords="212,1139,395,1264"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="230,1052,274,1138,269,1140,225,1054"/>
+</map>

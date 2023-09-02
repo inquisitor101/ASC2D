@@ -1,0 +1,7 @@
+<map id="CEESupersonicInletBoundary" name="CEESupersonicInletBoundary">
+<area shape="rect" id="Node000001" title="A class used for implementing supersonic inlet boundary conditions." alt="" coords="5,572,213,677"/>
+<area shape="rect" id="Node000002" href="$classCEEBoundary.html" title="A generic class used for implementing different Euler&#45;equation (EE) boundary conditions." alt="" coords="21,339,198,524"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="112,538,112,572,107,572,107,538"/>
+<area shape="rect" id="Node000003" href="$classCBoundary.html" title="A class used as an interface for different boundary conditions." alt="" coords="18,5,201,291"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="112,305,112,339,107,339,107,305"/>
+</map>

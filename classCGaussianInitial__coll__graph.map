@@ -1,0 +1,12 @@
+<map id="CGaussianInitial" name="CGaussianInitial">
+<area shape="rect" id="Node000001" title="A class used for initializing a solution based on a Gaussian pressure pulse." alt="" coords="155,477,357,917"/>
+<area shape="rect" id="Node000002" href="$classCInitial.html" title="An interface class used for initializing a solution." alt="" coords="5,134,208,414"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="163,426,181,476,176,478,158,428"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="43,5,141,71"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="95,70,97,110,97,117,92,117,91,110,90,71"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="197,5,248,71"/>
+<area shape="poly" id="edge4_Node000001_Node000004" title=" " alt="" coords="235,70,240,94,251,186,258,280,264,459,258,460,253,280,246,187,235,95,230,71"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="200,66,177,96,163,120,159,117,172,93,195,63"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="325,241,363,306"/>
+<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="340,307,308,460,303,459,335,306"/>
+</map>

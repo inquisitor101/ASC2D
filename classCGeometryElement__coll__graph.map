@@ -1,0 +1,9 @@
+<map id="CGeometryElement" name="CGeometryElement">
+<area shape="rect" id="Node000001" title="A class used for generating a grid in a element belonging to a specific zone." alt="" coords="129,149,280,314"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,5,97,71"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="78,69,131,134,127,137,74,72"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="122,5,287,71"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="207,70,207,132,202,132,202,70"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="312,5,465,71"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="361,72,294,142,290,138,357,69"/>
+</map>

@@ -1,0 +1,9 @@
+<map id="asc/include/reflection_structure.hpp" name="asc/include/reflection_structure.hpp">
+<area shape="rect" id="Node000001" title="The file containing all the reflection coefficient definitions." alt="" coords="13,5,156,46"/>
+<area shape="rect" id="Node000002" href="$process__structure_8hpp.html" title="The file containing all the (post&#45;)processing functionalities." alt="" coords="16,94,153,135"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="87,61,87,94,82,94,82,61"/>
+<area shape="rect" id="Node000003" href="$driver__structure_8hpp.html" title="The file responsible for setting and and running the solver." alt="" coords="23,183,146,223"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="87,149,87,182,82,182,82,149"/>
+<area shape="rect" id="Node000004" href="$ASC2D_8hpp.html" title="The file containing all the ASC2D header information." alt="" coords="5,271,164,297"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="87,238,87,271,82,271,82,238"/>
+</map>

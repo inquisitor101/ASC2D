@@ -1,0 +1,8 @@
+<map id="CRatioR5Reflection" name="CRatioR5Reflection">
+<area shape="rect" id="Node000001" title="A class used for initializing the reflection coefficient: R5." alt="" coords="5,288,156,394"/>
+<area shape="rect" id="Node000002" href="$classCReflection.html" title="An interface class used for initializing a generic reflection coefficient." alt="" coords="121,134,265,239"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="149,252,121,290,116,287,144,249"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="5,5,103,71"/>
+<area shape="poly" id="edge3_Node000001_Node000003" title=" " alt="" coords="51,71,43,148,43,193,47,239,56,272,50,273,42,239,37,193,38,147,46,70"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="86,69,134,119,130,123,82,72"/>
+</map>

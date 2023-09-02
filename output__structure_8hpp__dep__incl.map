@@ -1,0 +1,10 @@
+<map id="asc/include/output_structure.hpp" name="asc/include/output_structure.hpp">
+<area shape="rect" id="Node000001" title="The file containing all the output functionalities." alt="" coords="21,5,148,46"/>
+<area shape="rect" id="Node000002" href="$driver__structure_8hpp.html" title="The file responsible for setting and and running the solver." alt="" coords="23,183,146,223"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="70,60,59,95,57,114,59,134,77,181,72,183,54,135,51,114,54,93,65,59"/>
+<area shape="rect" id="Node000004" href="$process__structure_8hpp.html" title="The file containing all the (post&#45;)processing functionalities." alt="" coords="69,94,207,135"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="107,58,128,92,124,95,102,60"/>
+<area shape="rect" id="Node000003" href="$ASC2D_8hpp.html" title="The file containing all the ASC2D header information." alt="" coords="5,271,164,297"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="87,238,87,271,82,271,82,238"/>
+<area shape="poly" id="edge4_Node000004_Node000002" title=" " alt="" coords="120,149,99,184,94,181,116,146"/>
+</map>

@@ -1,0 +1,11 @@
+<map id="CElement" name="CElement">
+<area shape="rect" id="Node000001" title="A class used for initializing and definining all operations on a standard element in reference space." alt="" coords="176,298,404,698"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,13,103,78"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="63,77,88,167,107,221,130,273,169,340,164,342,125,276,102,223,83,169,58,78"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="127,5,274,85"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="211,85,250,281,245,282,206,86"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="298,13,463,78"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="378,78,343,275,342,282,337,281,338,274,373,77"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="487,13,538,78"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="511,78,493,169,477,223,456,275,416,347,411,344,452,273,472,221,488,168,506,77"/>
+</map>

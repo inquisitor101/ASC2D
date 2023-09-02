@@ -1,0 +1,15 @@
+<map id="CScalarVariable" name="CScalarVariable">
+<area shape="rect" id="Node000001" title="An interface structure used for extracting a generic scalar variable." alt="" coords="505,5,637,111"/>
+<area shape="rect" id="Node000002" href="$structCDensityConservative.html" title="A structure used for extracting a density scalar variable from conservative variables." alt="" coords="5,159,172,264"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="492,77,347,110,266,133,186,161,173,166,171,162,184,156,264,128,346,105,491,71"/>
+<area shape="rect" id="Node000003" href="$structCEnergyConservative.html" title="A structure used for extracting a total energy scalar variable from conservative variables." alt="" coords="197,159,359,264"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="494,100,373,161,360,168,358,163,370,156,492,95"/>
+<area shape="rect" id="Node000004" href="$structCEntropyConservative.html" title="A structure used for extracting a specific entropy scalar variable from conservative variables." alt="" coords="384,159,551,264"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="530,124,505,161,500,158,526,121"/>
+<area shape="rect" id="Node000005" href="$structCMachNumberConservative.html" title="A structure used for extracting a Mach number scalar variable from conservative variables." alt="" coords="575,159,776,264"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="617,121,642,158,638,161,613,124"/>
+<area shape="rect" id="Node000006" href="$structCPressureConservative.html" title="A structure used for extracting a pressure scalar variable from conservative variables." alt="" coords="801,159,977,264"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="652,92,790,156,802,162,800,167,788,161,649,97"/>
+<area shape="rect" id="Node000007" href="$structCTemperatureConservative.html" title="A structure used for extracting a temperature scalar variable from conservative variables." alt="" coords="1001,159,1197,264"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="652,71,810,105,900,128,990,156,1002,161,1000,166,988,161,899,133,808,110,651,76"/>
+</map>

@@ -1,0 +1,55 @@
+<map id="asc/include/data_structure.hpp" name="asc/include/data_structure.hpp">
+<area shape="rect" id="Node000001" title="The file containing most of the element data." alt="" coords="305,5,503,31"/>
+<area shape="rect" id="Node000002" href="$option__structure_8hpp.html" title="The file containing all the global option functionalities." alt="" coords="324,381,462,407"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="305,32,241,47,210,58,181,72,156,89,137,110,124,135,120,164,120,240,124,269,135,289,154,305,178,323,204,337,241,350,327,374,326,380,240,355,202,342,176,328,150,309,131,292,119,270,114,241,114,164,119,133,132,107,153,85,178,67,208,53,239,41,304,26"/>
+<area shape="rect" id="Node000012" href="$config__structure_8hpp.html" title="The file containing all the user input options." alt="" coords="590,300,727,326"/>
+<area shape="poly" id="edge11_Node000001_Node000012" title=" " alt="" coords="441,29,485,47,538,73,592,108,639,151,657,175,668,197,671,222,670,252,666,286,661,285,665,252,666,222,663,199,653,178,635,154,588,112,535,78,483,52,439,34"/>
+<area shape="rect" id="Node000016" href="$geometry__structure_8hpp.html" title="The file containing all the grid information." alt="" coords="439,153,595,178"/>
+<area shape="poly" id="edge16_Node000001_Node000016" title=" " alt="" coords="427,29,456,50,484,77,502,107,513,137,508,139,497,110,480,81,453,54,424,34"/>
+<area shape="rect" id="Node000017" href="$element__structure_8hpp.html" title="The file responsible for the definitions of a standard element in reference space." alt="" coords="326,226,476,252"/>
+<area shape="poly" id="edge27_Node000001_Node000017" title=" " alt="" coords="378,34,350,53,337,66,327,80,322,98,321,116,333,153,355,187,379,214,375,218,351,190,328,155,316,117,316,97,323,78,333,62,346,49,375,29"/>
+<area shape="rect" id="Node000021" href="$initial__structure_8hpp.html" title="The file containing all the initial condition specifications." alt="" coords="337,79,470,105"/>
+<area shape="poly" id="edge28_Node000001_Node000021" title=" " alt="" coords="406,31,406,64,401,64,401,31"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="5,462,77,488"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="342,410,312,417,92,464,91,459,311,412,341,405"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="100,462,169,488"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="354,410,183,462,182,457,352,405"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="192,462,258,488"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="368,410,265,458,263,453,366,405"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="282,462,339,488"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="382,409,335,454,331,450,379,405"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="363,462,423,488"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="396,407,396,447,390,447,390,407"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="448,462,512,488"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="408,405,457,450,454,454,404,409"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="536,462,594,488"/>
+<area shape="poly" id="edge8_Node000002_Node000009" title=" " alt="" coords="421,405,527,453,525,458,418,410"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="617,462,684,488"/>
+<area shape="poly" id="edge9_Node000002_Node000010" title=" " alt="" coords="433,405,604,457,602,462,432,410"/>
+<area shape="rect" id="Node000011" href="$TensorProduct_8hpp.html" title="The file containing all the tensor product implementations." alt="" coords="708,462,838,488"/>
+<area shape="poly" id="edge10_Node000002_Node000011" title=" " alt="" coords="452,405,701,456,700,461,451,410"/>
+<area shape="poly" id="edge12_Node000012_Node000002" title=" " alt="" coords="618,329,448,379,447,374,617,324"/>
+<area shape="rect" id="Node000013" title=" " alt="" coords="545,381,591,407"/>
+<area shape="poly" id="edge13_Node000012_Node000013" title=" " alt="" coords="646,328,594,373,591,369,643,324"/>
+<area shape="rect" id="Node000014" title=" " alt="" coords="615,381,702,407"/>
+<area shape="poly" id="edge14_Node000012_Node000014" title=" " alt="" coords="661,326,661,366,656,366,656,326"/>
+<area shape="rect" id="Node000015" title=" " alt="" coords="725,381,802,407"/>
+<area shape="poly" id="edge15_Node000012_Node000015" title=" " alt="" coords="676,324,738,370,735,374,673,328"/>
+<area shape="poly" id="edge17_Node000016_Node000002" title=" " alt="" coords="521,178,524,207,523,245,516,287,499,327,472,356,440,377,437,372,469,352,495,324,511,286,518,245,518,207,516,179"/>
+<area shape="poly" id="edge18_Node000016_Node000012" title=" " alt="" coords="530,177,638,287,635,291,527,181"/>
+<area shape="poly" id="edge19_Node000016_Node000017" title=" " alt="" coords="499,181,434,221,431,216,496,177"/>
+<area shape="poly" id="edge20_Node000017_Node000002" title=" " alt="" coords="427,250,448,264,468,282,480,303,481,315,478,327,458,355,431,375,428,371,454,351,473,324,476,314,475,304,464,285,445,268,424,255"/>
+<area shape="poly" id="edge21_Node000017_Node000012" title=" " alt="" coords="445,250,601,293,600,298,444,255"/>
+<area shape="rect" id="Node000018" href="$quadrature__structure_8hpp.html" title="The file containing all the numerical quadrature implementations." alt="" coords="299,300,463,326"/>
+<area shape="poly" id="edge22_Node000017_Node000018" title=" " alt="" coords="400,253,391,286,386,285,395,252"/>
+<area shape="rect" id="Node000019" href="$blas_8hpp.html" title="An interface to the Eigen library." alt="" coords="205,300,274,326"/>
+<area shape="poly" id="edge24_Node000017_Node000019" title=" " alt="" coords="375,255,281,296,279,291,373,250"/>
+<area shape="poly" id="edge23_Node000018_Node000002" title=" " alt="" coords="385,326,392,366,386,367,380,326"/>
+<area shape="poly" id="edge25_Node000019_Node000002" title=" " alt="" coords="264,324,358,372,355,376,262,328"/>
+<area shape="rect" id="Node000020" title=" " alt="" coords="153,374,300,414"/>
+<area shape="poly" id="edge26_Node000019_Node000020" title=" " alt="" coords="240,327,235,360,229,359,235,326"/>
+<area shape="poly" id="edge29_Node000021_Node000002" title=" " alt="" coords="378,108,310,143,272,167,236,195,206,226,186,258,182,274,182,291,186,307,195,324,212,334,247,347,335,374,333,379,245,352,210,339,191,328,181,309,176,292,177,274,182,256,201,223,232,191,269,163,308,138,376,103"/>
+<area shape="poly" id="edge30_Node000021_Node000012" title=" " alt="" coords="471,94,506,100,543,111,579,128,610,151,633,182,648,218,656,254,660,285,655,285,651,255,643,220,628,185,606,155,576,132,541,116,505,106,471,99"/>
+<area shape="poly" id="edge31_Node000021_Node000016" title=" " alt="" coords="424,103,487,142,484,147,421,107"/>
+<area shape="poly" id="edge32_Node000021_Node000017" title=" " alt="" coords="406,105,404,211,399,211,401,105"/>
+</map>

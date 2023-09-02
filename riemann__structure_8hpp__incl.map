@@ -1,0 +1,32 @@
+<map id="asc/include/riemann_structure.hpp" name="asc/include/riemann_structure.hpp">
+<area shape="rect" id="Node000001" title="The file containing all the Riemann solver implementation." alt="" coords="383,5,520,46"/>
+<area shape="rect" id="Node000002" href="$option__structure_8hpp.html" title="The file containing all the global option functionalities." alt="" coords="324,168,462,193"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="447,47,405,155,400,153,442,45"/>
+<area shape="rect" id="Node000012" href="$config__structure_8hpp.html" title="The file containing all the user input options." alt="" coords="440,94,578,120"/>
+<area shape="poly" id="edge11_Node000001_Node000012" title=" " alt="" coords="468,45,494,80,490,83,464,48"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="5,241,77,267"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="327,197,92,243,91,238,326,191"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="100,241,169,267"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="350,196,184,242,182,237,348,191"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="192,241,258,267"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="366,196,268,238,266,233,363,191"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="282,241,339,267"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="381,196,337,233,334,229,377,192"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="363,241,423,267"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="396,194,396,226,390,226,390,194"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="448,241,512,267"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="409,192,456,230,452,234,406,196"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="536,241,594,267"/>
+<area shape="poly" id="edge8_Node000002_Node000009" title=" " alt="" coords="423,191,523,233,521,238,421,196"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="617,241,684,267"/>
+<area shape="poly" id="edge9_Node000002_Node000010" title=" " alt="" coords="437,191,604,237,602,242,436,196"/>
+<area shape="rect" id="Node000011" href="$TensorProduct_8hpp.html" title="The file containing all the tensor product implementations." alt="" coords="708,241,838,267"/>
+<area shape="poly" id="edge10_Node000002_Node000011" title=" " alt="" coords="458,191,695,236,694,241,457,197"/>
+<area shape="poly" id="edge12_Node000012_Node000002" title=" " alt="" coords="491,122,426,162,423,157,488,118"/>
+<area shape="rect" id="Node000013" title=" " alt="" coords="486,168,532,193"/>
+<area shape="poly" id="edge13_Node000012_Node000013" title=" " alt="" coords="512,120,512,153,506,153,506,120"/>
+<area shape="rect" id="Node000014" title=" " alt="" coords="557,168,643,193"/>
+<area shape="poly" id="edge14_Node000012_Node000014" title=" " alt="" coords="526,118,575,156,572,161,523,122"/>
+<area shape="rect" id="Node000015" title=" " alt="" coords="666,168,744,193"/>
+<area shape="poly" id="edge15_Node000012_Node000015" title=" " alt="" coords="543,118,659,160,657,165,541,123"/>
+</map>

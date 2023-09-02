@@ -1,0 +1,8 @@
+<map id="CRoeRiemann" name="CRoeRiemann">
+<area shape="rect" id="Node000001" title="A class used for initializing Roe&#39;s Riemann class." alt="" coords="5,308,144,414"/>
+<area shape="rect" id="Node000002" href="$classCRiemann.html" title="An interface class used for initializing a generic Riemann class." alt="" coords="85,134,307,259"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="144,272,115,310,111,307,139,269"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="20,5,71,71"/>
+<area shape="poly" id="edge3_Node000001_Node000003" title=" " alt="" coords="42,71,34,156,33,207,39,259,48,292,43,293,34,259,28,208,28,156,37,70"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="72,64,127,120,123,123,69,67"/>
+</map>

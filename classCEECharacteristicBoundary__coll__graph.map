@@ -1,0 +1,20 @@
+<map id="CEECharacteristicBoundary" name="CEECharacteristicBoundary">
+<area shape="rect" id="Node000001" title="A generic class used for implementing characteristic boundary conditions." alt="" coords="185,636,385,782"/>
+<area shape="rect" id="Node000002" href="$classCEEBoundary.html" title="A generic class used for implementing different Euler&#45;equation (EE) boundary conditions." alt="" coords="311,442,488,587"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="352,600,330,638,325,635,347,598"/>
+<area shape="rect" id="Node000003" href="$classCBoundary.html" title="A class used as an interface for different boundary conditions." alt="" coords="287,208,469,334"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="387,347,396,442,390,442,382,348"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="5,13,103,78"/>
+<area shape="poly" id="edge8_Node000001_Node000004" title=" " alt="" coords="51,78,42,141,36,226,38,322,45,370,55,417,78,475,111,530,149,580,189,623,186,626,145,583,106,533,73,478,50,418,39,371,33,322,31,226,37,141,46,77"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="71,76,105,131,129,159,156,182,184,195,209,197,235,198,267,206,272,208,270,213,265,211,234,204,208,203,183,200,154,187,125,163,100,135,66,79"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="301,13,466,78"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="384,78,382,109,380,191,375,191,377,109,378,78"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="518,13,569,78"/>
+<area shape="poly" id="edge10_Node000001_Node000006" title=" " alt="" coords="560,77,570,109,573,147,570,185,567,247,568,303,570,398,566,442,556,488,535,536,503,589,482,614,457,635,401,669,398,665,453,631,478,610,499,585,531,533,550,486,561,442,565,398,563,303,562,247,565,184,568,147,565,110,555,79"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="521,72,489,111,479,131,473,148,468,165,458,186,450,197,446,194,453,183,463,163,468,146,474,129,484,108,516,68"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="130,5,277,85"/>
+<area shape="poly" id="edge6_Node000003_Node000007" title=" " alt="" coords="229,84,299,183,309,194,305,197,295,186,225,87"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="100,238,253,304"/>
+<area shape="poly" id="edge9_Node000001_Node000008" title=" " alt="" coords="174,304,167,359,163,430,168,509,175,548,187,586,205,622,201,624,182,588,170,550,163,510,158,430,161,358,168,303"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="186,302,206,359,222,389,243,416,254,425,265,429,292,439,298,442,295,447,290,444,263,434,252,430,239,420,217,392,201,361,181,304"/>
+</map>

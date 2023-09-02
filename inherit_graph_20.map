@@ -1,0 +1,15 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" href="$structCScalarVariable.html" title="An interface structure used for extracting a generic scalar variable." alt="" coords="5,129,120,155"/>
+<area shape="rect" id="Node000001" href="$structCDensityConservative.html" title="A structure used for extracting a density scalar variable from conservative variables." alt="" coords="185,5,335,31"/>
+<area shape="poly" id="edge39_Node000000_Node000001" title=" " alt="" coords="81,116,117,77,141,57,166,40,191,29,193,34,169,45,144,61,121,81,84,120"/>
+<area shape="rect" id="Node000002" href="$structCEnergyConservative.html" title="A structure used for extracting a total energy scalar variable from conservative variables." alt="" coords="187,55,333,80"/>
+<area shape="poly" id="edge40_Node000000_Node000002" title=" " alt="" coords="100,120,167,89,200,78,202,83,169,94,102,124"/>
+<area shape="rect" id="Node000003" href="$structCEntropyConservative.html" title="A structure used for extracting a specific entropy scalar variable from conservative variables." alt="" coords="185,104,335,130"/>
+<area shape="poly" id="edge41_Node000000_Node000003" title=" " alt="" coords="134,130,184,124,185,129,135,136"/>
+<area shape="rect" id="Node000004" href="$structCMachNumberConservative.html" title="A structure used for extracting a Mach number scalar variable from conservative variables." alt="" coords="168,153,352,179"/>
+<area shape="poly" id="edge42_Node000000_Node000004" title=" " alt="" coords="135,148,167,152,167,158,134,154"/>
+<area shape="rect" id="Node000005" href="$structCPressureConservative.html" title="A structure used for extracting a pressure scalar variable from conservative variables." alt="" coords="181,203,339,228"/>
+<area shape="poly" id="edge43_Node000000_Node000005" title=" " alt="" coords="102,159,169,189,202,200,201,205,167,194,100,164"/>
+<area shape="rect" id="Node000006" href="$structCTemperatureConservative.html" title="A structure used for extracting a temperature scalar variable from conservative variables." alt="" coords="170,252,350,278"/>
+<area shape="poly" id="edge44_Node000000_Node000006" title=" " alt="" coords="85,164,121,203,169,239,193,249,191,254,166,243,118,207,81,168"/>
+</map>

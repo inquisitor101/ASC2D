@@ -1,0 +1,7 @@
+<map id="CEEStaticOutletBoundary" name="CEEStaticOutletBoundary">
+<area shape="rect" id="Node000001" title="A class used for implementing Riemann&#45;extrapolation static outlet boundary conditions." alt="" coords="5,572,192,677"/>
+<area shape="rect" id="Node000002" href="$classCEEBoundary.html" title="A generic class used for implementing different Euler&#45;equation (EE) boundary conditions." alt="" coords="10,339,187,524"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="101,538,101,572,96,572,96,538"/>
+<area shape="rect" id="Node000003" href="$classCBoundary.html" title="A class used as an interface for different boundary conditions." alt="" coords="7,5,190,291"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="101,305,101,339,96,339,96,305"/>
+</map>

@@ -1,0 +1,12 @@
+<map id="asc/include/restart_structure.hpp" name="asc/include/restart_structure.hpp">
+<area shape="rect" id="Node000001" title="The file containing all the restart files writing functionalities." alt="" coords="20,5,149,46"/>
+<area shape="rect" id="Node000002" href="$output__structure_8hpp.html" title="The file containing all the output functionalities." alt="" coords="21,94,148,135"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="87,61,87,94,82,94,82,61"/>
+<area shape="rect" id="Node000003" href="$driver__structure_8hpp.html" title="The file responsible for setting and and running the solver." alt="" coords="23,271,146,312"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="70,149,59,183,57,203,59,223,77,270,72,272,54,224,51,203,54,182,65,147"/>
+<area shape="rect" id="Node000005" href="$process__structure_8hpp.html" title="The file containing all the (post&#45;)processing functionalities." alt="" coords="69,183,207,223"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="107,146,128,181,124,184,102,149"/>
+<area shape="rect" id="Node000004" href="$ASC2D_8hpp.html" title="The file containing all the ASC2D header information." alt="" coords="5,360,164,386"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="87,327,87,359,82,359,82,327"/>
+<area shape="poly" id="edge5_Node000005_Node000003" title=" " alt="" coords="120,238,99,272,94,269,116,235"/>
+</map>

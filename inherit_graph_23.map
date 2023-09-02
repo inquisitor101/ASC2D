@@ -1,0 +1,7 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" href="$classCTemporal.html" title="A class used for initializing a generic temporal class." alt="" coords="5,31,90,56"/>
+<area shape="rect" id="Node000001" href="$classCLSRK4Temporal.html" title="A class used for initializing a low&#45;storage 4th&#45;order Runge&#45;Kutta (LSRK4) temporal class." alt="" coords="143,5,269,31"/>
+<area shape="poly" id="edge49_Node000000_Node000001" title=" " alt="" coords="104,32,142,26,143,31,105,37"/>
+<area shape="rect" id="Node000002" href="$classCSSPRK3Temporal.html" title="A class used for initializing a strong stability preserving 3rd&#45;order Runge Kutta (SSPRK3) temporal c..." alt="" coords="138,55,274,80"/>
+<area shape="poly" id="edge50_Node000000_Node000002" title=" " alt="" coords="105,49,138,54,137,60,104,55"/>
+</map>

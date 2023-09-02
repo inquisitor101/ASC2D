@@ -1,0 +1,7 @@
+<map id="CImport" name="CImport">
+<area shape="rect" id="Node000001" title="An interface class used for importing a solution restart file." alt="" coords="103,5,275,111"/>
+<area shape="rect" id="Node000002" href="$classCASCIIImport.html" title="A class used for importing a solution restart file in ASCII format." alt="" coords="5,159,177,264"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="150,124,126,160,122,158,146,121"/>
+<area shape="rect" id="Node000003" href="$classCBinaryImport.html" title="A class used for importing a solution restart file in binary format." alt="" coords="201,159,373,264"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="232,121,256,158,252,161,228,124"/>
+</map>

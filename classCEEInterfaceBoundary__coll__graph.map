@@ -1,0 +1,20 @@
+<map id="CEEInterfaceBoundary" name="CEEInterfaceBoundary">
+<area shape="rect" id="Node000001" title="A class used for implementing interface/periodic boundary conditions." alt="" coords="153,636,336,762"/>
+<area shape="rect" id="Node000002" href="$classCEEBoundary.html" title="A generic class used for implementing different Euler&#45;equation (EE) boundary conditions." alt="" coords="220,442,397,587"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="281,601,269,638,264,636,276,599"/>
+<area shape="rect" id="Node000003" href="$classCBoundary.html" title="A class used as an interface for different boundary conditions." alt="" coords="397,208,580,334"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="482,348,470,385,452,419,428,447,399,470,395,466,424,443,448,416,466,383,477,347"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="5,13,103,78"/>
+<area shape="poly" id="edge8_Node000001_Node000004" title=" " alt="" coords="53,78,47,142,45,227,51,322,59,370,71,417,93,473,121,528,185,622,180,625,117,530,88,476,66,418,54,372,46,323,40,227,42,141,47,78"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="83,76,144,132,182,159,223,182,264,194,299,196,336,197,382,205,381,210,336,202,299,202,263,199,221,187,179,164,140,136,80,80"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="362,13,527,78"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="444,78,442,128,449,184,451,192,446,193,443,185,437,128,438,78"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="589,13,639,78"/>
+<area shape="poly" id="edge10_Node000001_Node000006" title=" " alt="" coords="628,77,637,109,643,174,638,225,622,275,595,335,555,414,518,473,474,526,412,589,351,638,348,634,408,585,470,523,514,470,551,411,590,333,617,273,633,224,638,174,631,110,623,78"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="591,70,555,111,521,193,516,191,551,108,587,66"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="170,5,317,85"/>
+<area shape="poly" id="edge9_Node000001_Node000007" title=" " alt="" coords="214,86,203,110,199,130,200,146,203,184,201,298,196,387,196,475,210,587,218,620,213,621,205,587,191,475,190,387,195,298,198,184,194,146,194,130,198,108,210,84"/>
+<area shape="poly" id="edge6_Node000003_Node000007" title=" " alt="" coords="289,83,312,108,327,129,336,146,345,164,361,182,386,205,382,209,357,186,341,167,331,149,322,131,308,111,285,87"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="220,238,373,304"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="301,303,307,424,302,425,296,303"/>
+</map>

@@ -1,0 +1,17 @@
+<map id="CGeometry" name="CGeometry">
+<area shape="rect" id="Node000001" title="A class used for generating a (multi&#45;zone) grid." alt="" coords="379,178,595,524"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,13,103,78"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="81,76,116,114,158,152,262,225,366,285,363,290,259,229,155,156,112,118,77,79"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="127,13,219,78"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="189,77,210,115,237,153,300,214,368,268,364,273,297,218,233,156,205,117,185,79"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="243,5,390,85"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="341,84,385,162,380,165,336,86"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="414,5,561,85"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="490,85,490,161,485,161,485,85"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="585,5,731,85"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="639,86,595,165,590,162,634,84"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="755,13,921,78"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="817,80,786,117,749,156,681,216,610,269,607,265,677,211,745,152,782,114,813,76"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="945,13,1134,78"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="992,80,866,157,735,228,612,291,609,286,733,223,863,152,990,76"/>
+</map>

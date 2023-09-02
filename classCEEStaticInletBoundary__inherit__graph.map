@@ -1,0 +1,7 @@
+<map id="CEEStaticInletBoundary" name="CEEStaticInletBoundary">
+<area shape="rect" id="Node000001" title="A class used for implementing Riemann&#45;extrapolation static inlet boundary conditions." alt="" coords="5,572,188,677"/>
+<area shape="rect" id="Node000002" href="$classCEEBoundary.html" title="A generic class used for implementing different Euler&#45;equation (EE) boundary conditions." alt="" coords="8,339,185,524"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="99,538,99,572,94,572,94,538"/>
+<area shape="rect" id="Node000003" href="$classCBoundary.html" title="A class used as an interface for different boundary conditions." alt="" coords="5,5,188,291"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="99,305,99,339,94,339,94,305"/>
+</map>

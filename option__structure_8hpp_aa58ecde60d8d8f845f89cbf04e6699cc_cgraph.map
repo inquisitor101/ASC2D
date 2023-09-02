@@ -1,0 +1,7 @@
+<map id="AddVectorOption" name="AddVectorOption">
+<area shape="rect" id="Node000001" title="Function that works as a template to read vector data, otherwise exits." alt="" coords="5,31,126,56"/>
+<area shape="rect" id="Node000002" href="$option__structure_8hpp.html#a73d0c91ac39e0efe5c900b4449811330" title="Function that searches for and finds a string vector from input file." alt="" coords="174,5,372,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="126,34,158,29,159,35,126,39"/>
+<area shape="rect" id="Node000003" href="$option__structure_8hpp.html#a561f92d39d07adf2e8386fac6e0363e6" title="Function that terminates program immediately." alt="" coords="233,55,313,80"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="126,48,219,59,218,64,126,53"/>
+</map>

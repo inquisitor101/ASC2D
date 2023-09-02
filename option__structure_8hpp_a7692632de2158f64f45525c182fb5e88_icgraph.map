@@ -1,0 +1,7 @@
+<map id="FindStringFromKeyword" name="FindStringFromKeyword">
+<area shape="rect" id="Node000001" title="Function that searches for and finds a string from input file." alt="" coords="173,31,333,56"/>
+<area shape="rect" id="Node000002" href="$option__structure_8hpp.html#aaa5e95d89c580db5868947681b3f0ae9" title="Function used in reading &quot;scalar&quot; data." alt="" coords="5,5,125,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="158,33,125,29,125,24,159,28"/>
+<area shape="rect" id="Node000003" href="$option__structure_8hpp.html#ad2098ad93284b6c7c6fb419195ac3c9b" title="Function used in reading &quot;scalar&quot; data, takes default parameter." alt="" coords="5,55,125,80"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="159,58,125,63,125,57,158,53"/>
+</map>

@@ -1,0 +1,10 @@
+<map id="CSpatial" name="CSpatial">
+<area shape="rect" id="Node000001" title="A class used for initializing a generic spatial class." alt="" coords="67,382,246,587"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,164,103,229"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="51,229,47,290,49,324,58,357,62,368,57,370,52,359,44,325,41,290,46,229"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="153,5,203,71"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="177,71,171,134,161,365,156,365,165,133,171,70"/>
+<area shape="rect" id="Node000004" href="$classCRiemann.html" title="An interface class used for initializing a generic Riemann class." alt="" coords="255,134,477,259"/>
+<area shape="poly" id="edge4_Node000004_Node000003" title=" " alt="" coords="205,58,281,121,277,125,201,62"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="323,261,243,370,239,367,319,257"/>
+</map>

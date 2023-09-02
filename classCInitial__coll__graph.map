@@ -1,0 +1,7 @@
+<map id="CInitial" name="CInitial">
+<area shape="rect" id="Node000001" title="An interface class used for initializing a solution." alt="" coords="5,134,208,414"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="9,5,106,71"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="66,70,76,117,71,118,61,71"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="131,5,181,71"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="152,71,142,118,137,117,147,70"/>
+</map>

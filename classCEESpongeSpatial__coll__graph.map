@@ -1,0 +1,16 @@
+<map id="CEESpongeSpatial" name="CEESpongeSpatial">
+<area shape="rect" id="Node000001" title="A class used for initializing an Euler&#45;equation(EE) sponge&#45;layer spatial class." alt="" coords="157,865,335,1010"/>
+<area shape="rect" id="Node000002" href="$classCEESpatial.html" title="A class used for initializing an Euler&#45;equation(EE) spatial class." alt="" coords="67,637,246,802"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="198,814,219,864,214,866,193,816"/>
+<area shape="rect" id="Node000003" href="$classCSpatial.html" title="A class used for initializing a generic spatial class." alt="" coords="67,382,246,587"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="159,602,159,637,154,637,154,602"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="5,164,103,229"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="51,229,47,290,49,324,58,357,62,368,57,370,52,359,44,325,41,290,46,229"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="153,5,203,71"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="177,71,171,134,161,365,156,365,165,133,171,70"/>
+<area shape="rect" id="Node000006" href="$classCRiemann.html" title="An interface class used for initializing a generic Riemann class." alt="" coords="255,134,477,259"/>
+<area shape="poly" id="edge6_Node000006_Node000005" title=" " alt="" coords="205,58,281,121,277,125,201,62"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="323,261,243,370,239,367,319,257"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="271,687,400,752"/>
+<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="325,753,284,851,279,849,320,751"/>
+</map>

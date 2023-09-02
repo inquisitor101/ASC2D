@@ -1,0 +1,13 @@
+<map id="CReflection" name="CReflection">
+<area shape="rect" id="Node000001" title="An interface class used for initializing a generic reflection coefficient." alt="" coords="358,5,502,111"/>
+<area shape="rect" id="Node000002" href="$classCRatioR1Reflection.html" title="A class used for initializing the reflection coefficient: R1." alt="" coords="5,179,156,304"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="345,85,258,116,212,137,169,161,141,181,138,177,166,156,210,132,256,111,344,80"/>
+<area shape="rect" id="Node000003" href="$classCRatioR2Reflection.html" title="A class used for initializing the reflection coefficient: R2." alt="" coords="180,179,331,304"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="372,123,316,181,312,177,369,119"/>
+<area shape="rect" id="Node000004" href="$classCRatioR3Reflection.html" title="A class used for initializing the reflection coefficient: R3." alt="" coords="355,159,505,324"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="433,125,433,159,427,159,427,125"/>
+<area shape="rect" id="Node000005" href="$classCRatioR4Reflection.html" title="A class used for initializing the reflection coefficient: R4." alt="" coords="529,189,680,294"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="491,119,557,187,554,191,487,123"/>
+<area shape="rect" id="Node000006" href="$classCRatioR5Reflection.html" title="A class used for initializing the reflection coefficient: R5." alt="" coords="704,189,855,294"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="516,80,604,111,650,132,694,156,733,187,730,191,691,161,648,137,602,116,515,85"/>
+</map>

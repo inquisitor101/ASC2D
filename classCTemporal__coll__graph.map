@@ -1,0 +1,13 @@
+<map id="CTemporal" name="CTemporal">
+<area shape="rect" id="Node000001" title="A class used for initializing a generic temporal class." alt="" coords="277,193,477,339"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,13,103,78"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="65,77,85,124,100,147,118,167,151,191,186,211,261,239,260,244,184,216,148,196,115,171,96,150,80,126,60,79"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="133,5,279,85"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="236,84,298,168,307,179,303,182,294,171,231,87"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="303,5,450,85"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="379,85,379,176,374,176,374,85"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="475,13,567,78"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="510,79,489,123,462,171,454,182,450,179,457,168,484,121,505,76"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="591,5,738,85"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="644,87,613,130,573,171,535,199,493,221,491,217,532,194,570,167,609,127,640,84"/>
+</map>

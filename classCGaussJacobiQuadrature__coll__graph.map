@@ -1,0 +1,9 @@
+<map id="CGaussJacobiQuadrature" name="CGaussJacobiQuadrature">
+<area shape="rect" id="Node000001" title="A class used for initializing a Gauss&#45;Jacobi numerical quadrature class." alt="" coords="137,204,325,349"/>
+<area shape="rect" id="Node000002" href="$classCQuadrature.html" title="An interface class used for initializing a generic numerical quadrature class." alt="" coords="5,5,165,111"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="130,121,185,202,181,205,126,124"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="190,25,271,91"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="233,90,233,187,228,187,228,90"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="299,25,349,91"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="322,91,313,134,297,181,293,190,288,188,292,179,308,133,317,90"/>
+</map>

@@ -1,0 +1,7 @@
+<map id="asc/include/input_structure.hpp" name="asc/include/input_structure.hpp">
+<area shape="rect" id="Node000001" title="The file containing functionalities for reading input data files." alt="" coords="5,5,207,31"/>
+<area shape="rect" id="Node000002" href="$driver__structure_8hpp.html" title="The file responsible for setting and and running the solver." alt="" coords="44,79,168,120"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="109,46,109,79,103,79,103,46"/>
+<area shape="rect" id="Node000003" href="$ASC2D_8hpp.html" title="The file containing all the ASC2D header information." alt="" coords="27,168,185,193"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="109,135,109,167,103,167,103,135"/>
+</map>

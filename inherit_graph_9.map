@@ -1,0 +1,7 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" href="$classCImport.html" title="An interface class used for importing a solution restart file." alt="" coords="5,31,73,56"/>
+<area shape="rect" id="Node000001" href="$classCASCIIImport.html" title="A class used for importing a solution restart file in ASCII format." alt="" coords="121,5,224,31"/>
+<area shape="poly" id="edge19_Node000000_Node000001" title=" " alt="" coords="87,32,120,25,121,31,88,37"/>
+<area shape="rect" id="Node000002" href="$classCBinaryImport.html" title="A class used for importing a solution restart file in binary format." alt="" coords="121,55,224,80"/>
+<area shape="poly" id="edge20_Node000000_Node000002" title=" " alt="" coords="88,50,121,56,120,61,87,55"/>
+</map>

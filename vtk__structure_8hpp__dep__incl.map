@@ -1,0 +1,12 @@
+<map id="asc/include/vtk_structure.hpp" name="asc/include/vtk_structure.hpp">
+<area shape="rect" id="Node000001" title="The file containing all the VTK output functionalities." alt="" coords="5,5,197,31"/>
+<area shape="rect" id="Node000002" href="$output__structure_8hpp.html" title="The file containing all the output functionalities." alt="" coords="37,79,165,120"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="104,46,104,79,98,79,98,46"/>
+<area shape="rect" id="Node000003" href="$driver__structure_8hpp.html" title="The file responsible for setting and and running the solver." alt="" coords="39,256,163,297"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="87,134,76,168,73,188,76,208,93,255,88,257,70,209,68,188,70,167,82,132"/>
+<area shape="rect" id="Node000005" href="$process__structure_8hpp.html" title="The file containing all the (post&#45;)processing functionalities." alt="" coords="86,168,223,208"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="123,131,145,166,140,169,119,134"/>
+<area shape="rect" id="Node000004" href="$ASC2D_8hpp.html" title="The file containing all the ASC2D header information." alt="" coords="22,345,180,371"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="104,312,104,344,98,344,98,312"/>
+<area shape="poly" id="edge5_Node000005_Node000003" title=" " alt="" coords="137,223,115,257,111,254,132,220"/>
+</map>

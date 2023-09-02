@@ -1,0 +1,42 @@
+<map id="asc/include/boundary_structure.hpp" name="asc/include/boundary_structure.hpp">
+<area shape="rect" id="Node000001" title="The file containing all the boundary condition information." alt="" coords="397,5,541,46"/>
+<area shape="rect" id="Node000002" href="$solver__structure_8hpp.html" title="The file containing all the solver functionalities." alt="" coords="406,94,532,135"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="463,61,464,93,459,94,457,61"/>
+<area shape="poly" id="edge2_Node000002_Node000001" title=" " alt="" coords="475,79,474,47,479,46,480,79"/>
+<area shape="rect" id="Node000003" href="$driver__structure_8hpp.html" title="The file responsible for setting and and running the solver." alt="" coords="289,449,412,489"/>
+<area shape="poly" id="edge3_Node000002_Node000003" title=" " alt="" coords="391,118,293,122,184,133,133,141,88,153,53,167,29,185,16,205,9,225,9,245,15,264,25,284,41,303,83,339,135,372,191,402,295,446,293,450,189,406,132,377,79,343,37,306,21,287,10,267,4,246,4,224,11,203,26,181,50,162,87,147,132,136,183,127,292,117,391,113"/>
+<area shape="rect" id="Node000005" href="$import__structure_8hpp.html" title="The file containing all the import functionalities." alt="" coords="40,183,167,223"/>
+<area shape="poly" id="edge5_Node000002_Node000005" title=" " alt="" coords="392,137,168,189,167,184,390,131"/>
+<area shape="rect" id="Node000006" href="$input__structure_8hpp.html" title="The file containing functionalities for reading input data files." alt="" coords="71,279,272,305"/>
+<area shape="poly" id="edge8_Node000002_Node000006" title=" " alt="" coords="391,125,352,132,310,144,269,161,232,185,211,207,195,233,177,279,172,277,191,230,207,204,229,181,266,156,308,139,350,127,390,119"/>
+<area shape="rect" id="Node000007" href="$iteration__structure_8hpp.html" title="The file containing all the iteration steps." alt="" coords="243,183,380,223"/>
+<area shape="poly" id="edge9_Node000002_Node000007" title=" " alt="" coords="422,144,348,185,346,180,419,140"/>
+<area shape="rect" id="Node000008" href="$temporal__structure_8hpp.html" title="The file containing all the temporal discretization functionalities." alt="" coords="348,271,489,312"/>
+<area shape="poly" id="edge24_Node000002_Node000008" title=" " alt="" coords="462,149,426,272,421,270,457,148"/>
+<area shape="rect" id="Node000009" href="$output__structure_8hpp.html" title="The file containing all the output functionalities." alt="" coords="513,271,641,312"/>
+<area shape="poly" id="edge13_Node000002_Node000009" title=" " alt="" coords="474,149,481,186,496,222,519,248,545,269,542,273,515,252,492,225,476,187,469,150"/>
+<area shape="rect" id="Node000010" href="$process__structure_8hpp.html" title="The file containing all the (post&#45;)processing functionalities." alt="" coords="796,360,934,401"/>
+<area shape="poly" id="edge19_Node000002_Node000010" title=" " alt="" coords="547,115,634,120,729,132,811,151,843,164,864,181,878,202,886,226,891,276,884,323,874,360,869,359,879,322,885,275,881,227,873,204,860,184,840,169,810,156,728,137,634,126,547,120"/>
+<area shape="rect" id="Node000011" href="$probe__structure_8hpp.html" title="The file responsible for defining probes." alt="" coords="902,279,1108,305"/>
+<area shape="poly" id="edge17_Node000002_Node000011" title=" " alt="" coords="547,119,745,141,840,158,879,169,908,180,938,202,965,229,1000,277,996,280,961,232,935,206,905,185,877,174,839,163,744,146,546,124"/>
+<area shape="rect" id="Node000012" href="$reflection__structure_8hpp.html" title="The file containing all the reflection coefficient definitions." alt="" coords="1132,271,1275,312"/>
+<area shape="poly" id="edge20_Node000002_Node000012" title=" " alt="" coords="547,118,732,137,842,155,950,180,1011,200,1070,223,1167,268,1165,273,1068,228,1009,205,948,185,841,160,731,142,546,123"/>
+<area shape="rect" id="Node000013" href="$restart__structure_8hpp.html" title="The file containing all the restart files writing functionalities." alt="" coords="506,183,634,223"/>
+<area shape="poly" id="edge22_Node000002_Node000013" title=" " alt="" coords="505,143,549,180,546,184,501,147"/>
+<area shape="rect" id="Node000014" href="$vtk__structure_8hpp.html" title="The file containing all the VTK output functionalities." alt="" coords="659,190,850,216"/>
+<area shape="poly" id="edge25_Node000002_Node000014" title=" " alt="" coords="547,136,715,187,713,192,546,142"/>
+<area shape="rect" id="Node000004" href="$ASC2D_8hpp.html" title="The file containing all the ASC2D header information." alt="" coords="271,537,429,563"/>
+<area shape="poly" id="edge4_Node000003_Node000004" title=" " alt="" coords="353,504,353,537,348,537,348,504"/>
+<area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="130,234,164,277,160,280,126,237"/>
+<area shape="poly" id="edge7_Node000006_Node000003" title=" " alt="" coords="196,313,332,446,329,450,192,317"/>
+<area shape="poly" id="edge10_Node000007_Node000003" title=" " alt="" coords="319,238,350,448,345,449,314,238"/>
+<area shape="poly" id="edge11_Node000007_Node000008" title=" " alt="" coords="349,231,396,269,392,273,345,235"/>
+<area shape="poly" id="edge12_Node000008_Node000003" title=" " alt="" coords="408,327,360,449,355,447,403,325"/>
+<area shape="poly" id="edge14_Node000009_Node000003" title=" " alt="" coords="542,323,377,450,374,446,539,319"/>
+<area shape="poly" id="edge15_Node000009_Node000010" title=" " alt="" coords="656,314,800,357,799,362,654,319"/>
+<area shape="poly" id="edge16_Node000010_Node000003" title=" " alt="" coords="782,398,413,460,412,455,781,393"/>
+<area shape="poly" id="edge18_Node000011_Node000010" title=" " alt="" coords="974,315,898,362,895,357,972,310"/>
+<area shape="poly" id="edge21_Node000012_Node000010" title=" " alt="" coords="1118,317,935,364,933,359,1117,312"/>
+<area shape="poly" id="edge23_Node000013_Node000009" title=" " alt="" coords="576,238,578,271,573,271,570,238"/>
+<area shape="poly" id="edge26_Node000014_Node000009" title=" " alt="" coords="717,225,618,273,616,268,715,220"/>
+</map>

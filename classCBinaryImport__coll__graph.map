@@ -1,0 +1,7 @@
+<map id="CBinaryImport" name="CBinaryImport">
+<area shape="rect" id="Node000001" title="A class used for importing a solution restart file in binary format." alt="" coords="5,288,177,394"/>
+<area shape="rect" id="Node000002" href="$classCImport.html" title="An interface class used for importing a solution restart file." alt="" coords="5,134,177,239"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="94,253,94,289,89,289,89,253"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="43,5,140,71"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="94,71,94,117,89,117,89,71"/>
+</map>

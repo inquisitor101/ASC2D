@@ -1,0 +1,11 @@
+<map id="CEETotalInletCBC" name="CEETotalInletCBC">
+<area shape="rect" id="Node000001" title="A class used for implementing characteristic total/stagnation inlet boundary conditions." alt="" coords="14,1039,197,1164"/>
+<area shape="rect" id="Node000002" href="$classCEEInletCBC.html" title="An interface class used for implementing characteristic inlet boundary conditions." alt="" coords="47,905,163,991"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="108,1005,108,1039,103,1039,103,1005"/>
+<area shape="rect" id="Node000003" href="$classCEECharacteristicBoundary.html" title="A generic class used for implementing characteristic boundary conditions." alt="" coords="5,572,205,857"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="108,871,108,905,103,905,103,871"/>
+<area shape="rect" id="Node000004" href="$classCEEBoundary.html" title="A generic class used for implementing different Euler&#45;equation (EE) boundary conditions." alt="" coords="17,339,194,524"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="108,538,108,572,103,572,103,538"/>
+<area shape="rect" id="Node000005" href="$classCBoundary.html" title="A class used as an interface for different boundary conditions." alt="" coords="14,5,197,291"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="108,305,108,339,103,339,103,305"/>
+</map>

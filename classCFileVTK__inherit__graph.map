@@ -1,0 +1,7 @@
+<map id="CFileVTK" name="CFileVTK">
+<area shape="rect" id="Node000001" title="An interface class used for initializing a generic VTK class." alt="" coords="107,5,248,311"/>
+<area shape="rect" id="Node000002" href="$classCASCIIFileVTK.html" title="A class used for initializing an ASCII type VTK class." alt="" coords="5,359,155,704"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="137,325,127,360,122,359,131,324"/>
+<area shape="rect" id="Node000003" href="$classCBinaryFileVTK.html" title="A class used for initializing a binary type VTK class." alt="" coords="179,369,370,694"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="223,324,235,368,230,370,218,325"/>
+</map>

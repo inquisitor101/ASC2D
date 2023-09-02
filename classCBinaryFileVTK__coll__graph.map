@@ -1,0 +1,22 @@
+<map id="CBinaryFileVTK" name="CBinaryFileVTK">
+<area shape="rect" id="Node000001" title="A class used for initializing a binary type VTK class." alt="" coords="695,452,885,577"/>
+<area shape="rect" id="Node000002" href="$classCFileVTK.html" title="An interface class used for initializing a generic VTK class." alt="" coords="193,254,301,359"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="314,354,373,392,439,426,504,450,571,469,695,496,694,501,570,474,502,455,437,430,371,397,311,359"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="5,5,103,71"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="57,70,60,106,68,147,82,190,105,228,139,259,179,280,176,285,136,263,101,231,77,192,63,148,55,106,52,71"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="127,5,208,71"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="163,71,158,105,156,145,160,188,171,229,185,251,180,253,166,231,154,189,151,145,153,104,158,70"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="373,5,410,71"/>
+<area shape="poly" id="edge6_Node000001_Node000005" title=" " alt="" coords="412,54,427,72,440,94,453,133,456,168,448,232,444,262,444,292,452,323,471,358,491,382,514,403,567,439,623,467,679,487,678,492,621,472,564,444,511,407,487,385,467,360,447,325,439,293,439,262,443,231,450,168,447,134,436,96,423,75,408,58"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="375,53,351,71,330,96,316,131,312,161,310,193,299,231,295,240,290,238,294,229,305,192,307,160,311,129,326,93,347,68,371,49"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="546,266,693,346"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="627,345,639,387,660,426,684,451,680,455,656,430,634,389,622,347"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="717,266,863,346"/>
+<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="793,346,793,435,787,435,787,346"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="887,266,1034,346"/>
+<area shape="poly" id="edge8_Node000001_Node000008" title=" " alt="" coords="936,348,872,430,862,441,858,438,868,426,931,344"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="1058,274,1178,339"/>
+<area shape="poly" id="edge9_Node000001_Node000009" title=" " alt="" coords="1091,341,1043,386,985,430,902,474,900,469,982,426,1040,382,1087,337"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="1203,274,1364,339"/>
+<area shape="poly" id="edge10_Node000001_Node000010" title=" " alt="" coords="1260,340,1213,387,1184,411,1153,430,1091,458,1026,479,962,494,902,504,902,499,961,489,1025,473,1089,453,1150,426,1181,406,1210,383,1256,337"/>
+</map>

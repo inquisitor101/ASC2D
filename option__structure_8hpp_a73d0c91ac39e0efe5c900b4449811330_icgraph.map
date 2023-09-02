@@ -1,0 +1,7 @@
+<map id="FindStringVectorFromKeyword" name="FindStringVectorFromKeyword">
+<area shape="rect" id="Node000001" title="Function that searches for and finds a string vector from input file." alt="" coords="174,31,372,56"/>
+<area shape="rect" id="Node000002" href="$option__structure_8hpp.html#aa58ecde60d8d8f845f89cbf04e6699cc" title="Function that works as a template to read vector data, otherwise exits." alt="" coords="5,5,126,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="159,32,126,28,126,23,159,27"/>
+<area shape="rect" id="Node000003" href="$option__structure_8hpp.html#aadd51d4497a092d6ffe58c9011e362c9" title="Function that works as a template to read vector data, otherwise assigns default value." alt="" coords="5,55,126,80"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="159,59,126,63,126,58,159,54"/>
+</map>
